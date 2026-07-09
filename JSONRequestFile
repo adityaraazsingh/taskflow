@@ -1,0 +1,148 @@
+/api/tasks/{id}/comments: :
+    {
+        "name":"1st Comment",
+            "content":"1st comments content",
+            "commentator":{
+        "createdAt": null,
+                "email": "abhay@mail.com",
+                "id": 5,
+                "role": "ADMIN",
+                "username": "Abhay"
+    },
+        "task":{
+        "assignee": {
+            "createdAt": null,
+                    "email": "user@mail.com",
+                    "id": 2,
+                    "role": "ADMIN",
+                    "username": "User"
+        },
+        "comments": [],
+        "createdAt": "2026-07-09T07:00:20.390Z",
+                "description": "Be happy your time has come",
+                "dueDate": null,
+                "id": 3,
+                "priority": null,
+                "project": {
+            "CreatedAt": null,
+                    "description": "Spring Boot project management system",
+                    "id": 3,
+                    "name": "TaskFlow Backend Part 2",
+                    "status": "TODO",
+                    "user": {
+                "createdAt": null,
+                        "email": "user@mail.com",
+                        "id": 2,
+                        "role": "ADMIN",
+                        "username": "User"
+            }
+        },
+        "status": "TODO",
+                "tags": [],
+        "title": "1st Task ",
+                "updatedAt": "2026-07-09T07:00:20.390Z"
+    }
+ }
+
+ /api/projects
+
+ Post:
+ [
+     {
+         "name": "TaskFlow Backend",
+             "description": "Spring Boot project management system",
+             "status": "TODO",
+             "createdAt": "2026-07-08T15:30:00",
+             "user":{
+         "id":2,
+                 "username": "User",
+                 "passwordHash": "123123",
+                 "email":"user@mail.com",
+                 "role":"ADMIN"
+     }
+     }
+ ]
+
+ /api/projects/{id}/tasks
+ [
+     {
+         "title": "TaskFlow Backend",
+             "description": "Spring Boot project management system",
+             "status": "TODO",
+             "createdAt": "2026-07-08T15:30:00",
+             "assignee":{
+         "id":2,
+                 "username": "User",
+                 "passwordHash": "123123",
+                 "email":"user@mail.com",
+                 "role":"ADMIN"
+     },
+         "project":{
+         "CreatedAt": null,
+                 "description": "Spring Boot project management system",
+                 "id": 3,
+                 "name": "TaskFlow Backend Part 2",
+                 "status": "TODO",
+                 "user": {
+             "createdAt": null,
+                     "email": "user@mail.com",
+                     "id": 2,
+                     "role": "ADMIN",
+                     "username": "User"
+         }
+     }
+     }
+ ]
+
+ OR
+ {
+     "assignee": {
+     "createdAt": null,
+             "email": "abhay@mail.com",
+             "id": 5,
+             "role": "ADMIN",
+             "username": "Abhay"
+ },
+     "comments": [],
+     "createdAt": "2026-07-08T16:25:33.074Z",
+         "description": "Be happy your time has come",
+         "dueDate": null,
+         "id": 2,
+         "priority": null,
+         "project": {
+     "CreatedAt": null,
+             "description": "Spring Boot project management system",
+             "id": 3,
+             "name": "TaskFlow Backend Part 2",
+             "status": "TODO",
+             "user": {
+         "createdAt": null,
+                 "email": "user@mail.com",
+                 "id": 2,
+                 "role": "ADMIN",
+                 "username": "User"
+     }
+ },
+     "status": "TODO",
+         "tags": [],
+     "title": "1st Task ",
+         "updatedAt": "2026-07-08T16:25:33.074Z"
+ }
+     The later one has to be array
+
+/api/projects/{id}/members
+
+"EDITOR" just send this nothing more than it
+
+/api/tasks/{id}/status
+
+"IN_PROGRESS" just this for change
+
+/api/users/me
+
+        {
+        "username": "User",
+            "passwordHash": "123123",
+            "email":"user@mail.com",
+            "role":"ADMIN"
+    }

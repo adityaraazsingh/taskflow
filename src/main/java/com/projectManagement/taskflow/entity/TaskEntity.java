@@ -1,0 +1,138 @@
+package com.projectManagement.taskflow.entity;
+
+import com.projectManagement.taskflow.enums.Status;
+import com.projectManagement.taskflow.enums.priority;
+import jakarta.persistence.*;
+import lombok.Data;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+@Data
+@Entity
+public class TaskEntity {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String title;
+
+    private String description;
+
+    @ManyToOne
+    private UserEntity assignee;
+
+    @OneToMany(mappedBy = "task")
+    private List<CommentEntity> comments = new ArrayList<>();
+
+    @ManyToOne
+    private ProjectEntity project;
+
+    @ManyToMany
+    private List<TagEntity> tags = new ArrayList<>();
+
+    @Enumerated(EnumType.STRING)
+    private Status status;
+
+    @Enumerated(EnumType.STRING)
+    private priority priority;
+
+    private Date dueDate;
+
+    private Date createdAt;
+
+    private Date updatedAt;
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public UserEntity getAssignee() {
+        return assignee;
+    }
+
+    public void setAssignee(UserEntity assignee) {
+        this.assignee = assignee;
+    }
+
+    public List<CommentEntity> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<CommentEntity> comments) {
+        this.comments = comments;
+    }
+
+    public ProjectEntity getProject() {
+        return project;
+    }
+
+    public void setProject(ProjectEntity project) {
+        this.project = project;
+    }
+
+    public List<TagEntity> getTags() {
+        return tags;
+    }
+
+    public void setTags(List<TagEntity> tags) {
+        this.tags = tags;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
+    public priority getPriority() {
+        return priority;
+    }
+
+    public void setPriority(priority priority) {
+        this.priority = priority;
+    }
+
+    public Date getDueDate() {
+        return dueDate;
+    }
+
+    public void setDueDate(Date dueDate) {
+        this.dueDate = dueDate;
+    }
+
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Date getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Date updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+}
