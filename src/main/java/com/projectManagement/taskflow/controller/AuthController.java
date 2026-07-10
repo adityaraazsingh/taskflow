@@ -32,20 +32,6 @@ public class AuthController {
 
     @PostMapping("/login")
     private String login(@RequestBody LoginCredentials loginCredentials){
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        loginCredentials.getUsername(),
-                        loginCredentials.getPassword()
-                )
-        );
-        if(authentication.isAuthenticated()){
-            RoleEnum role = userService.findByUsername(loginCredentials.getUsername()).getRole();
-            return jwtUtil.generateToken(
-                    loginCredentials.getUsername(),role);
-        }else{
-            throw new RuntimeException("Invalid Credentials");
-        }
+       return authService.login(loginCredentials);
     }
-
 }
-//eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJBRElUWUEiLCJ1c2VybmFtZSI6IkFESVRZQSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc4MzU5NTkzMiwiZXhwIjoxNzgzNTk5NTMyfQ.IR7gNbrY31EHd6FgjtacdGWExD8AdHvdZ25QCxo0TeI

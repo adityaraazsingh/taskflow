@@ -1,12 +1,15 @@
 package com.projectManagement.taskflow.controller;
 
-import com.projectManagement.taskflow.dto.LoginCredentials;
 import com.projectManagement.taskflow.dto.UserRequestDTO;
 import com.projectManagement.taskflow.entity.UserEntity;
 import com.projectManagement.taskflow.mapper.UserMapper;
 import com.projectManagement.taskflow.repository.UserRepo;
+import com.projectManagement.taskflow.service.AuthService;
 import com.projectManagement.taskflow.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,6 +29,9 @@ public class UsersController {
     private UserMapper userMapper;
 
     @Autowired
+    private AuthService authService;
+
+    @Autowired
     private BCryptPasswordEncoder passwordEncoder;
 
     @GetMapping
@@ -39,11 +45,16 @@ public class UsersController {
         return userService.findByUsername(username);
     }
 
-    @PostMapping("/me")
+    @PostMapping("/signup")
     private UserEntity registerUser(@RequestBody UserRequestDTO dto){
-        String password = dto.getPassword();
-        String passwordHash = passwordEncoder.encode(password);
-        UserEntity user = userMapper.toEntity(dto, passwordHash);
-        return userRepo.save(user);
+        return authService.register(dto);
+    }
+
+    @GetMapping("/all")
+    private Page<UserEntity> getAllusers(@RequestParam(defaultValue = "0") int page,
+                                         @RequestParam(defaultValue = "10") int size){
+        Pageable pageable = PageRequest.of(page, size);
+        return userService.listUsers(pageable);
+
     }
 }

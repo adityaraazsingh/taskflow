@@ -8,6 +8,8 @@ import com.projectManagement.taskflow.repository.ProjectMemberRepo;
 import com.projectManagement.taskflow.repository.ProjectRepo;
 import com.projectManagement.taskflow.repository.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,25 +27,31 @@ public class ProjectService {
     @Autowired
     private ProjectMemberRepo projectMemberRepo;
 
+    @Autowired
+    private AuthService authService;
+
 //TODO: createProject(ProjectEntity project, UserEntity owner) See what it is
     public ProjectEntity createProject(ProjectEntity project){
        return projectRepo.save(project);
     }
-//TODO: getProjectById(Long id, UserEntity user) See what it is
+
+    //TODO: getProjectById(Long id, UserEntity user) See what it is
     public ProjectEntity getProjectById(Long id){
+        UserEntity user = authService.getCurrentUser();
         return projectRepo.findById(id)
                 .orElseThrow(()->new RuntimeException("Project Not found"));
     }
-// TODO: pageable refer blueprint.md
-    public List<ProjectEntity> listProjectsForUser(UserEntity user){
-        return projectRepo.findByUser_id(user.getId());
+
+    public Page<ProjectEntity> listProjectsForUser(Long userId, Pageable pageable){
+        return projectRepo.findByUser_id(userId,pageable);
     }
 
     public ProjectEntity updateProject(Long id, ProjectEntity updatedProjectRequest, UserEntity use){
         return projectRepo.save(updatedProjectRequest);
     }
-//    TODO : correct the below logic ,check it deleteProject(Long id, UserEntity requester)
+
     public boolean deleteProject(Long id){
+         authService.getCurrentUser();
          projectRepo.deleteById(id);
          return true;
     }
@@ -66,8 +74,10 @@ public class ProjectService {
 
         return "User added successfully";
     }
-//TODO: removeMember(Long projectId, Long userId, UserEntity requester) what's up with requester??
+
     public boolean removeMember(Long projectId, Long userId){
+        UserEntity requester = authService.getCurrentUser();
+
         ProjectMember projectMember = projectMemberRepo.findByUser_idAndProject_id(userId , projectId);
         projectMemberRepo.delete(projectMember);
         return true;

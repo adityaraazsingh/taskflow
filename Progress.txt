@@ -25,4 +25,6 @@ DELETE /api/comments/{id} - DONE
 GET    /api/tags -DONE
 POST   /api/tags - DONE
 POST   /api/tasks/{id}/tags/{tagId} - DONE
-DELETE /api/tasks/{id}/tags/{tagId}
+DELETE /api/tasks/{id}/tags/{tagId} - DONE
+
+TasksController.java - User is being hardcoded make it dynamic - DONE

@@ -6,10 +6,15 @@ import com.projectManagement.taskflow.entity.TaskEntity;
 import com.projectManagement.taskflow.entity.UserEntity;
 import com.projectManagement.taskflow.enums.RoleInProject;
 import com.projectManagement.taskflow.repository.ProjectRepo;
+import com.projectManagement.taskflow.repository.TaskRepo;
+import com.projectManagement.taskflow.service.AuthService;
 import com.projectManagement.taskflow.service.ProjectService;
 import com.projectManagement.taskflow.service.TaskService;
 import com.projectManagement.taskflow.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -29,6 +34,12 @@ public class ProjectsController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private TaskRepo taskRepo;
+
+    @Autowired
+    private AuthService authService;
 
     @GetMapping
     public List<ProjectEntity> getProjects(){
@@ -57,10 +68,11 @@ public class ProjectsController {
         projectService.deleteProject(id);
         return true;
     }
-//POST: /api/projects/{id}/members
-//TODO: NOT DONE COMPLETE IT
-//    TODO: user fetching logic is incorrect
-//        "EDITOR" just send this nothing more than it
+
+    //POST: /api/projects/{id}/members
+    //TODO: NOT DONE COMPLETE IT
+    //    TODO: user fetching logic is incorrect
+    //        "EDITOR" just send this nothing more than it
     @PostMapping("/{id}/members")
     public boolean addProjectPerMember(@PathVariable Long id, @RequestBody RoleInProject role){
         UserEntity user = userService.findByUsername("Aditya");
@@ -70,21 +82,31 @@ public class ProjectsController {
 
     @DeleteMapping("/{id}/members/{userId}")
     public boolean deleteProjectForMember(@PathVariable Long id, @PathVariable Long userId){
-        projectService.removeMember(userId, id);
-        return true;
+        return projectService.removeMember(userId, id);
     }
 
     @GetMapping("/{id}/tasks")
-    public List<TaskEntity> getAllTaskOfProject(@PathVariable Long id){
-        return taskService.listTasksByProject(id);
+    public Page<TaskEntity> getAllTaskOfProject(@RequestParam(defaultValue = "0") int page
+            , @RequestParam(defaultValue = "10") int size
+            , @PathVariable Long id){
+        Pageable pageable = PageRequest.of(page, size);
+        return taskService.listTasksByProject(id, pageable);
     }
 
     @PostMapping("/{id}/tasks")
-    public List<TaskEntity> postAllTaskOfProject(@PathVariable Long id, @RequestBody List<TaskRequestDTO> tasks){
+    public List<TaskEntity> postAllTaskOfProject(@PathVariable Long id,
+                                                 @RequestBody List<TaskRequestDTO> tasks){
 //        id = projectId here
-//        TODO: logic of user is incorrect have to feed in the actual values
-        UserEntity user = userService.findByUsername("User");
+        UserEntity user = authService.getCurrentUser();
         tasks.forEach((task)-> taskService.createTask(id,task,user));
-        return taskService.listTasksByProject(id);
+        return taskRepo.findByProject_id(id);
+    }
+
+    @GetMapping("/user/{userId}")
+    private Page<ProjectEntity> getProjectsForUser(@PathVariable Long userId,
+                                                   @RequestParam(defaultValue = "0") int size,
+                                                   @RequestParam(defaultValue = "10") int page) {
+        Pageable pageable = PageRequest.of(page,size);
+        return projectService.listProjectsForUser(userId, pageable);
     }
 }

@@ -5,10 +5,13 @@ import com.projectManagement.taskflow.entity.ProjectEntity;
 import com.projectManagement.taskflow.entity.TaskEntity;
 import com.projectManagement.taskflow.entity.UserEntity;
 import com.projectManagement.taskflow.enums.Status;
+import com.projectManagement.taskflow.exception.TaskNotFoundException;
 import com.projectManagement.taskflow.repository.ProjectRepo;
 import com.projectManagement.taskflow.repository.TaskRepo;
 import com.projectManagement.taskflow.repository.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -25,6 +28,9 @@ public class TaskService {
 
     @Autowired
     private UserRepo userRepo;
+
+    @Autowired
+    private AuthService authService;
 
 //    TODO : write logic for requester createTask(Long projectId , TaskRequestDTO taskDTO, UserEntity requester)
 
@@ -49,16 +55,18 @@ public class TaskService {
 
         return taskRepo.save(task);
     }
+
 //TODO : fix getTaskById(Long id , UserEntity user)
-    public TaskEntity getTaskById(Long id , UserEntity user){
+    public TaskEntity getTaskById(Long id){
 //        TODO : Create Custom Error Exception For Task Not Found
+        UserEntity user = authService.getCurrentUser();
         return taskRepo.findById(id)
-                .orElseThrow(()-> new RuntimeException("Task Not Found"));
+                .orElseThrow(()-> new TaskNotFoundException("Task Not Found"));
     }
 
-//TODO: Add TaskFilter and Pageable 'listTasksByProject(projectId, taskFilter, Pageable)'
-    public List<TaskEntity> listTasksByProject(Long projectId){
-        return taskRepo.findByProject_id(projectId);
+//TODO: Add TaskFilter
+    public Page<TaskEntity> listTasksByProject(Long projectId, Pageable pageable){
+        return taskRepo.findByProject_id(projectId, pageable);
     }
 
 //TODO:    Add logic of Role of User according To projectMember
@@ -73,6 +81,7 @@ public class TaskService {
         taskRepo.save(task);
         return "Status Updated to "+task.getStatus();
     }
+
 //TODO : userId is not being used assignTask(Long id, Long userId ,UserEntity user)
     public String assignTask(Long id, UserEntity user){
         TaskEntity task = taskRepo.findById(id)
