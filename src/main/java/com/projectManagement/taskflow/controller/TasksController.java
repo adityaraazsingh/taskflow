@@ -13,6 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.RequestEntity;
+import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.config.Task;
 import org.springframework.web.bind.annotation.*;
 
@@ -46,26 +49,26 @@ public class TasksController {
     }
 
     @PutMapping("/{id}")
-    public TaskEntity updateTaskById(@PathVariable Long id, @RequestBody TaskEntity updatedTask){
+    public ResponseEntity<TaskEntity> updateTaskById(@PathVariable Long id, @RequestBody TaskEntity updatedTask){
         UserEntity user = authService.getCurrentUser();
-        return taskService.updateTask(id, updatedTask,user );
+        return ResponseEntity.ok(taskService.updateTask(id, updatedTask, user));
     }
 
     // "IN_PROGRESS" just this for change
     @PatchMapping("/{id}/status")
-    public String changeStatusOfTask(@PathVariable Long id, @RequestBody Status status){
+    public ResponseEntity<String> changeStatusOfTask(@PathVariable Long id, @RequestBody Status status){
         UserEntity user = authService.getCurrentUser();
-        return taskService.updateStatus(id, status, user);
+        return ResponseEntity.ok(taskService.updateStatus(id, status, user));
     }
 
     @PatchMapping("/{id}/assignee")
-    public String changeAssignee(@PathVariable Long id,@RequestBody UserEntity user){
-        return taskService.assignTask(id, user);
+    public ResponseEntity<String> changeAssignee(@PathVariable Long id,@RequestBody UserEntity user){
+        return ResponseEntity.ok(taskService.assignTask(id, user));
     }
 
     @DeleteMapping("/{id}")
-    public String deleteTask(@PathVariable Long id){
-        return taskService.deleteTask(id);
+    public ResponseEntity<String> deleteTask(@PathVariable Long id){
+        return ResponseEntity.ok(taskService.deleteTask(id));
     }
 
     @GetMapping("/{id}/comments")
@@ -78,20 +81,19 @@ public class TasksController {
 
     //TODO: Add a logic to add users here
     @PostMapping("/{id}/comments")
-    public String postCommentsForTask(@PathVariable Long id, @RequestBody List<CommentRequestDTO> comments){
+    public ResponseEntity<String> postCommentsForTask(@PathVariable Long id, @RequestBody List<CommentRequestDTO> comments){
         UserEntity user = authService.getCurrentUser();
         comments.forEach((comment)-> commentService.addComment(id,comment,user));
-        return "Added comments for task";
+        return ResponseEntity.ok("Added comments for task");
     }
 
     @PostMapping("{id}/tags/{tagId}")
-    private String addTasksPerTags(@PathVariable Long id, @PathVariable Long tagId){
-        return tagService.AttachTagToTask(id, tagId);
+    private ResponseEntity<String> addTasksPerTags(@PathVariable Long id, @PathVariable Long tagId){
+        return ResponseEntity.ok(tagService.AttachTagToTask(id, tagId));
     }
 
     @DeleteMapping("{id}/tags/{tagId}")
-    private String deleteTagForTask(@PathVariable Long id, @PathVariable Long tagId){
-        return tagService.removeTagFromTask(id, tagId);
+    private ResponseEntity<String> deleteTagForTask(@PathVariable Long id, @PathVariable Long tagId){
+        return ResponseEntity.ok(tagService.removeTagFromTask(id, tagId));
     }
-
 }

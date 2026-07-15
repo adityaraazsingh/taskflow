@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -41,13 +43,13 @@ public class UsersController {
 
 //    http://localhost:8080/api/users/me/User
     @GetMapping("/me/{username}")
-    private UserEntity getUserDetails(@PathVariable String username){
-        return userService.findByUsername(username);
+    private ResponseEntity<UserEntity> getUserDetails(@PathVariable String username){
+        return ResponseEntity.ok(userService.findByUsername(username));
     }
 
     @PostMapping("/signup")
-    private UserEntity registerUser(@RequestBody UserRequestDTO dto){
-        return authService.register(dto);
+    private ResponseEntity<UserEntity> registerUser(@RequestBody UserRequestDTO dto){
+        return ResponseEntity.status(HttpStatus.CREATED).body(authService.register(dto));
     }
 
     @GetMapping("/all")

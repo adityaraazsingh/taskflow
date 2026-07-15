@@ -1,5 +1,6 @@
-package com.projectManagement.taskflow.security;
+package com.projectManagement.taskflow.config;
 
+import com.projectManagement.taskflow.security.JwtFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -1,9 +1,12 @@
 package com.projectManagement.taskflow.service;
 
+import com.projectManagement.taskflow.dto.AuthResponse;
 import com.projectManagement.taskflow.dto.LoginCredentials;
 import com.projectManagement.taskflow.dto.UserRequestDTO;
 import com.projectManagement.taskflow.entity.UserEntity;
 import com.projectManagement.taskflow.enums.RoleEnum;
+import com.projectManagement.taskflow.exception.InvalidCredentialsException;
+import com.projectManagement.taskflow.exception.UserNotFoundException;
 import com.projectManagement.taskflow.mapper.UserMapper;
 import com.projectManagement.taskflow.repository.UserRepo;
 import com.projectManagement.taskflow.security.JwtUtil;
@@ -29,9 +32,6 @@ public class AuthService {
     private BCryptPasswordEncoder passwordEncoder;
 
     @Autowired
-    private UserService userService;
-
-    @Autowired
     private UserMapper userMapper;
 
     @Autowired
@@ -45,7 +45,8 @@ public class AuthService {
         return userRepo.save(user);
     }
 
-    public String login( LoginCredentials loginCredentials){
+    public AuthResponse login(LoginCredentials loginCredentials){
+        AuthResponse authResponse = new AuthResponse();
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         loginCredentials.getUsername(),
@@ -53,11 +54,17 @@ public class AuthService {
                 )
         );
         if(authentication.isAuthenticated()){
-            RoleEnum role = userService.findByUsername(loginCredentials.getUsername()).getRole();
-            return jwtUtil.generateToken(
-                    loginCredentials.getUsername(),role);
+            String username = loginCredentials.getUsername();
+            RoleEnum role = userRepo.findByUsername(username)
+                    .orElseThrow(()->new UserNotFoundException("User not found"))
+                    .getRole();
+            authResponse.setToken(jwtUtil.generateToken(
+                    loginCredentials.getUsername(),role));
+            authResponse.setRole(role);
+            authResponse.setUsername(username);
+            return authResponse;
         }else{
-            throw new RuntimeException("Invalid Credentials");
+            throw new InvalidCredentialsException("Invalid Credentials");
         }
     }
 
@@ -70,6 +77,6 @@ public class AuthService {
             username = principal.toString();
         }
 
-        return userService.findByUsername(username);
+        return userRepo.findByUsername(username).orElseThrow(()->new UserNotFoundException("User not found"));
     }
 }

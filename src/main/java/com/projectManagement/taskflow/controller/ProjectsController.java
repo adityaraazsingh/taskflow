@@ -15,6 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -47,26 +49,26 @@ public class ProjectsController {
     }
 
     @PostMapping
-    public boolean postProjects(@RequestBody List<ProjectEntity> projects){
+    public ResponseEntity<String> postProjects(@RequestBody List<ProjectEntity> projects){
         projectRepo.saveAll(projects);
-        return true;
+        return ResponseEntity.status(HttpStatus.CREATED).body("Projects Created");
     }
 
     @GetMapping("/{id}")
-    public ProjectEntity getOneProject(@PathVariable Long id){
-        return projectService.getProjectById(id);
+    public ResponseEntity<ProjectEntity> getOneProject(@PathVariable Long id){
+        return ResponseEntity.ok(projectService.getProjectById(id));
     }
 
     @PutMapping("/{id}")
-    public boolean createOrUpdateProject(@PathVariable Long id, @RequestBody ProjectEntity project){
+    public ResponseEntity<String> createOrUpdateProject(@PathVariable Long id, @RequestBody ProjectEntity project){
         projectService.createProject(project);
-        return true;
+        return ResponseEntity.status(HttpStatus.CREATED).body("Project Created");
     }
 
     @DeleteMapping("/{id}")
-    public boolean deleteProject(@PathVariable Long id){
+    public ResponseEntity<String> deleteProject(@PathVariable Long id){
         projectService.deleteProject(id);
-        return true;
+        return ResponseEntity.ok("Project Deleted");
     }
 
     //POST: /api/projects/{id}/members
@@ -74,15 +76,16 @@ public class ProjectsController {
     //    TODO: user fetching logic is incorrect
     //        "EDITOR" just send this nothing more than it
     @PostMapping("/{id}/members")
-    public boolean addProjectPerMember(@PathVariable Long id, @RequestBody RoleInProject role){
+    public ResponseEntity<String> addProjectPerMember(@PathVariable Long id, @RequestBody RoleInProject role){
         UserEntity user = userService.findByUsername("Aditya");
         projectService.addMember(id,user.getId(),role);
-        return true;
+        return ResponseEntity.ok("Member added to the Project with id "+ id);
     }
 
     @DeleteMapping("/{id}/members/{userId}")
-    public boolean deleteProjectForMember(@PathVariable Long id, @PathVariable Long userId){
-        return projectService.removeMember(userId, id);
+    public ResponseEntity<String> deleteProjectForMember(@PathVariable Long id, @PathVariable Long userId){
+        projectService.removeMember(userId, id);
+        return ResponseEntity.ok("Member removed from Project");
     }
 
     @GetMapping("/{id}/tasks")

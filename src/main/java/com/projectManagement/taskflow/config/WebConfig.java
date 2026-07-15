@@ -1,4 +1,4 @@
-package com.projectManagement.taskflow.security;
+package com.projectManagement.taskflow.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;

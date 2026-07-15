@@ -40,11 +40,11 @@ public class UserService {
     }
 
     public Boolean changePassword(Long id , String password){
-//     TODO : Add password Encoder here
-        String encodedPassword = password;
-        String user = String.valueOf(userRepo.findById(id));
-        if(user!=null) return true;
-        else return false;
+        String encodedPassword = passwordEncoder.encode(password);
+        UserEntity user = userRepo.findById(id).orElseThrow(()->new UserNotFoundException("User Not Found"));
+        user.setPasswordHash(encodedPassword);
+        userRepo.save(user);
+        return user != null;
 
     }
 
