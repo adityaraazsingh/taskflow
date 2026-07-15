@@ -1,1 +1,35 @@
-<p>login works!</p>
+@if (isLoggingIn) {
+    <form [formGroup]="loginForm" (ngSubmit)="onLoginClick()">
+        <div class="formGroup">
+            <label for="text">Enter the Username :</label>
+            <input id="username" formControlName="username" type="text"/>
+        </div>
+        <div class="formGroup">
+            <label for="text">Enter the Password :</label>
+            <input id="password" type="password" formControlName="password"/>
+        </div>
+        <button class="submit">Submit</button>
+        <button class="button" (click)="onClick()"> Sign up!!!</button>
+    </form>
+}@else {
+    <form [formGroup]="signUpForm" (ngSubmit)="onLoginClick()">
+        <div class="formGroup">
+            <label for="text">Enter the Username :</label>
+            <input id="username" formControlName="username" type="text"/>
+        </div>
+        <div class="formGroup">
+            <label for="text">Enter the Password :</label>
+            <input id="password" type="password" formControlName="password"/>
+        </div>
+        <div class="formGroup">
+            <label for="text">Enter the Role :</label>
+            <input id="role" type="text" formControlName="role"/>
+        </div>
+        <div class="formGroup">
+            <label for="text">Enter the Email :</label>
+            <input id="email" type="email" formControlName="email"/>
+        </div>
+        <button class="submit">Submit</button>
+        <button class="button" (click)="onClick()"> log in</button>
+    </form>
+}
