@@ -100,8 +100,7 @@ public class ProjectsController {
     public List<TaskEntity> postAllTaskOfProject(@PathVariable Long id,
                                                  @RequestBody List<TaskRequestDTO> tasks){
 //        id = projectId here
-        UserEntity user = authService.getCurrentUser();
-        tasks.forEach((task)-> taskService.createTask(id,task,user));
+        tasks.forEach((task)-> taskService.createTask(id,task));
         return taskRepo.findByProject_id(id);
     }
 

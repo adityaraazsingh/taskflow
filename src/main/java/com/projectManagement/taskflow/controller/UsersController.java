@@ -53,7 +53,7 @@ public class UsersController {
     }
 
     @GetMapping("/all")
-    private Page<UserEntity> getAllusers(@RequestParam(defaultValue = "0") int page,
+    private Page<UserEntity> getAllUsers(@RequestParam(defaultValue = "0") int page,
                                          @RequestParam(defaultValue = "10") int size){
         Pageable pageable = PageRequest.of(page, size);
         return userService.listUsers(pageable);

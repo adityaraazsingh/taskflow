@@ -15,12 +15,12 @@ public class CommentEntity {
 
     private String content;
 
-    @JsonIgnore
-    @ManyToOne
+    @JoinColumn(name = "task_id")
+    @ManyToOne(fetch = FetchType.LAZY)
     private TaskEntity task;
 
-    @JsonIgnore
-    @ManyToOne
+    @JoinColumn(name = "commentator_id")
+    @ManyToOne(fetch = FetchType.LAZY)
     private UserEntity commentator;
 
     public Long getId() {

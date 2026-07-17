@@ -5,7 +5,9 @@ import com.projectManagement.taskflow.entity.ProjectEntity;
 import com.projectManagement.taskflow.entity.TaskEntity;
 import com.projectManagement.taskflow.entity.UserEntity;
 import com.projectManagement.taskflow.enums.Status;
+import com.projectManagement.taskflow.exception.ProjectNotFoundException;
 import com.projectManagement.taskflow.exception.TaskNotFoundException;
+import com.projectManagement.taskflow.mapper.TaskMapper;
 import com.projectManagement.taskflow.repository.ProjectRepo;
 import com.projectManagement.taskflow.repository.TaskRepo;
 import com.projectManagement.taskflow.repository.UserRepo;
@@ -29,22 +31,14 @@ public class TaskService {
     @Autowired
     private AuthService authService;
 
-//    TODO : write logic for requester createTask(Long projectId , TaskRequestDTO taskDTO, UserEntity requester)
-    public TaskEntity createTask(Long projectId , TaskRequestDTO taskDTO, UserEntity requester){
-        TaskEntity task = new TaskEntity();
-//    TODO :Create Exceptions for project not found etc.....
+    @Autowired
+    private TaskMapper taskMapper;
+
+    public TaskEntity createTask(Long projectId , TaskRequestDTO taskDTO){
         ProjectEntity project = projectRepo.findById(projectId)
-                .orElseThrow(()-> new RuntimeException("Project Not Found"));
-        task.setProject(project);
-
-        task.setDescription(taskDTO.getDescription());
-        task.setTitle(taskDTO.getTitle());
-        task.setDueDate(taskDTO.getDueDate());
-        task.setAssignee(requester);
-        // Not saving comments and Tags
-        task.setStatus(Status.TODO);
-        task.setPriority(taskDTO.getPriority());
-
+                .orElseThrow(()-> new ProjectNotFoundException("Project Not Found"));
+        UserEntity user = authService.getCurrentUser();
+        TaskEntity task = taskMapper.toEntity(taskDTO,project,user);
         Date now = new Date();
         task.setCreatedAt(now);
         task.setUpdatedAt(now);
@@ -52,9 +46,7 @@ public class TaskService {
         return taskRepo.save(task);
     }
 
-//TODO : fix getTaskById(Long id , UserEntity user)
     public TaskEntity getTaskById(Long id){
-//        TODO : Create Custom Error Exception For Task Not Found
         UserEntity user = authService.getCurrentUser();
         return taskRepo.findById(id)
                 .orElseThrow(()-> new TaskNotFoundException("Task Not Found"));
@@ -78,7 +70,7 @@ public class TaskService {
         return "Status Updated to "+task.getStatus();
     }
 
-//TODO : userId is not being used assignTask(Long id, Long userId ,UserEntity user)
+//   TODO : userId is not being used assignTask(Long id, Long userId ,UserEntity user)
     public String assignTask(Long id, UserEntity user){
         TaskEntity task = taskRepo.findById(id)
                 .orElseThrow(()->new RuntimeException("Task Not Found"));
@@ -89,7 +81,7 @@ public class TaskService {
         return "Task is assigned to user with user id : "+user.getId();
     }
 
-//    TODO: logic of above and below code deals with positive cases only
+//    TODO : logic of above and below code deals with positive cases only
 //    TODO : deleteTask(Long id , UserEntity requester)
     public String deleteTask(Long id){
         taskRepo.deleteById(id);

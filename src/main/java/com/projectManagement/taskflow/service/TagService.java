@@ -3,6 +3,8 @@ package com.projectManagement.taskflow.service;
 import com.projectManagement.taskflow.dto.TagRequestDTO;
 import com.projectManagement.taskflow.entity.TagEntity;
 import com.projectManagement.taskflow.entity.TaskEntity;
+import com.projectManagement.taskflow.exception.TaskNotFoundException;
+import com.projectManagement.taskflow.mapper.TagMapper;
 import com.projectManagement.taskflow.repository.TagRepo;
 import com.projectManagement.taskflow.repository.TaskRepo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,11 +18,12 @@ public class TagService {
     @Autowired
     private TaskRepo taskRepo;
 
-    public TagEntity createTag(TagRequestDTO tagRequest){
-        TagEntity tag = new TagEntity();
-        tag.setName(tagRequest.name);
-        tag.setColorHex(tagRequest.colorHex);
+    @Autowired
+    private TagMapper tagMapper;
 
+
+    public TagEntity createTag(TagRequestDTO tagRequest){
+        TagEntity tag = tagMapper.toEntity(tagRequest);
         return tagRepo.save(tag);
     }
 
@@ -30,7 +33,7 @@ public class TagService {
                 .orElseThrow(()-> new RuntimeException("Tag not found"));
 
         TaskEntity task = taskRepo.findById(taskId)
-                .orElseThrow(()-> new RuntimeException("Task not found"));
+                .orElseThrow(()-> new TaskNotFoundException("Task not found"));
 
         if (!task.getTags().contains(tag)) {
             task.getTags().add(tag);

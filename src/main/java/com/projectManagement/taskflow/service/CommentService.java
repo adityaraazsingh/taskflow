@@ -1,8 +1,12 @@
 package com.projectManagement.taskflow.service;
 
 import com.projectManagement.taskflow.dto.CommentRequestDTO;
+import com.projectManagement.taskflow.dto.CommentResponseDto;
+import com.projectManagement.taskflow.dto.TaskRequestDTO;
 import com.projectManagement.taskflow.entity.CommentEntity;
+import com.projectManagement.taskflow.entity.TaskEntity;
 import com.projectManagement.taskflow.entity.UserEntity;
+import com.projectManagement.taskflow.mapper.CommentMapper;
 import com.projectManagement.taskflow.repository.CommentRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -20,25 +24,29 @@ public class CommentService {
     @Autowired
     private TaskService taskService;
 
-    public String addComment(Long taskId, CommentRequestDTO commentDTO, UserEntity author){
-        CommentEntity comment = new CommentEntity() ;
-        comment.setName(commentDTO.name);
-        comment.setContent(commentDTO.content);
-        comment.setCommentator(author);
-        comment.setTask(taskService.getTaskById(taskId));
+    @Autowired
+    private AuthService authService;
 
+    @Autowired
+    private CommentMapper commentMapper;
+
+    public String addComment(Long taskId, CommentRequestDTO commentDTO){
+        UserEntity author = authService.getCurrentUser();
+        TaskEntity task = taskService.getTaskById(taskId);
+        CommentEntity comment =  commentMapper.toEntity(commentDTO, author, task); ;
         commentRepo.save(comment);
         return "Comment Added Succesfully";
     }
 
 //    TODO : make this pageable also
-    public Page<CommentEntity> listCommentsForTask(Long taskId, Pageable pageable){
-        return commentRepo.findAllByTask_id(taskId, pageable);
+    public Page<CommentResponseDto> listCommentsForTask(Long taskId, Pageable pageable){
+        Page<CommentEntity> comments = commentRepo.findAllByTask_id(taskId, pageable);
+        return comments.map(commentMapper::toDto);
     }
 
 //    TODO: Write logic for failure too
-//    TODO : write logic for 'deleteComment(Long id, UserEntity requester)'
     public String deleteComment(Long id){
+        UserEntity requester = authService.getCurrentUser();
         commentRepo.deleteById(id);
         return "Comment Deleted Successfully";
     }

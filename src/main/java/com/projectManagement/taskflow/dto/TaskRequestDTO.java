@@ -1,5 +1,6 @@
 package com.projectManagement.taskflow.dto;
 
+import com.projectManagement.taskflow.enums.Status;
 import com.projectManagement.taskflow.enums.priority;
 
 import java.util.Date;
@@ -9,6 +10,33 @@ public class TaskRequestDTO {
     private String description;
     private Date dueDate;
     private priority priority;
+    private Status status;
+    private Long[] commentIds;
+    private Long[] tagIds;
+
+    public Long[] getCommentIds() {
+        return commentIds;
+    }
+
+    public void setCommentIds(Long[] commentId) {
+        this.commentIds = commentId;
+    }
+
+    public Long[] getTagIds() {
+        return tagIds;
+    }
+
+    public void setTagIds(Long[] tagsId) {
+        this.tagIds = tagsId;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
 
     public priority getPriority() {
         return priority;

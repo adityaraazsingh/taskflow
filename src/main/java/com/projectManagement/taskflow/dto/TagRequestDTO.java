@@ -1,6 +1,22 @@
 package com.projectManagement.taskflow.dto;
 
 public class TagRequestDTO {
-    public String name;
-    public String colorHex;
+    private String name;
+    private String colorHex;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getColorHex() {
+        return colorHex;
+    }
+
+    public void setColorHex(String colorHex) {
+        this.colorHex = colorHex;
+    }
 }

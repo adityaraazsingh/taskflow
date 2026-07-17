@@ -1,6 +1,7 @@
 package com.projectManagement.taskflow.controller;
 
 import com.projectManagement.taskflow.dto.CommentRequestDTO;
+import com.projectManagement.taskflow.dto.CommentResponseDto;
 import com.projectManagement.taskflow.dto.TagRequestDTO;
 import com.projectManagement.taskflow.dto.TaskRequestDTO;
 import com.projectManagement.taskflow.entity.CommentEntity;
@@ -72,18 +73,16 @@ public class TasksController {
     }
 
     @GetMapping("/{id}/comments")
-    public Page<CommentEntity> getComments(@PathVariable Long id,
-                                           @RequestParam(defaultValue = "0") int page,
-                                           @RequestParam(defaultValue = "10") int size){
+    public Page<CommentResponseDto> getComments(@PathVariable Long id,
+                                                @RequestParam(defaultValue = "0") int page,
+                                                @RequestParam(defaultValue = "10") int size){
         Pageable pageable = PageRequest.of(page,size);
         return commentService.listCommentsForTask(id, pageable);
     }
 
-    //TODO: Add a logic to add users here
     @PostMapping("/{id}/comments")
     public ResponseEntity<String> postCommentsForTask(@PathVariable Long id, @RequestBody List<CommentRequestDTO> comments){
-        UserEntity user = authService.getCurrentUser();
-        comments.forEach((comment)-> commentService.addComment(id,comment,user));
+        comments.forEach((comment)-> commentService.addComment(id,comment));
         return ResponseEntity.ok("Added comments for task");
     }
 
