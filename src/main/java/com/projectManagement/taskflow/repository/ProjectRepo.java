@@ -13,7 +13,4 @@ import java.util.Optional;
 @Repository
 public interface ProjectRepo extends JpaRepository<ProjectEntity,Long> {
     Page<ProjectEntity> findByUser_id(Long id, Pageable pageable);
-
-    List<ProjectMember> findAllById(Long projectId);
-    Optional<ProjectEntity> findAllByProject_id(Long projectId);
 }
