@@ -20,13 +20,15 @@ public class TaskEntity {
 
     private String description;
 
-    @ManyToOne
+    @JoinColumn(name = "assignee_id")
+    @ManyToOne(fetch = FetchType.LAZY)
     private UserEntity assignee;
 
     @OneToMany(mappedBy = "task")
     private List<CommentEntity> comments = new ArrayList<>();
 
-    @ManyToOne
+    @JoinColumn(name = "project_id")
+    @ManyToOne(fetch = FetchType.LAZY)
     private ProjectEntity project;
 
     @ManyToMany

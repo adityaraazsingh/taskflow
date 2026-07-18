@@ -1,6 +1,7 @@
 package com.projectManagement.taskflow.service;
 
 import com.projectManagement.taskflow.dto.TagRequestDTO;
+import com.projectManagement.taskflow.dto.TagResponseDto;
 import com.projectManagement.taskflow.entity.TagEntity;
 import com.projectManagement.taskflow.entity.TaskEntity;
 import com.projectManagement.taskflow.exception.TaskNotFoundException;
@@ -22,9 +23,9 @@ public class TagService {
     private TagMapper tagMapper;
 
 
-    public TagEntity createTag(TagRequestDTO tagRequest){
+    public TagResponseDto createTag(TagRequestDTO tagRequest){
         TagEntity tag = tagMapper.toEntity(tagRequest);
-        return tagRepo.save(tag);
+        return tagMapper.toDto(tagRepo.save(tag));
     }
 
 //    TODO: create exceptions for 'tag not found too'

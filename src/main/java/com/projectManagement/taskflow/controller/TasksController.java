@@ -1,9 +1,6 @@
 package com.projectManagement.taskflow.controller;
 
-import com.projectManagement.taskflow.dto.CommentRequestDTO;
-import com.projectManagement.taskflow.dto.CommentResponseDto;
-import com.projectManagement.taskflow.dto.TagRequestDTO;
-import com.projectManagement.taskflow.dto.TaskRequestDTO;
+import com.projectManagement.taskflow.dto.*;
 import com.projectManagement.taskflow.entity.CommentEntity;
 import com.projectManagement.taskflow.entity.TaskEntity;
 import com.projectManagement.taskflow.entity.UserEntity;
@@ -27,13 +24,7 @@ import java.util.List;
 public class TasksController {
 
     @Autowired
-    private TaskRepo taskRepo;
-
-    @Autowired
     private TaskService taskService;
-
-    @Autowired
-    private UserService userService;
 
     @Autowired
     private CommentService commentService;
@@ -41,29 +32,26 @@ public class TasksController {
     @Autowired
     private TagService tagService;
 
-    @Autowired
-    private AuthService authService;
-
     @GetMapping("/{id}")
-    public TaskEntity getTaskById(@PathVariable Long id){
+    public TaskResponseDto getTaskById(@PathVariable Long id){
         return taskService.getTaskById(id);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<TaskEntity> updateTaskById(@PathVariable Long id, @RequestBody TaskEntity updatedTask){
-        UserEntity user = authService.getCurrentUser();
-        return ResponseEntity.ok(taskService.updateTask(id, updatedTask, user));
+    public ResponseEntity<TaskResponseDto> updateTaskById(@PathVariable Long id, @RequestBody TaskRequestDTO updatedTask){
+        return ResponseEntity.ok(taskService.updateTask(id, updatedTask));
     }
 
     // "IN_PROGRESS" just this for change
     @PatchMapping("/{id}/status")
-    public ResponseEntity<String> changeStatusOfTask(@PathVariable Long id, @RequestBody Status status){
-        UserEntity user = authService.getCurrentUser();
-        return ResponseEntity.ok(taskService.updateStatus(id, status, user));
+    public ResponseEntity<String> changeStatusOfTask(@PathVariable Long id,
+                                                     @RequestBody Status status){
+        return ResponseEntity.ok(taskService.updateStatus(id, status));
     }
 
     @PatchMapping("/{id}/assignee")
-    public ResponseEntity<String> changeAssignee(@PathVariable Long id,@RequestBody UserEntity user){
+    public ResponseEntity<String> changeAssignee(@PathVariable Long id,
+                                                 @RequestBody UserEntity user){
         return ResponseEntity.ok(taskService.assignTask(id, user));
     }
 
@@ -81,17 +69,18 @@ public class TasksController {
     }
 
     @PostMapping("/{id}/comments")
-    public ResponseEntity<String> postCommentsForTask(@PathVariable Long id, @RequestBody List<CommentRequestDTO> comments){
+    public ResponseEntity<String> postCommentsForTask(@PathVariable Long id,
+                                                      @RequestBody List<CommentRequestDTO> comments){
         comments.forEach((comment)-> commentService.addComment(id,comment));
         return ResponseEntity.ok("Added comments for task");
     }
 
-    @PostMapping("{id}/tags/{tagId}")
+    @PostMapping("/{id}/tags/{tagId}")
     private ResponseEntity<String> addTasksPerTags(@PathVariable Long id, @PathVariable Long tagId){
         return ResponseEntity.ok(tagService.AttachTagToTask(id, tagId));
     }
 
-    @DeleteMapping("{id}/tags/{tagId}")
+    @DeleteMapping("/{id}/tags/{tagId}")
     private ResponseEntity<String> deleteTagForTask(@PathVariable Long id, @PathVariable Long tagId){
         return ResponseEntity.ok(tagService.removeTagFromTask(id, tagId));
     }

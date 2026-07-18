@@ -32,7 +32,7 @@ public class UserEntity {
 
     @JsonIgnore
     @OneToMany(mappedBy = "user")
-    private List<ProjectEntity> projects;
+    private List<ProjectEntity> projects = new ArrayList<>();
 
     @JsonIgnore
     @OneToMany(mappedBy = "assignee")

@@ -6,8 +6,11 @@ import com.projectManagement.taskflow.dto.TaskRequestDTO;
 import com.projectManagement.taskflow.entity.CommentEntity;
 import com.projectManagement.taskflow.entity.TaskEntity;
 import com.projectManagement.taskflow.entity.UserEntity;
+import com.projectManagement.taskflow.exception.TaskNotFoundException;
 import com.projectManagement.taskflow.mapper.CommentMapper;
+import com.projectManagement.taskflow.mapper.TaskMapper;
 import com.projectManagement.taskflow.repository.CommentRepo;
+import com.projectManagement.taskflow.repository.TaskRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -30,21 +33,29 @@ public class CommentService {
     @Autowired
     private CommentMapper commentMapper;
 
+    @Autowired
+    private TaskMapper taskMapper;
+
+    @Autowired
+    private TaskRepo taskRepo;
+
     public String addComment(Long taskId, CommentRequestDTO commentDTO){
         UserEntity author = authService.getCurrentUser();
-        TaskEntity task = taskService.getTaskById(taskId);
+        TaskEntity task = taskRepo.findById(taskId).orElseThrow(() ->
+                new TaskNotFoundException("Task not found")
+        );
         CommentEntity comment =  commentMapper.toEntity(commentDTO, author, task); ;
         commentRepo.save(comment);
         return "Comment Added Succesfully";
     }
 
-//    TODO : make this pageable also
+//  TODO : make this pageable also
     public Page<CommentResponseDto> listCommentsForTask(Long taskId, Pageable pageable){
         Page<CommentEntity> comments = commentRepo.findAllByTask_id(taskId, pageable);
         return comments.map(commentMapper::toDto);
     }
 
-//    TODO: Write logic for failure too
+//  TODO: Write logic for failure too
     public String deleteComment(Long id){
         UserEntity requester = authService.getCurrentUser();
         commentRepo.deleteById(id);

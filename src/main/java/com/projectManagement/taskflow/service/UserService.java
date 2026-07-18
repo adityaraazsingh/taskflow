@@ -1,9 +1,12 @@
 package com.projectManagement.taskflow.service;
 
+import com.projectManagement.taskflow.dto.UserRequestDTO;
+import com.projectManagement.taskflow.dto.UserResponseDto;
 import com.projectManagement.taskflow.entity.UserEntity;
 import com.projectManagement.taskflow.enums.RoleEnum;
 import com.projectManagement.taskflow.exception.AccessDeniedException;
 import com.projectManagement.taskflow.exception.UserNotFoundException;
+import com.projectManagement.taskflow.mapper.UserMapper;
 import com.projectManagement.taskflow.repository.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -26,17 +29,27 @@ public class UserService {
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
 
-    public UserEntity findById(Long id){
-        return userRepo.findById(id).get();
+    @Autowired
+    private UserMapper userMapper;
+
+    public UserResponseDto findById(Long id){
+        return userMapper.toDto(userRepo.findById(id)
+                .orElseThrow(()-> new UserNotFoundException("User not found")));
     }
 
-    public UserEntity findByUsername(String username){
-        return userRepo.findByUsername(username).
+    public UserResponseDto findByUsername(String username){
+        UserEntity entity = userRepo.findByUsername(username).
                 orElseThrow(()-> new UserNotFoundException("User Not Found"));
+        return userMapper.toDto(entity);
     }
 
-    public UserEntity updateProfile(Long id,UserEntity updatedProfile){
-        return userRepo.save(updatedProfile);
+    public UserResponseDto updateProfile(Long id, UserRequestDTO updatedProfile){
+        UserEntity entity = authService.getCurrentUser();
+        entity.setUsername(updatedProfile.getUsername());
+        entity.setRole(updatedProfile.getRole());
+        entity.setEmail(updatedProfile.getEmail());
+        entity = userRepo.save(entity);
+        return userMapper.toDto(entity);
     }
 
     public Boolean changePassword(Long id , String password){
@@ -48,10 +61,11 @@ public class UserService {
 
     }
 
-    public Page<UserEntity> listUsers(Pageable pageable){
+    public Page<UserResponseDto> listUsers(Pageable pageable){
         UserEntity requester = authService.getCurrentUser();
         if(requester.getRole()== RoleEnum.ADMIN){
-            return userRepo.findAll(pageable);
+            Page<UserEntity> users = userRepo.findAll(pageable);
+            return users.map(userMapper::toDto);
         }else{
             throw new AccessDeniedException("User Not Allowed to do this Action");
         }

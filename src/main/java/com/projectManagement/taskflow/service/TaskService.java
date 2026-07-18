@@ -1,9 +1,8 @@
 package com.projectManagement.taskflow.service;
 
 import com.projectManagement.taskflow.dto.TaskRequestDTO;
-import com.projectManagement.taskflow.entity.ProjectEntity;
-import com.projectManagement.taskflow.entity.TaskEntity;
-import com.projectManagement.taskflow.entity.UserEntity;
+import com.projectManagement.taskflow.dto.TaskResponseDto;
+import com.projectManagement.taskflow.entity.*;
 import com.projectManagement.taskflow.enums.Status;
 import com.projectManagement.taskflow.exception.ProjectNotFoundException;
 import com.projectManagement.taskflow.exception.TaskNotFoundException;
@@ -15,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
 import java.util.Date;
 
 @Service
@@ -46,23 +46,34 @@ public class TaskService {
         return taskRepo.save(task);
     }
 
-    public TaskEntity getTaskById(Long id){
+    public TaskResponseDto getTaskById(Long id){
         UserEntity user = authService.getCurrentUser();
-        return taskRepo.findById(id)
+        TaskEntity task = taskRepo.findById(id)
                 .orElseThrow(()-> new TaskNotFoundException("Task Not Found"));
+        return taskMapper.toDto(task);
     }
 
 //TODO: Add TaskFilter
-    public Page<TaskEntity> listTasksByProject(Long projectId, Pageable pageable){
-        return taskRepo.findByProject_id(projectId, pageable);
+    public Page<TaskResponseDto> listTasksByProject(Long projectId, Pageable pageable){
+        Page<TaskEntity> tasks = taskRepo.findByProject_id(projectId, pageable);
+        return tasks.map(taskMapper::toDto);
     }
 
 //TODO:    Add logic of Role of User according To projectMember
-    public TaskEntity updateTask(Long id ,TaskEntity updateTaskRequest,UserEntity requester){
-        return taskRepo.save(updateTaskRequest);
+    public TaskResponseDto updateTask(Long id ,TaskRequestDTO updateTaskRequest){
+        UserEntity requester = authService.getCurrentUser();
+        TaskEntity entity = taskRepo.findById(id).orElseThrow(()-> new TaskNotFoundException("Task not found"));
+        entity.setTitle(updateTaskRequest.getTitle());
+        entity.setDescription(updateTaskRequest.getDescription());
+        entity.setPriority(updateTaskRequest.getPriority());
+        entity.setStatus(updateTaskRequest.getStatus());
+        entity.setDueDate(updateTaskRequest.getDueDate());
+
+        return taskMapper.toDto(taskRepo.save(entity));
     }
 
-    public String updateStatus(Long id , Status status, UserEntity requester){
+    public String updateStatus(Long id , Status status){
+        UserEntity user = authService.getCurrentUser();
         TaskEntity task = taskRepo.findById(id)
                 .orElseThrow(()->new RuntimeException("Task Not Found"));
         task.setStatus(status);
