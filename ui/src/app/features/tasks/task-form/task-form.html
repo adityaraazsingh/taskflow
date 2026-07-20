@@ -1,1 +1,142 @@
-<p>task-form works!</p>
+<div class="max-w-2xl mx-auto">
+  <!-- Header -->
+  <div class="mb-8">
+    <div class="flex items-center gap-2 text-sm text-gray-500 mb-2">
+      <a routerLink="/dashboard" class="hover:text-indigo-600 transition-colors">Dashboard</a>
+      <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+      </svg>
+      <a class="hover:text-indigo-600 transition-colors">Website Redesign</a>
+      <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+      </svg>
+      <span class="text-gray-900 font-medium">{{ isEdit ? 'Edit Task' : 'New Task' }}</span>
+    </div>
+    <h1 class="text-2xl font-bold text-gray-900 tracking-tight">{{ isEdit ? 'Edit Task' : 'Create New Task' }}</h1>
+    <p class="mt-1 text-sm text-gray-500">{{ isEdit ? 'Update task details' : 'Add a new task to the project' }}</p>
+  </div>
+
+  <!-- Form Card -->
+  <div class="bg-white rounded-2xl ring-1 ring-gray-200 p-6 sm:p-8">
+    <form class="space-y-6">
+      <!-- Title -->
+      <div>
+        <label for="task-title" class="block text-sm font-medium text-gray-700 mb-1.5">Task Title</label>
+        <input id="task-title" type="text" required placeholder="Enter task title"
+          class="block w-full rounded-xl border-0 py-2.5 px-3.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm transition-all duration-200" />
+        <p class="mt-1 text-xs text-gray-400">A short, descriptive title for the task.</p>
+      </div>
+
+      <!-- Description -->
+      <div>
+        <label for="task-desc" class="block text-sm font-medium text-gray-700 mb-1.5">Description</label>
+        <textarea id="task-desc" rows="5" placeholder="Describe what needs to be done, acceptance criteria, or any relevant details..."
+          class="block w-full rounded-xl border-0 py-2.5 px-3.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm transition-all duration-200 resize-none"></textarea>
+      </div>
+
+      <!-- Grid Fields -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+        <!-- Status -->
+        <div>
+          <label for="task-status" class="block text-sm font-medium text-gray-700 mb-1.5">Status</label>
+          <div class="relative">
+            <select id="task-status"
+              class="block w-full rounded-xl border-0 py-2.5 px-3.5 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm transition-all duration-200 appearance-none bg-white">
+              <option>TODO</option>
+              <option>IN_PROGRESS</option>
+              <option>DONE</option>
+            </select>
+            <svg class="absolute right-3 top-1/2 -translate-y-1/2 size-4 text-gray-400 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+            </svg>
+          </div>
+        </div>
+
+        <!-- Priority -->
+        <div>
+          <label for="task-priority" class="block text-sm font-medium text-gray-700 mb-1.5">Priority</label>
+          <div class="relative">
+            <select id="task-priority"
+              class="block w-full rounded-xl border-0 py-2.5 px-3.5 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm transition-all duration-200 appearance-none bg-white">
+              <option>LOW</option>
+              <option selected>MED</option>
+              <option>HIGH</option>
+            </select>
+            <svg class="absolute right-3 top-1/2 -translate-y-1/2 size-4 text-gray-400 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+            </svg>
+          </div>
+        </div>
+
+        <!-- Assignee -->
+        <div>
+          <label for="task-assignee" class="block text-sm font-medium text-gray-700 mb-1.5">Assignee</label>
+          <div class="relative">
+            <select id="task-assignee"
+              class="block w-full rounded-xl border-0 py-2.5 px-3.5 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm transition-all duration-200 appearance-none bg-white">
+              <option value="">Unassigned</option>
+              <option>John Doe</option>
+              <option>Jane Smith</option>
+              <option>Bob Wilson</option>
+            </select>
+            <svg class="absolute right-3 top-1/2 -translate-y-1/2 size-4 text-gray-400 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+            </svg>
+          </div>
+        </div>
+
+        <!-- Due Date -->
+        <div>
+          <label for="task-duedate" class="block text-sm font-medium text-gray-700 mb-1.5">Due Date</label>
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+              <svg class="size-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
+              </svg>
+            </div>
+            <input id="task-duedate" type="date"
+              class="block w-full rounded-xl border-0 py-2.5 pl-10 pr-3.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm transition-all duration-200" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Tags -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2">Tags</label>
+        <div class="flex flex-wrap gap-2 mb-3">
+          <span class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 ring-1 ring-blue-200 cursor-pointer hover:bg-blue-100 transition-colors">
+            frontend
+          </span>
+          <span class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium bg-gray-50 text-gray-500 ring-1 ring-gray-200 cursor-pointer hover:bg-gray-100 transition-colors">
+            backend
+          </span>
+          <span class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium bg-gray-50 text-gray-500 ring-1 ring-gray-200 cursor-pointer hover:bg-gray-100 transition-colors">
+            design
+          </span>
+          <span class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium bg-gray-50 text-gray-500 ring-1 ring-gray-200 cursor-pointer hover:bg-gray-100 transition-colors">
+            bug
+          </span>
+        </div>
+        <div class="flex items-center gap-2">
+          <input type="text" placeholder="Add a tag..."
+            class="flex-1 rounded-lg border-0 py-1.5 px-3 text-sm text-gray-900 ring-1 ring-inset ring-gray-200 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-500 transition-all duration-200" />
+          <button type="button" class="text-sm font-medium text-indigo-600 hover:text-indigo-500 transition-colors">Add</button>
+        </div>
+      </div>
+
+      <!-- Form Actions -->
+      <div class="flex items-center justify-end gap-3 pt-4 border-t border-gray-100">
+        <button type="button" class="inline-flex items-center justify-center rounded-xl px-5 py-2.5 text-sm font-medium text-gray-700 bg-white ring-1 ring-gray-300 hover:bg-gray-50 transition-all duration-200">
+          Cancel
+        </button>
+        <button type="submit"
+          class="inline-flex items-center justify-center rounded-xl bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 transition-all duration-200">
+          <svg class="size-4 mr-2" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+          </svg>
+          {{ isEdit ? 'Update Task' : 'Create Task' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

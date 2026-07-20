@@ -1,1 +1,10 @@
-<p>priority-tag works!</p>
+<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md text-xs font-semibold" [ngClass]="{
+    'bg-rose-50 text-rose-700 ring-1 ring-rose-200': priority === 'HIGH',
+    'bg-amber-50 text-amber-700 ring-1 ring-amber-200': priority === 'MED',
+    'bg-sky-50 text-sky-700 ring-1 ring-sky-200': priority === 'LOW'
+  }">
+  <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+    <path d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z"/>
+  </svg>
+  {{ priority }}
+</span>

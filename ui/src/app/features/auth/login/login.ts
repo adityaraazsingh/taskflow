@@ -3,6 +3,7 @@ import { FormControl, FormControlName, FormGroup, ReactiveFormsModule } from '@a
 import { AuthService } from '../../../core/services/auth.service';
 import { LoginRequest } from '../../../core/models/loginRequest.model';
 import { UserModel } from '../../../core/models/user.model';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login',
@@ -27,6 +28,7 @@ export class Login {
   });
 
   authService = inject(AuthService);
+  router = inject(Router);
 
   onLoginClick(){
     if(this.isLoggingIn){
@@ -38,7 +40,7 @@ export class Login {
       this.authService.login(payload).subscribe({
         next : (response) => {
           localStorage.setItem("Token" , response.token);
-          console.log("response token saved succesfully");
+          this.router.navigate(['/dashboard']);
         },
         error : (error) => {
           console.error(error);
@@ -54,7 +56,7 @@ export class Login {
       console.log(payload);
       this.authService.signUp(payload).subscribe({
         next : (response) => {
-          console.log("User signed up successfully" , response);
+          window.alert(`User signed up successfully ${response}`);
         },
         error : (error) => {
           console.error(error);

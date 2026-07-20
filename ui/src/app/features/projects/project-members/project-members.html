@@ -1,1 +1,105 @@
-<p>project-members works!</p>
+<div class="max-w-4xl mx-auto">
+  <!-- Breadcrumb -->
+  <nav class="flex items-center gap-2 text-sm text-gray-500 mb-6">
+    <a routerLink="/dashboard" class="hover:text-indigo-600 transition-colors">Dashboard</a>
+    <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+    </svg>
+    <a class="hover:text-indigo-600 transition-colors">Website Redesign</a>
+    <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+    </svg>
+    <span class="text-gray-900 font-medium">Members</span>
+  </nav>
+
+  <!-- Header -->
+  <div class="flex items-center justify-between mb-6">
+    <div>
+      <h1 class="text-2xl font-bold text-gray-900 tracking-tight">Team Members</h1>
+      <p class="mt-1 text-sm text-gray-500">Manage who has access to this project</p>
+    </div>
+    <button class="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 transition-all duration-200">
+      <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M19 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zM3 19.235v-.11a6.375 6.375 0 0112.75 0v.109A12.318 12.318 0 019.374 21c-2.331 0-4.512-.645-6.374-1.766z" />
+      </svg>
+      Add Member
+    </button>
+  </div>
+
+  <!-- Members List -->
+  <div class="bg-white rounded-2xl ring-1 ring-gray-200 overflow-hidden">
+    <div class="divide-y divide-gray-100">
+      <!-- Member Row -->
+      @for (member of members; track member.id) {
+        <div class="flex items-center justify-between p-4 sm:px-6 hover:bg-gray-50 transition-colors">
+          <div class="flex items-center gap-4">
+            <div class="size-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-sm font-semibold text-white flex-shrink-0">
+              {{ member.user?.username?.charAt(0)?.toUpperCase() || '?' }}
+            </div>
+            <div>
+              <p class="text-sm font-medium text-gray-900">{{ member.user?.username || 'Unknown' }}</p>
+              <p class="text-xs text-gray-400">{{ member.user?.email || '' }}</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-3">
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
+                  [ngClass]="{
+                    'bg-purple-50 text-purple-700 ring-1 ring-purple-200': member.roleInProject === 'OWNER',
+                    'bg-blue-50 text-blue-700 ring-1 ring-blue-200': member.roleInProject === 'EDITOR',
+                    'bg-gray-50 text-gray-600 ring-1 ring-gray-200': member.roleInProject === 'VIEWER'
+                  }">
+              {{ member.roleInProject }}
+            </span>
+            @if (member.roleInProject !== 'OWNER') {
+              <button class="p-1.5 rounded-lg text-gray-400 hover:text-rose-500 hover:bg-rose-50 transition-all duration-200">
+                <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  @if (!members || members.length === 0) {
+    <div class="text-center py-16">
+      <div class="inline-flex items-center justify-center size-16 rounded-2xl bg-gray-100 mb-4">
+        <svg class="size-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
+        </svg>
+      </div>
+      <h3 class="text-lg font-semibold text-gray-900 mb-1">No members yet</h3>
+      <p class="text-sm text-gray-500 mb-4">Invite team members to collaborate on this project.</p>
+      <button class="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 transition-all duration-200">
+        <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M19 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zM3 19.235v-.11a6.375 6.375 0 0112.75 0v.109A12.318 12.318 0 019.374 21c-2.331 0-4.512-.645-6.374-1.766z" />
+        </svg>
+        Invite Members
+      </button>
+    </div>
+  }
+
+  <!-- Add Member Modal (placeholder) -->
+  <div class="mt-8 bg-gray-50 rounded-2xl ring-1 ring-gray-200 p-6">
+    <h3 class="text-sm font-semibold text-gray-900 mb-3">Quick Invite</h3>
+    <div class="flex items-center gap-3">
+      <div class="relative flex-1">
+        <svg class="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
+        </svg>
+        <input type="email" placeholder="Enter email address..."
+          class="w-full rounded-xl border-0 bg-white py-2.5 pl-9 pr-3 text-sm text-gray-900 ring-1 ring-inset ring-gray-200 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-500 transition-all duration-200" />
+      </div>
+      <select class="rounded-xl border-0 bg-white py-2.5 px-3 text-sm text-gray-900 ring-1 ring-inset ring-gray-200 focus:ring-2 focus:ring-inset focus:ring-indigo-500 transition-all duration-200">
+        <option>EDITOR</option>
+        <option>VIEWER</option>
+      </select>
+      <button class="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 transition-all duration-200">
+        Invite
+      </button>
+    </div>
+  </div>
+</div>

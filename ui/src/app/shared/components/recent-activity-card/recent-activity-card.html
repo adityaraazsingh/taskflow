@@ -1,0 +1,31 @@
+<div class="flex items-start gap-3 p-4 hover:bg-gray-50 transition-colors">
+    @if (recentActivityStatus()==="PROGRESS") {
+    <div class="size-8 rounded-full bg-indigo-100 flex items-center justify-center flex-shrink-0">
+        <svg class="size-4 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round"
+                d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.091.787l-2.611 1.203.002-2.607c.063-.514.266-.998.563-1.38l9.643-10.336zm0 0L18.7 6.316" />
+        </svg>
+    </div>
+    }
+    @else if (recentActivityStatus()==="GENERAL") {
+    <div class="size-8 rounded-full bg-emerald-100 flex items-center justify-center flex-shrink-0">
+        <svg class="size-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round"
+                d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+        </svg>
+    </div>
+    }
+    @else if (recentActivityStatus()==="ALERT") {
+    <div class="size-8 rounded-full bg-amber-100 flex items-center justify-center flex-shrink-0">
+        <svg class="size-4 text-amber-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+    </div>
+    }
+    <div class="flex-1 min-w-0">
+        <p class="text-sm text-gray-900"><span class="font-medium"><ng-content select=[name] /></span> <ng-content
+                select=[title] /></p>
+        <p class="text-xs text-gray-400 mt-0.5"><ng-content select=[description] /></p>
+    </div>
+    <span class="text-xs text-gray-400 whitespace-nowrap"><ng-content select=[timestamp] /></span>
+</div>

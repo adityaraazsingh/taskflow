@@ -1,1 +1,86 @@
-<p>project-list works!</p>
+<div class="space-y-6">
+  <!-- Search & Filter Bar -->
+  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div class="relative flex-1 max-w-md">
+      <svg class="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+      </svg>
+      <input type="text" placeholder="Search projects..."
+        class="w-full rounded-xl border-0 bg-white py-2.5 pl-9 pr-3 text-sm text-gray-900 ring-1 ring-inset ring-gray-200 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-500 transition-all duration-200" />
+    </div>
+    <div class="flex items-center gap-2">
+      <button class="inline-flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium text-gray-600 bg-white ring-1 ring-gray-200 hover:bg-gray-50 transition-all duration-200">
+        <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 01-.659 1.591l-5.432 5.432a2.25 2.25 0 00-.659 1.591v2.927a2.25 2.25 0 01-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 00-.659-1.591L3.659 7.409A2.25 2.25 0 013 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0112 3z" />
+        </svg>
+        Filter
+      </button>
+      <button class="inline-flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium text-gray-600 bg-white ring-1 ring-gray-200 hover:bg-gray-50 transition-all duration-200">
+        <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+        </svg>
+        Sort
+      </button>
+    </div>
+  </div>
+
+  <!-- Project Grid -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+    <!-- Project Card Repeated -->
+    @for (project of projects; track project.id) {
+      <div class="group bg-white rounded-xl ring-1 ring-gray-200 overflow-hidden hover:shadow-lg hover:ring-indigo-200 transition-all duration-200 cursor-pointer">
+        <div class="h-2 bg-gradient-to-r from-[var(--accent-from)] to-[var(--accent-to)]" 
+             [style.--accent-from]="project.colorFrom" [style.--accent-to]="project.colorTo"></div>
+        <div class="p-5">
+          <div class="flex items-start justify-between mb-3">
+            <h3 class="font-semibold text-gray-900 group-hover:text-indigo-600 transition-colors">{{ project.name }}</h3>
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
+                  [ngClass]="{
+                    'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200': project.status === 'ACTIVE',
+                    'bg-amber-50 text-amber-700 ring-1 ring-amber-200': project.status === 'TODO',
+                    'bg-blue-50 text-blue-700 ring-1 ring-blue-200': project.status === 'COMPLETED',
+                    'bg-gray-50 text-gray-600 ring-1 ring-gray-200': project.status === 'ARCHIVED'
+                  }">
+              {{ project.status }}
+            </span>
+          </div>
+          <p class="text-sm text-gray-500 line-clamp-2 mb-4">{{ project.description }}</p>
+          <div class="flex items-center justify-between">
+            <div class="flex -space-x-2">
+              <div class="size-7 rounded-full bg-indigo-500 ring-2 ring-white flex items-center justify-center text-[10px] font-semibold text-white">AK</div>
+              <div class="size-7 rounded-full bg-emerald-500 ring-2 ring-white flex items-center justify-center text-[10px] font-semibold text-white">JR</div>
+            </div>
+            <div class="flex items-center gap-3 text-xs text-gray-400">
+              <span>{{ project.createdAt | date:'mediumDate' }}</span>
+              <div class="flex items-center gap-1">
+                <svg class="size-3.5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                </svg>
+                <span>{{ project.memberCount || 3 }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+
+  <!-- Empty State -->
+  @if (!projects || projects.length === 0) {
+    <div class="text-center py-16">
+      <div class="inline-flex items-center justify-center size-16 rounded-2xl bg-gray-100 mb-4">
+        <svg class="size-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z" />
+        </svg>
+      </div>
+      <h3 class="text-lg font-semibold text-gray-900 mb-1">No projects yet</h3>
+      <p class="text-sm text-gray-500 mb-4">Get started by creating your first project.</p>
+      <button class="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 transition-all duration-200">
+        <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+        </svg>
+        Create Project
+      </button>
+    </div>
+  }
+</div>
