@@ -59,6 +59,12 @@ public class ProjectsController {
         return projectRepo.findAll();
     }
 
+    @GetMapping("/all")
+    public ResponseEntity<List<ProjectResponseDto>> getAllProjects(){
+        List<ProjectResponseDto> dtos = projectRepo.findAll().stream().map(projectMapper::toDto).collect(Collectors.toList());
+        return ResponseEntity.ok(dtos);
+    }
+
     @PostMapping
     public ResponseEntity<ProjectResponseDto> createProject(@RequestBody ProjectRequestDto project){
         return ResponseEntity.status(HttpStatus.CREATED).body(projectService.createProject(project));
