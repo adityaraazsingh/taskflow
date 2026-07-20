@@ -1,7 +1,7 @@
 package com.projectManagement.taskflow.entity;
 
 import com.projectManagement.taskflow.enums.Status;
-import com.projectManagement.taskflow.enums.priority;
+import com.projectManagement.taskflow.enums.Priority;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -38,7 +38,7 @@ public class TaskEntity {
     private Status status;
 
     @Enumerated(EnumType.STRING)
-    private priority priority;
+    private Priority priority;
 
     private Date dueDate;
 
@@ -106,11 +106,11 @@ public class TaskEntity {
         this.status = status;
     }
 
-    public priority getPriority() {
+    public Priority getPriority() {
         return priority;
     }
 
-    public void setPriority(priority priority) {
+    public void setPriority(Priority priority) {
         this.priority = priority;
     }
 

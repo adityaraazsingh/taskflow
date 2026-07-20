@@ -51,7 +51,7 @@ public class TasksController {
 
     @PatchMapping("/{id}/assignee")
     public ResponseEntity<String> changeAssignee(@PathVariable Long id,
-                                                 @RequestBody UserEntity user){
+                                                 @RequestBody UserRequestDTO user){
         return ResponseEntity.ok(taskService.assignTask(id, user));
     }
 

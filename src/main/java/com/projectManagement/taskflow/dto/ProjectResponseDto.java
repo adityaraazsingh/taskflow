@@ -19,8 +19,8 @@ public class ProjectResponseDto {
     private String description;
     private Status status;
     private Long userId;
-    private List<Long> taskIds = new ArrayList<>();;
-    private List<Long> projectMemberIds = new ArrayList<>();;
+    private List<Long> taskIds = new ArrayList<>();
+    private List<Long> projectMemberIds = new ArrayList<>();
 
     public Long getUserId() {
         return userId;

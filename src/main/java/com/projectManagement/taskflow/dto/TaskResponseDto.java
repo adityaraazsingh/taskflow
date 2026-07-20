@@ -1,8 +1,6 @@
 package com.projectManagement.taskflow.dto;
 import com.projectManagement.taskflow.enums.Status;
-import com.projectManagement.taskflow.enums.priority;
-import lombok.Getter;
-import lombok.Setter;
+import com.projectManagement.taskflow.enums.Priority;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -13,10 +11,10 @@ public class TaskResponseDto {
     private String title;
     private String description;
     private Date dueDate;
-    private priority priority;
+    private Priority priority;
     private Status status;
-    private List<Long> commentIds = new ArrayList<>();;
-    private List<Long> tagIds = new ArrayList<>();;
+    private List<Long> commentIds = new ArrayList<>();
+    private List<Long> tagIds = new ArrayList<>();
 
     public Long getId() {
         return id;
@@ -50,11 +48,11 @@ public class TaskResponseDto {
         this.status = status;
     }
 
-    public priority getPriority() {
+    public Priority getPriority() {
         return priority;
     }
 
-    public void setPriority(priority priority) {
+    public void setPriority(Priority priority) {
         this.priority = priority;
     }
 
