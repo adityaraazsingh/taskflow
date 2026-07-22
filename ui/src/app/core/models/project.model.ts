@@ -3,7 +3,9 @@ export interface ProjectModel{
     name: string;
     description: string;
     status: 'TODO' | 'IN_PROGRESS' | 'DONE';
-    userId: number;
-    taskIds: number[];
-    projectMemberIds: number[];
+    // userId: number;
+    taskIds?: number[];
+    projectMemberIds?: number[];
+    createdAt?: Date;
+    updatedAt?: Date;
 }

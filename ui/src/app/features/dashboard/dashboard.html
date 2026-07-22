@@ -5,7 +5,7 @@
       <h1 class="text-2xl font-bold text-gray-900 tracking-tight">Dashboard</h1>
       <p class="mt-1 text-sm text-gray-500">Overview of your projects and tasks</p>
     </div>
-    <button class="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 transition-all duration-200">
+    <button (click)="onAddingProject()" class="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 transition-all duration-200">
       <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
       </svg>
@@ -76,11 +76,13 @@
   <div class="mb-8">
     <div class="flex items-center justify-between mb-4">
       <h2 class="text-lg font-semibold text-gray-900">Recent Projects</h2>
-      <a routerLink="/dashboard" class="text-sm font-medium text-indigo-600 hover:text-indigo-500 transition-colors">View all →</a>
+      <a routerLink="/allprojects" class="text-sm font-medium text-indigo-600 hover:text-indigo-500 transition-colors"
+        style="cursor: pointer;" (click)="clickOnViewAllProject()"
+      >View all →</a>
     </div>
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       @for (project of projects(); track $index) {
-        <app-project-card>
+        <app-project-card (click)="navigateToProject(project.id!)">
           <span status>{{project.status}}</span>
           <span title>{{project.name}}</span>
           <span description>{{project.description}}</span>
@@ -116,3 +118,7 @@
     </div>
   </div>
 </div>
+
+@if(addingProject){
+  <app-project-form></app-project-form>
+}

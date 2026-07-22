@@ -1,6 +1,6 @@
 import { inject, Injectable } from "@angular/core";
 import { environment } from "../../environment";
-import { HttpClient } from "@angular/common/http";
+import { HttpClient, HttpParams } from "@angular/common/http";
 import { TaskModel } from "../models/task.model";
 import { UserModel } from "../models/user.model";
 import { CommentModel } from "../models/comment.model";
@@ -19,6 +19,14 @@ export class TaskService{
         return this.httpClient.get<TaskModel>(`${this.url}/${id}`);
     }
 
+    // @PostMapping("project/{projectId}")
+    // public ResponseEntity<TaskResponseDto> createTask(@RequestBody TaskRequestDTO dto, @PathVariable Long projectId){
+    //     return ResponseEntity.status(HttpStatus.CREATED).body(taskMapper.toDto(taskService.createTask(projectId,dto)));
+    // }
+    public createTask(projectId:number ,task : TaskModel){
+        return this.httpClient.post<TaskModel>(`${this.url}/project/${projectId}`, task);
+    }
+
     public updateTaskById(id : number, updatedTask : TaskModel){
         return this.httpClient.put<TaskModel>(`${this.url}/${id}`, updatedTask);
     }
@@ -35,8 +43,11 @@ export class TaskService{
         return this.httpClient.delete(`${this.url}/${taskId}`);
     }
 
-    public getComments(){
-        return this.httpClient.get<CommentModel[]>(`${this.url}/comments`);
+    public getComments(page : number, size : number){
+        let params = new HttpParams()
+            .set('page', page.toString())
+            .set('size', size.toString());        
+        return this.httpClient.get<CommentModel[]>(`${this.url}/comments`, {params});
     }
 
     public postCommentsForTask(taskId :  number, comments : CommentModel){

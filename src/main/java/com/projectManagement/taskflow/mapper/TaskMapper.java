@@ -30,6 +30,7 @@ public class TaskMapper {
         dto.setId(entity.getId());
         dto.setTitle(entity.getTitle());
         dto.setDescription(entity.getDescription());
+        dto.setAssigneeId(entity.getAssignee().getId());
         dto.setStatus(entity.getStatus());
         dto.setPriority(entity.getPriority());
         dto.setDescription(entity.getDescription());

@@ -1,5 +1,6 @@
 package com.projectManagement.taskflow.service;
 
+import com.projectManagement.taskflow.dto.ChangePasswordRequestDto;
 import com.projectManagement.taskflow.dto.UserRequestDTO;
 import com.projectManagement.taskflow.dto.UserResponseDto;
 import com.projectManagement.taskflow.entity.UserEntity;
@@ -16,6 +17,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class UserService {
@@ -52,13 +54,15 @@ public class UserService {
         return userMapper.toDto(entity);
     }
 
-    public Boolean changePassword(Long id , String password){
-        String encodedPassword = passwordEncoder.encode(password);
-        UserEntity user = userRepo.findById(id).orElseThrow(()->new UserNotFoundException("User Not Found"));
+    public Boolean changePassword(ChangePasswordRequestDto dto){
+        UserEntity user = authService.getCurrentUser();
+        System.out.println(user.getPasswordHash());
+        System.out.println(passwordEncoder.encode(dto.getCurrentPassword()));
+//        Objects.equals(user.getPasswordHash(), passwordEncoder.encode(dto.getCurrentPassword()))
+        String encodedPassword = passwordEncoder.encode(dto.getNewPassword());
         user.setPasswordHash(encodedPassword);
         userRepo.save(user);
-        return user != null;
-
+        return true;
     }
 
     public Page<UserResponseDto> listUsers(Pageable pageable){

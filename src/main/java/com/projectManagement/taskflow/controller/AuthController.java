@@ -1,6 +1,7 @@
 package com.projectManagement.taskflow.controller;
 
 import com.projectManagement.taskflow.dto.AuthResponse;
+import com.projectManagement.taskflow.dto.ChangePasswordRequestDto;
 import com.projectManagement.taskflow.dto.LoginCredentials;
 import com.projectManagement.taskflow.entity.UserEntity;
 import com.projectManagement.taskflow.enums.RoleEnum;
@@ -19,6 +20,9 @@ public class AuthController {
     @Autowired
     private AuthService authService;
 
+    @Autowired
+    private UserService userService;
+
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@RequestBody LoginCredentials loginCredentials){
        return ResponseEntity.ok(authService.login(loginCredentials));
@@ -27,5 +31,10 @@ public class AuthController {
     @GetMapping("/me")
     public ResponseEntity<UserEntity> getCurrentUser(){
         return ResponseEntity.ok(authService.getCurrentUser());
+    }
+
+    @PostMapping("/password")
+    public ResponseEntity<Boolean> changePassword(@RequestBody ChangePasswordRequestDto changePasswordRequest){
+        return ResponseEntity.ok(userService.changePassword(changePasswordRequest));
     }
 }

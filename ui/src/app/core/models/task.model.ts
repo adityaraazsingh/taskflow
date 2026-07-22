@@ -1,16 +1,18 @@
+import { Priority } from "../enums/Priority";
+import { Status } from "../enums/Status";
 import { UserModel } from "./user.model";
 
 export interface TaskModel {
     id?: number;
     title: string;
     description: string;
-    assignee: UserModel;
+    assigneeId?: number;
     dueDate: Date;
-    tagsIds: number[];
+    tagsIds?: number[];
     projectIds? : number[]; // projectId is being send in Url so it gets added in the backend
     comments? : number[];
-    priority: 'LOW' | 'MEDIUM' | 'HIGH';
-    status: 'TODO' | 'IN_PROGRESS' | 'DONE';   
+    priority: Priority;
+    status: Status;   
     updatedAt?: Date;
     createdAt?: Date;
 }

@@ -59,6 +59,5 @@ public class UsersController {
                                          @RequestParam(defaultValue = "10") int size){
         Pageable pageable = PageRequest.of(page, size);
         return userService.listUsers(pageable);
-
     }
 }

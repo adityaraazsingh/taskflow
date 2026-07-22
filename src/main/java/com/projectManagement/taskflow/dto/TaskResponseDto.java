@@ -10,11 +10,20 @@ public class TaskResponseDto {
     private Long id;
     private String title;
     private String description;
+    private Long assigneeId;
     private Date dueDate;
     private Priority priority;
     private Status status;
     private List<Long> commentIds = new ArrayList<>();
     private List<Long> tagIds = new ArrayList<>();
+
+    public Long getAssigneeId() {
+        return assigneeId;
+    }
+
+    public void setAssigneeId(Long assigneeId) {
+        this.assigneeId = assigneeId;
+    }
 
     public Long getId() {
         return id;

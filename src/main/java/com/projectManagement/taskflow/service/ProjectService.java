@@ -55,10 +55,7 @@ public class ProjectService {
         entity.setName(dto.getName());
         entity.setDescription(dto.getDescription());
         entity.setStatus(dto.getStatus());
-        entity.setUser(userrepo.findById(dto.getUserId())
-                .orElseThrow(()->
-                        new UserNotFoundException("user Not Found"))
-        );
+        entity.setUser(creator);
 // TODO : We are not setting taskIds and ProjectMemberIDs, creator should be the first projectMember
         return projectMapper.toDto(projectRepo.save(entity));
     }
@@ -86,8 +83,7 @@ public class ProjectService {
         entity.setName(dto.getName());
         entity.setDescription(dto.getDescription());
         entity.setStatus(dto.getStatus());
-        entity.setUser(userrepo.findById(dto.getUserId())
-                .orElseThrow(()-> new UserNotFoundException("user is not Found")));
+        entity.setUser(user);
         entity.setTasks(taskRepo.findByProject_id(id));
         //we don't need to set ProjectMember here because we created add/remove member below
         return projectMapper.toDto(projectRepo.save(entity));

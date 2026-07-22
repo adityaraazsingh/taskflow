@@ -1,42 +1,50 @@
-<div class="max-w-7xl mx-auto">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
   <!-- Breadcrumb -->
   <nav class="flex items-center gap-2 text-sm text-gray-500 mb-6">
     <a routerLink="/dashboard" class="hover:text-indigo-600 transition-colors">Dashboard</a>
     <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
       <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
     </svg>
-    <span class="text-gray-900 font-medium">Project Name</span>
+    <span class="text-gray-900 font-medium">{{ project()?.name || 'Loading...' }}</span>
   </nav>
 
+  @if (loading()) {
+  <app-loading-spinner message="Loading project details..." />
+  } @else {
   <!-- Project Header -->
-  <div class="bg-white rounded-2xl ring-1 ring-gray-200 p-6 mb-6">
-    <div class="flex items-start justify-between">
+  <div
+    class="bg-white rounded-2xl ring-1 ring-gray-200 p-6 sm:p-8 mb-6 hover:ring-gray-300 transition-all duration-200 shadow-sm">
+    <div class="flex items-start justify-between flex-wrap gap-4">
       <div class="flex items-start gap-4">
-        <div class="size-14 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center flex-shrink-0 shadow-sm">
-          <svg class="size-7 text-white" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z" />
-          </svg>
+        <div
+          class="size-14 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center flex-shrink-0 shadow-md shadow-indigo-200">
+          <span class="text-xl font-bold text-white">{{ project()?.name?.charAt(0)?.toUpperCase() || 'P' }}</span>
         </div>
         <div>
-          <div class="flex items-center gap-3">
-            <h1 class="text-2xl font-bold text-gray-900 tracking-tight">Website Redesign</h1>
-            <span class="inline-flex items-center px-3 py-0.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200">
-              ACTIVE
-            </span>
+          <div class="flex items-center gap-3 flex-wrap">
+            <h1 class="text-2xl font-bold text-gray-900 tracking-tight">{{ project()?.name || 'Untitled Project' }}</h1>
+            <app-status-badge [status]="project()?.status || 'TODO'" />
           </div>
-          <p class="mt-1 text-sm text-gray-500 max-w-2xl">Complete overhaul of the company website with modern design principles, improved UX, and better performance across all devices.</p>
+          <p class="mt-1.5 text-sm text-gray-500 max-w-2xl leading-relaxed">
+            {{ project()?.description || 'No description provided.' }}
+          </p>
         </div>
       </div>
-      <div class="flex items-center gap-2">
-        <button class="inline-flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium text-gray-600 bg-white ring-1 ring-gray-200 hover:bg-gray-50 transition-all duration-200">
+      <div class="flex items-center gap-2 flex-shrink-0">
+        <button (click)="onEditingProject()"
+          class="inline-flex items-center gap-1.5 rounded-lg px-3.5 py-2 text-sm font-medium text-gray-600 bg-white ring-1 ring-gray-200 hover:bg-gray-50 hover:ring-gray-300 transition-all duration-200">
           <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.091.787l-2.611 1.203.002-2.607c.063-.514.266-.998.563-1.38l9.643-10.336zm0 0L18.7 6.316" />
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.091.787l-2.611 1.203.002-2.607c.063-.514.266-.998.563-1.38l9.643-10.336zm0 0L18.7 6.316" />
           </svg>
           Edit
         </button>
-        <button class="inline-flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium text-rose-600 bg-white ring-1 ring-rose-200 hover:bg-rose-50 transition-all duration-200">
+        <button
+          class="inline-flex items-center gap-1.5 rounded-lg px-3.5 py-2 text-sm font-medium text-rose-600 bg-white ring-1 ring-rose-200 hover:bg-rose-50 transition-all duration-200"
+          (click)="onTogglingDelete()">
           <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
           </svg>
           Delete
         </button>
@@ -44,61 +52,79 @@
     </div>
 
     <!-- Project Meta -->
-    <div class="flex items-center gap-6 mt-6 pt-6 border-t border-gray-100">
+    <div class="flex flex-wrap items-center gap-6 mt-6 pt-6 border-t border-gray-100">
       <div class="flex items-center gap-2 text-sm text-gray-500">
         <svg class="size-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
         </svg>
-        <span>Created <strong>Jan 15, 2026</strong></span>
+        <span>Created <strong>{{ project()?.createdAt ? (project()!.createdAt | date:'MMM d, yyyy') : 'N/A'
+            }}</strong></span>
       </div>
       <div class="flex items-center gap-2 text-sm text-gray-500">
         <svg class="size-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
         </svg>
-        <span><strong>4</strong> members</span>
+        <span><strong>{{ project()?.projectMemberIds?.length || 0 }}</strong> members</span>
       </div>
       <div class="flex items-center gap-2 text-sm text-gray-500">
         <svg class="size-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
-        <span><strong>8/14</strong> tasks completed</span>
+        <span><strong>{{ completedTasks() }}/{{ totalTasks() }}</strong> tasks completed</span>
       </div>
     </div>
 
     <!-- Progress Bar -->
-    <div class="mt-4">
+    <div class="mt-5">
       <div class="flex items-center justify-between text-sm mb-1.5">
-        <span class="text-gray-500">Progress</span>
-        <span class="font-medium text-gray-900">57%</span>
+        <span class="text-gray-500 font-medium">Progress</span>
+        <span class="font-semibold text-gray-900">{{ progressPercent() }}%</span>
       </div>
-      <div class="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
-        <div class="h-full bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full transition-all duration-500" style="width: 57%"></div>
+      <div class="w-full h-2.5 bg-gray-100 rounded-full overflow-hidden">
+        <div
+          class="h-full bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full transition-all duration-700 ease-out"
+          [style.width.%]="progressPercent()">
+        </div>
       </div>
     </div>
   </div>
 
   <!-- Tabs -->
   <div class="border-b border-gray-200 mb-6">
-    <nav class="flex gap-6">
-      <button class="pb-3 text-sm font-medium text-indigo-600 border-b-2 border-indigo-600 transition-colors">
+    <nav class="flex gap-6 -mb-px">
+      <button
+        class="pb-3.5 text-sm font-semibold text-indigo-600 border-b-2 border-indigo-600 transition-colors relative">
         Tasks
+        @if (totalTasks() > 0) {
+        <span class="ml-1.5 text-indigo-400 font-normal">({{ totalTasks() }})</span>
+        }
       </button>
-      <button class="pb-3 text-sm font-medium text-gray-500 hover:text-gray-700 border-b-2 border-transparent transition-colors">
+      <button (click)="onClickingMember()"
+        class="pb-3.5 text-sm font-medium text-gray-500 hover:text-gray-700 border-b-2 border-transparent hover:border-gray-300 transition-all duration-200">
         Members
       </button>
-      <button class="pb-3 text-sm font-medium text-gray-500 hover:text-gray-700 border-b-2 border-transparent transition-colors">
+      <button
+        class="pb-3.5 text-sm font-medium text-gray-500 hover:text-gray-700 border-b-2 border-transparent hover:border-gray-300 transition-all duration-200">
         Activity
       </button>
-      <button class="pb-3 text-sm font-medium text-gray-500 hover:text-gray-700 border-b-2 border-transparent transition-colors">
+      <button
+        class="pb-3.5 text-sm font-medium text-gray-500 hover:text-gray-700 border-b-2 border-transparent hover:border-gray-300 transition-all duration-200">
         Settings
       </button>
     </nav>
   </div>
 
   <!-- Tasks Section Header -->
-  <div class="flex items-center justify-between mb-4">
-    <h2 class="text-lg font-semibold text-gray-900">Tasks</h2>
-    <button class="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 transition-all duration-200">
+  <div class="flex items-center justify-between mb-5">
+    <div>
+      <h2 class="text-lg font-semibold text-gray-900">Tasks</h2>
+      <p class="text-sm text-gray-400 mt-0.5">Drag and drop to change status</p>
+    </div>
+    <button (click)="toggleTheDialog()"
+      class="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 hover:shadow-md active:scale-95 transition-all duration-200">
       <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
       </svg>
@@ -106,6 +132,51 @@
     </button>
   </div>
 
-  <!-- Task Board Embed -->
-  <app-task-board></app-task-board>
+  <!-- Task Board -->
+  @if (tasks().length > 0) {
+  <app-task-board [tasks]="tasks()" (taskClick)="toggleTheDialog($event)"></app-task-board>
+  } @else {
+  <div class="bg-white rounded-2xl ring-1 ring-gray-200 p-12 text-center">
+    <div class="inline-flex items-center justify-center size-16 rounded-2xl bg-indigo-50 mb-4">
+      <svg class="size-8 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round"
+          d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+      </svg>
+    </div>
+    <h3 class="text-lg font-semibold text-gray-900 mb-1">No tasks yet</h3>
+    <p class="text-sm text-gray-500 mb-5">Get started by creating your first task for this project.</p>
+    <button (click)="toggleTheDialog()"
+      class="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 transition-all duration-200">
+      <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+      </svg>
+      Create First Task
+    </button>
+  </div>
+  }
+  }
 </div>
+
+<!-- Task Form Modal Overlay -->
+@if (addingTask) {
+<!-- Backdrop -->
+<div class="fixed inset-0 bg-black/40 backdrop-blur-sm z-40 transition-opacity duration-300"
+  (click)="toggleTheDialog()">
+</div>
+
+<!-- Modal -->
+<div class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
+  <div class="w-full max-w-2xl animate-in" (click)="$event.stopPropagation()">
+    <app-task-form (closeDialog)="toggleTheDialog()" [projectId]="projectId" [task]="taskToBeEdited"></app-task-form>
+  </div>
+</div>
+}
+
+@if(editingProject){
+<app-project-form [project]="project()!"></app-project-form>
+}
+
+@if(deletingProject){
+<app-confirm-dialog [confirmText]="'Delete Project'" [message]="'This Action cant be Undone, Project Will be deleted'"
+  (cancel)="onTogglingDelete()" (confirm)="deleteProject()"></app-confirm-dialog>
+}

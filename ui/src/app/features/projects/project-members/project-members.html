@@ -30,19 +30,19 @@
   <div class="bg-white rounded-2xl ring-1 ring-gray-200 overflow-hidden">
     <div class="divide-y divide-gray-100">
       <!-- Member Row -->
-      @for (member of members; track member.id) {
+      @for (member of members(); track member.id) {
         <div class="flex items-center justify-between p-4 sm:px-6 hover:bg-gray-50 transition-colors">
           <div class="flex items-center gap-4">
             <div class="size-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-sm font-semibold text-white flex-shrink-0">
-              {{ member.user?.username?.charAt(0)?.toUpperCase() || '?' }}
+              {{ member.username?.charAt(0)?.toUpperCase() || '?' }}
             </div>
             <div>
-              <p class="text-sm font-medium text-gray-900">{{ member.user?.username || 'Unknown' }}</p>
-              <p class="text-xs text-gray-400">{{ member.user?.email || '' }}</p>
+              <p class="text-sm font-medium text-gray-900">{{ member.username || 'Unknown' }}</p>
+              <p class="text-xs text-gray-400">{{ member.email || '' }}</p>
             </div>
           </div>
           <div class="flex items-center gap-3">
-            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
+            <!-- <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
                   [ngClass]="{
                     'bg-purple-50 text-purple-700 ring-1 ring-purple-200': member.roleInProject === 'OWNER',
                     'bg-blue-50 text-blue-700 ring-1 ring-blue-200': member.roleInProject === 'EDITOR',
@@ -56,7 +56,7 @@
                   <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
-            }
+            } -->
           </div>
         </div>
       }

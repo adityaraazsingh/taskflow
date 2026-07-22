@@ -46,8 +46,9 @@ export class ProjectService{
     public getAllProject(){
         return this.httpClient.get<ProjectModel[]>(`${this.url}/all`);
     }
+    
     public getAllTaskOfProject(projectId : number){
-        return this.httpClient.get<PageResponse<ProjectModel>>(`${this.url}/${projectId}/tasks`);
+        return this.httpClient.get<PageResponse<TaskModel>>(`${this.url}/${projectId}/tasks`);
     }
     
     public postAllTaskOfProject(projectId : number, tasks : TaskModel[]){

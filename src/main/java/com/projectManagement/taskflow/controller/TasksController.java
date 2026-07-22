@@ -5,6 +5,7 @@ import com.projectManagement.taskflow.entity.CommentEntity;
 import com.projectManagement.taskflow.entity.TaskEntity;
 import com.projectManagement.taskflow.entity.UserEntity;
 import com.projectManagement.taskflow.enums.Status;
+import com.projectManagement.taskflow.mapper.TaskMapper;
 import com.projectManagement.taskflow.repository.TaskRepo;
 import com.projectManagement.taskflow.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +32,14 @@ public class TasksController {
 
     @Autowired
     private TagService tagService;
+
+    @Autowired
+    private TaskMapper taskMapper;
+
+    @PostMapping("/project/{projectId}")
+    public ResponseEntity<TaskResponseDto> createTask(@RequestBody TaskRequestDTO dto, @PathVariable Long projectId){
+        return ResponseEntity.status(HttpStatus.CREATED).body(taskMapper.toDto(taskService.createTask(projectId,dto)));
+    }
 
     @GetMapping("/{id}")
     public TaskResponseDto getTaskById(@PathVariable Long id){

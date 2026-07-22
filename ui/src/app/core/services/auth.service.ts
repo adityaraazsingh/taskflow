@@ -4,6 +4,7 @@ import { LoginRequest } from "../models/loginRequest.model";
 import { Injectable } from "@angular/core";
 import { AuthModel } from "../models/auth.model";
 import { UserModel } from "../models/user.model";
+import { ChangePasswordDto } from "../models/ChangePasswordDto";
 
 @Injectable({
   providedIn: 'root'
@@ -25,6 +26,11 @@ export class AuthService{
             `${this.url}/auth/me`
         );
     }
+
+    public changePassword(changePasswordReq : ChangePasswordDto){
+        return this.httpClient.post(`${this.url}/auth/password`,changePasswordReq);
+    }
+
     // Auth.controller Done
     public signUp(payload: UserModel){
         return this.httpClient.post<UserModel>(

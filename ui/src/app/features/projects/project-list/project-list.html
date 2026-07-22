@@ -27,19 +27,20 @@
   <!-- Project Grid -->
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
     <!-- Project Card Repeated -->
-    @for (project of projects; track project.id) {
-      <div class="group bg-white rounded-xl ring-1 ring-gray-200 overflow-hidden hover:shadow-lg hover:ring-indigo-200 transition-all duration-200 cursor-pointer">
+    @for (project of projects(); track project.id) {
+      <div class="group bg-white rounded-xl ring-1 ring-gray-200 overflow-hidden hover:shadow-lg hover:ring-indigo-200 transition-all duration-200 cursor-pointer"
+        (click)="navigateToProject(project.id!)"
+      >
         <div class="h-2 bg-gradient-to-r from-[var(--accent-from)] to-[var(--accent-to)]" 
-             [style.--accent-from]="project.colorFrom" [style.--accent-to]="project.colorTo"></div>
+             ></div>
         <div class="p-5">
           <div class="flex items-start justify-between mb-3">
             <h3 class="font-semibold text-gray-900 group-hover:text-indigo-600 transition-colors">{{ project.name }}</h3>
             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
                   [ngClass]="{
-                    'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200': project.status === 'ACTIVE',
+                    'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200': project.status === 'IN_PROGRESS',
                     'bg-amber-50 text-amber-700 ring-1 ring-amber-200': project.status === 'TODO',
-                    'bg-blue-50 text-blue-700 ring-1 ring-blue-200': project.status === 'COMPLETED',
-                    'bg-gray-50 text-gray-600 ring-1 ring-gray-200': project.status === 'ARCHIVED'
+                    'bg-blue-50 text-blue-700 ring-1 ring-blue-200': project.status === 'DONE',
                   }">
               {{ project.status }}
             </span>
@@ -56,7 +57,7 @@
                 <svg class="size-3.5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
                 </svg>
-                <span>{{ project.memberCount || 3 }}</span>
+                <span>{{ project.projectMemberIds?.length }}</span>
               </div>
             </div>
           </div>
@@ -75,7 +76,9 @@
       </div>
       <h3 class="text-lg font-semibold text-gray-900 mb-1">No projects yet</h3>
       <p class="text-sm text-gray-500 mb-4">Get started by creating your first project.</p>
-      <button class="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 transition-all duration-200">
+      <button class="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 transition-all duration-200"
+        (click)="onClickCreateProject()"
+      >
         <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
         </svg>
@@ -84,3 +87,7 @@
     </div>
   }
 </div>
+
+@if(addingProject()){
+  <app-project-form></app-project-form>
+}
