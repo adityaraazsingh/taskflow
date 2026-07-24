@@ -10,9 +10,15 @@ import { PageResponse } from "../models/PageResponse";
 
 export class UserService{
     
-    url : string = environment.apiUrl;
+    url : string = environment.apiUrl+'/users';
     constructor(private httpClient:HttpClient){}
 
+
+    public getUserWithUserId(userId: number){
+        return this.httpClient.get<UserModel>(
+            `${this.url}/${userId}`
+        );
+    }
 
     public getUserWithUsername(username: string){
         return this.httpClient.get<UserModel>(
@@ -26,7 +32,7 @@ export class UserService{
             .set('size', size.toString());
 
         return this.httpClient.get<PageResponse<UserModel>>(
-            `${this.url}/users/all` , {params}
+            `${this.url}/all` , {params}
         );
     }
 }

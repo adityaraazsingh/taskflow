@@ -27,6 +27,7 @@ public class DataInitializer {
             TagRepo tagRepo,
             CommentRepo commentRepo,
             ProjectMemberRepo projectMemberRepo,
+            ProfileRepo profileRepo,
             BCryptPasswordEncoder passwordEncoder
     ) {
         return args -> {
@@ -55,7 +56,24 @@ public class DataInitializer {
             log.info("✅ Created {} users", userRepo.count());
 
             // ══════════════════════════════════════════════
-            // 2. TAGS  — 12 total
+            // 2. PROFILES  — 10 total (one per user)
+            // ══════════════════════════════════════════════
+            profileRepo.saveAll(List.of(
+                    createProfile(admin, "Admin", "User", "https://api.dicebear.com/7.x/avataaars/svg?seed=admin", "Platform administrator and team lead."),
+                    createProfile(john, "John", "Doe", "https://api.dicebear.com/7.x/avataaars/svg?seed=john", "Full-stack developer with 8 years of experience."),
+                    createProfile(jane, "Jane", "Smith", "https://api.dicebear.com/7.x/avataaars/svg?seed=jane", "Backend specialist passionate about microservices."),
+                    createProfile(bob, "Bob", "Wilson", "https://api.dicebear.com/7.x/avataaars/svg?seed=bob", "DevOps engineer and cloud infrastructure enthusiast."),
+                    createProfile(alice, "Alice", "Martin", "https://api.dicebear.com/7.x/avataaars/svg?seed=alice", "UI/UX designer who also codes. Loves design systems."),
+                    createProfile(chris, "Chris", "Chen", "https://api.dicebear.com/7.x/avataaars/svg?seed=chris", "Senior platform engineer. Kubernetes ninja."),
+                    createProfile(diana, "Diana", "Park", "https://api.dicebear.com/7.x/avataaars/svg?seed=diana", "Data engineer skilled in stream processing and analytics."),
+                    createProfile(ethan, "Ethan", "Lee", "https://api.dicebear.com/7.x/avataaars/svg?seed=ethan", "Software engineer focused on API design and security."),
+                    createProfile(fiona, "Fiona", "Wright", "https://api.dicebear.com/7.x/avataaars/svg?seed=fiona", "Mobile developer specialising in React Native."),
+                    createProfile(george, "George", "Moore", "https://api.dicebear.com/7.x/avataaars/svg?seed=george", "Site reliability engineer keeping the lights on.")
+            ));
+            log.info("✅ Created {} profiles", profileRepo.count());
+
+            // ══════════════════════════════════════════════
+            // 3. TAGS  — 12 total
             // ══════════════════════════════════════════════
             TagEntity bug         = createTag("bug",           "#dc3545");
             TagEntity feature     = createTag("feature",       "#28a745");
@@ -75,7 +93,7 @@ public class DataInitializer {
             log.info("✅ Created {} tags", tagRepo.count());
 
             // ══════════════════════════════════════════════
-            // 3. PROJECTS  — 5 total
+            // 4. PROJECTS  — 5 total
             // ══════════════════════════════════════════════
             ProjectEntity taskflowApp = createProject(
                     "TaskFlow Platform",
@@ -119,7 +137,7 @@ public class DataInitializer {
             log.info("✅ Created {} projects", projectRepo.count());
 
             // ══════════════════════════════════════════════
-            // 4. PROJECT MEMBERS  — 18 total
+            // 5. PROJECT MEMBERS  — 18 total
             // ══════════════════════════════════════════════
             projectMemberRepo.saveAll(List.of(
                     // TaskFlow Platform (4 members)
@@ -149,7 +167,7 @@ public class DataInitializer {
             log.info("✅ Created {} project members", projectMemberRepo.count());
 
             // ══════════════════════════════════════════════
-            // 5. TASKS  — 23 total
+            // 6. TASKS  — 23 total
             // ══════════════════════════════════════════════
             Calendar cal = Calendar.getInstance();
 
@@ -330,7 +348,7 @@ public class DataInitializer {
             log.info("✅ Created {} tasks", taskRepo.count());
 
             // ══════════════════════════════════════════════
-            // 6. TASK–TAG RELATIONSHIPS
+            // 7. TASK–TAG RELATIONSHIPS
             // ══════════════════════════════════════════════
             tf1.setTags(List.of(enhancement, docs, backend));
             tf2.setTags(List.of(feature, security, backend));
@@ -363,7 +381,7 @@ public class DataInitializer {
             taskRepo.saveAll(allTasks);
 
             // ══════════════════════════════════════════════
-            // 7. COMMENTS  — 22 total
+            // 8. COMMENTS  — 22 total
             // ══════════════════════════════════════════════
             commentRepo.saveAll(List.of(
                     // TaskFlow Platform comments
@@ -435,6 +453,16 @@ public class DataInitializer {
         u.setRole(role);
         u.setCreatedAt(new Date());
         return u;
+    }
+
+    private ProfileEntity createProfile(UserEntity user, String firstName, String lastName, String avatarUrl, String bio) {
+        ProfileEntity p = new ProfileEntity();
+        p.setUserId(user.getId());
+        p.setFirstName(firstName);
+        p.setLastName(lastName);
+        p.setAvatarUrl(avatarUrl);
+        p.setBio(bio);
+        return p;
     }
 
     private TagEntity createTag(String name, String colorHex) {

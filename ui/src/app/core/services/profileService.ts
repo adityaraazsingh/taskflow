@@ -13,7 +13,7 @@ export class ProfileService{
     constructor(private httpClient : HttpClient){}
 
     getProfileByUserId(userId : number){
-        return this.httpClient.get(`${this.url}/${userId}`)
+        return this.httpClient.get<ProfileModel>(`${this.url}/${userId}`)
     }
 
     public saveProfileByUserId(profile : ProfileModel){

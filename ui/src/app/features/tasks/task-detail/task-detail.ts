@@ -14,6 +14,10 @@ import { statusChangeRequestDto } from '../../../core/models/statusChangeRequest
 import { priorityChangeRequestDto } from '../../../core/models/priorityChangeRequestDto';
 import { TaskForm } from "../task-form/task-form";
 import { ConfirmDialog } from "../../../shared/components/confirm-dialog/confirm-dialog";
+import { UserModel } from '../../../core/models/user.model';
+import { UserService } from '../../../core/services/user.service';
+import { ProfileService } from '../../../core/services/profileService';
+import { ProfileModel } from '../../../core/models/profile.model';
 
 @Component({
   selector: 'app-task-detail',
@@ -24,6 +28,7 @@ import { ConfirmDialog } from "../../../shared/components/confirm-dialog/confirm
 export class TaskDetail implements OnInit {
 
   task!: TaskModel;
+  user = signal<ProfileModel | null>(null);
   Status = Status;
   editingTask = signal<boolean>(false);
   deletingTask = signal<boolean>(false);
@@ -35,11 +40,17 @@ export class TaskDetail implements OnInit {
   addingTag = signal<boolean>(false);
 
   form = new FormGroup({
-    status : new FormControl(),
-    priority : new FormControl()
+    status: new FormControl(),
+    priority: new FormControl()
   });
 
-  constructor(private router: Router, private route: ActivatedRoute, private taskService: TaskService, private tagService : TagService) {
+  constructor(private router: Router,
+    private route: ActivatedRoute,
+    private taskService: TaskService,
+    private tagService: TagService,
+    private userService: UserService,
+    private profileService : ProfileService
+  ) {
     const navigation = this.router.getCurrentNavigation();
     const state = navigation?.extras.state as { task: TaskModel };
     if (state?.task) {
@@ -48,67 +59,73 @@ export class TaskDetail implements OnInit {
       this.priority.set(this.task.priority)
     }
 
-    
+    this.profileService.getProfileByUserId(this.task.assigneeId!).subscribe(
+      (next) => {
+        console.log(next)
+        this.user.set(next)
+      }
+    )
+
   }
 
   ngOnInit(): void {
     this.getCommentsForTask();
     this.getTagsOnATask();
-    this.getAllTags();  
+    this.getAllTags();
     console.log("Patching Values");
 
     this.form.controls.status.patchValue(this.status());
-    this.form.controls.priority.patchValue(this.priority()); 
-    this.onChangingStatus()   
+    this.form.controls.priority.patchValue(this.priority());
+    this.onChangingStatus()
     this.onChangingPriority()
   }
 
-  onChangingStatus(){
-    this.form.controls.status.valueChanges.subscribe((data)=>{
-      const payload : statusChangeRequestDto ={
-        status : data
+  onChangingStatus() {
+    this.form.controls.status.valueChanges.subscribe((data) => {
+      const payload: statusChangeRequestDto = {
+        status: data
       }
       this.taskService.changeStatusOfTask(this.task.id!, payload).subscribe(
-        (next)=>{
+        (next) => {
           console.log(next)
         }
       )
     })
   }
 
-  onChangingPriority(){
-    this.form.controls.priority.valueChanges.subscribe((data)=>{
-      const payload : priorityChangeRequestDto ={
-        priority : data
+  onChangingPriority() {
+    this.form.controls.priority.valueChanges.subscribe((data) => {
+      const payload: priorityChangeRequestDto = {
+        priority: data
       }
       this.taskService.changePriorityOfTask(this.task.id!, payload).subscribe(
-        (next)=>{
+        (next) => {
           console.log(next)
         }
       )
     })
   }
 
-  getCommentsForTask(){
-     this.taskService.getCommentsForTask(this.task.id!, 0, 20).subscribe(
+  getCommentsForTask() {
+    this.taskService.getCommentsForTask(this.task.id!, 0, 20).subscribe(
       (data) => {
         this.comments.set(data.content)
       }
     )
   }
 
-  getTagsOnATask(){
+  getTagsOnATask() {
     this.taskService.getTagsOnATask(this.task.id!).subscribe(
-      (data)=>{
+      (data) => {
         this.tags.set(data);
         console.log("GetTask ON a Task is called")
       }
     )
   }
 
-  getAllTags(){
-     this.tagService.getTags().subscribe(
-      (data)=>{
+  getAllTags() {
+    this.tagService.getTags().subscribe(
+      (data) => {
         this.allTags.set(data);
         console.log(data);
       }
@@ -119,33 +136,33 @@ export class TaskDetail implements OnInit {
     this.addingTag.set(!this.addingTag());
   }
 
-  addingTagToATask(tagId : number){
+  addingTagToATask(tagId: number) {
     this.taskService.addTasksPerTags(this.task.id!, tagId).subscribe(
-      (data)=>{
+      (data) => {
       }
     );
     this.getTagsOnATask()
   }
 
-  deleteTagOfATask(tagId : number){
+  deleteTagOfATask(tagId: number) {
     this.taskService.deleteTagForTask(this.task.id!, tagId).subscribe(
-      (data)=>{
+      (data) => {
       }
     );
     this.getTagsOnATask()
   }
 
-  toggleTheDialog(){
+  toggleTheDialog() {
     this.editingTask.set(!this.editingTask())
   }
 
-  onClickDelete(){
+  onClickDelete() {
     this.deletingTask.set(!this.deletingTask())
   }
 
-  deletingTaskWithId(){
+  deletingTaskWithId() {
     this.taskService.deleteTask(this.task.id!).subscribe(
-      (next)=>{
+      (next) => {
         console.log(next)
       }
     )

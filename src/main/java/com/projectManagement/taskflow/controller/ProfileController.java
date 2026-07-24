@@ -11,7 +11,7 @@ public class ProfileController {
 
     @Autowired
     private ProfileRepo profileRepo;
-
+//    http://localhost:8080/api/profile/5
     @GetMapping("/{userId}")
     private ProfileEntity getProfile(@PathVariable Long userId){
         return profileRepo.findByUserId(userId).orElseThrow(()->new RuntimeException("Profile not found"));

@@ -3,6 +3,7 @@ package com.projectManagement.taskflow.controller;
 import com.projectManagement.taskflow.dto.UserRequestDTO;
 import com.projectManagement.taskflow.dto.UserResponseDto;
 import com.projectManagement.taskflow.entity.UserEntity;
+import com.projectManagement.taskflow.exception.UserNotFoundException;
 import com.projectManagement.taskflow.mapper.UserMapper;
 import com.projectManagement.taskflow.repository.UserRepo;
 import com.projectManagement.taskflow.service.AuthService;
@@ -43,7 +44,11 @@ public class UsersController {
         return userRepo.findAll().stream().map(userMapper::toDto).collect(Collectors.toList());
     }
 
-//    http://localhost:8080/api/users/me/User
+    @GetMapping("/{userId}")
+    public UserResponseDto getUserByUserId(@PathVariable Long userId){
+        return this.userMapper.toDto(userRepo.findById(userId).orElseThrow(()->new UserNotFoundException("User not Found")));
+    }
+
     @GetMapping("/me/{username}")
     private ResponseEntity<UserResponseDto> getUserDetails(@PathVariable String username){
         return ResponseEntity.ok(userService.findByUsername(username));
