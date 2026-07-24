@@ -5,6 +5,9 @@ import { TaskModel } from "../models/task.model";
 import { UserModel } from "../models/user.model";
 import { CommentModel } from "../models/comment.model";
 import { TagModel } from "../models/tag.model";
+import { PageResponse } from "../models/PageResponse";
+import { Status } from "../enums/Status";
+import { statusChangeRequestDto } from "../models/statusChangeRequestDto";
 
 @Injectable({
     providedIn: 'root'
@@ -31,8 +34,8 @@ export class TaskService{
         return this.httpClient.put<TaskModel>(`${this.url}/${id}`, updatedTask);
     }
     
-    public changeStatusOfTask(id : number, newStatus : 'TODO' | 'IN_PROGRESS' | 'DONE'){
-        return this.httpClient.put<TaskModel>(`${this.url}/${id}`, newStatus);
+    public changeStatusOfTask(id : number, newStatus : statusChangeRequestDto){
+        return this.httpClient.patch<String>(`${this.url}/${id}/status`, newStatus);
     }
 
     public changeAssignee(taskId : number,user : UserModel){
@@ -43,23 +46,32 @@ export class TaskService{
         return this.httpClient.delete(`${this.url}/${taskId}`);
     }
 
-    public getComments(page : number, size : number){
+    public getCommentsForTask(taskId : number, page : number, size : number){
         let params = new HttpParams()
             .set('page', page.toString())
             .set('size', size.toString());        
-        return this.httpClient.get<CommentModel[]>(`${this.url}/comments`, {params});
+        return this.httpClient.get<PageResponse<CommentModel>>(`${this.url}/${taskId}/comments`, {params});
     }
 
-    public postCommentsForTask(taskId :  number, comments : CommentModel){
+    public postCommentsForTask(taskId :  number, comments : CommentModel[]){
         return this.httpClient.post(`${this.url}/${taskId}/comments`, comments);
     }
 
-    public addTasksPerTags(taskId : number, tagId : number, tags : TagModel[]){
-        return this.httpClient.post<string>(`${this.url}/${taskId}/tags/${tagId}`, tags)
+    public addTasksPerTags(taskId : number, tagId : number){
+        return this.httpClient.post<string>(`${this.url}/${taskId}/tags/${tagId}`,{})
     }
 
-    public deleteTagForTask(taskId : number){
-        return this.httpClient.delete(`${this.url}/${taskId}`);
+    public getTagsOnATask(taskId : number){
+        return this.httpClient.get<TagModel[]>(`${this.url}/${taskId}/tags`,{})
+    }
+
+    // @DeleteMapping("/{id}/tags/{tagId}")
+    // private ResponseEntity<String> deleteTagForTask(@PathVariable Long id, @PathVariable Long tagId){
+    //     return ResponseEntity.ok(tagService.removeTagFromTask(id, tagId));
+    // }
+
+    public deleteTagForTask(taskId : number, tagId : number){
+        return this.httpClient.delete(`${this.url}/${taskId}/tags/${tagId}`);
     }
 
 }

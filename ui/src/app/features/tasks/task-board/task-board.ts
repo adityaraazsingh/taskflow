@@ -21,7 +21,10 @@ export class TaskBoard {
   doneTasks = computed(() => this.tasks().filter(t => t.status === Status.DONE));
 
   onTaskClick(task: TaskModel) {
-    this.router.navigate([`/tasks/${task.id}`],{ state: { task } });
+    this.router.navigate([`tasks/${task.id}`],
+      { state: { 
+        task
+      } });
     // this.taskClick.emit(task);
   }
 }

@@ -28,6 +28,11 @@ public class TagService {
         return tagMapper.toDto(tagRepo.save(tag));
     }
 
+    public TagResponseDto getTagById(Long id){
+        TagEntity tag = tagRepo.findById(id).orElseThrow(()->new RuntimeException("Tag Not Found"));
+        return tagMapper.toDto(tag);
+    }
+
 //    TODO: create exceptions for 'tag not found too'
     public String AttachTagToTask(Long taskId, Long tagId){
         TagEntity tag = tagRepo.findById(tagId)

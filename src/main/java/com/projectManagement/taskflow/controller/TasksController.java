@@ -5,6 +5,7 @@ import com.projectManagement.taskflow.entity.CommentEntity;
 import com.projectManagement.taskflow.entity.TaskEntity;
 import com.projectManagement.taskflow.entity.UserEntity;
 import com.projectManagement.taskflow.enums.Status;
+import com.projectManagement.taskflow.exception.TaskNotFoundException;
 import com.projectManagement.taskflow.mapper.TaskMapper;
 import com.projectManagement.taskflow.repository.TaskRepo;
 import com.projectManagement.taskflow.service.*;
@@ -19,6 +20,7 @@ import org.springframework.scheduling.config.Task;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/tasks")
@@ -35,6 +37,9 @@ public class TasksController {
 
     @Autowired
     private TaskMapper taskMapper;
+
+    @Autowired
+    private TaskRepo taskRepo;
 
     @PostMapping("/project/{projectId}")
     public ResponseEntity<TaskResponseDto> createTask(@RequestBody TaskRequestDTO dto, @PathVariable Long projectId){
@@ -54,8 +59,9 @@ public class TasksController {
     // "IN_PROGRESS" just this for change
     @PatchMapping("/{id}/status")
     public ResponseEntity<String> changeStatusOfTask(@PathVariable Long id,
-                                                     @RequestBody Status status){
-        return ResponseEntity.ok(taskService.updateStatus(id, status));
+                                                     @RequestBody StatusChangeRequestDto status){
+        taskService.updateStatus(id, status.getStatus());
+        return ResponseEntity.ok(null);
     }
 
     @PatchMapping("/{id}/assignee")
@@ -81,16 +87,25 @@ public class TasksController {
     public ResponseEntity<String> postCommentsForTask(@PathVariable Long id,
                                                       @RequestBody List<CommentRequestDTO> comments){
         comments.forEach((comment)-> commentService.addComment(id,comment));
-        return ResponseEntity.ok("Added comments for task");
+        return ResponseEntity.status(HttpStatus.CREATED).body(null);
     }
 
     @PostMapping("/{id}/tags/{tagId}")
-    private ResponseEntity<String> addTasksPerTags(@PathVariable Long id, @PathVariable Long tagId){
-        return ResponseEntity.ok(tagService.AttachTagToTask(id, tagId));
+    private ResponseEntity<String> addTasksPerTags(@PathVariable Long id, @PathVariable Long tagId) {
+        tagService.AttachTagToTask(id, tagId);
+        return ResponseEntity.status(HttpStatus.CREATED).body(null);
+    }
+
+    @GetMapping("/{id}/tags")
+    private ResponseEntity<List<TagResponseDto>> getTagsOnATask(@PathVariable Long id){
+        TaskEntity task = taskRepo.findById(id).orElseThrow(()->new TaskNotFoundException("Task Not found"));
+        List<TagResponseDto> tags = task.getTags().stream().map((tag)->tagService.getTagById(tag.getId())).collect(Collectors.toList());
+        return ResponseEntity.ok(tags);
     }
 
     @DeleteMapping("/{id}/tags/{tagId}")
     private ResponseEntity<String> deleteTagForTask(@PathVariable Long id, @PathVariable Long tagId){
-        return ResponseEntity.ok(tagService.removeTagFromTask(id, tagId));
+        tagService.removeTagFromTask(id, tagId);
+        return ResponseEntity.noContent().build();
     }
 }

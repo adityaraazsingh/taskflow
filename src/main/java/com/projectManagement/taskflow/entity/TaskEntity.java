@@ -137,4 +137,20 @@ public class TaskEntity {
     public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
     }
+
+    @Override
+    public String toString() {
+        return "TaskEntity{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", description='" + description + '\'' +
+                ", assignee=" + assignee.getId() +
+                ", project=" + project.getId() +
+                ", status=" + status +
+                ", priority=" + priority +
+                ", dueDate=" + dueDate +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                '}';
+    }
 }

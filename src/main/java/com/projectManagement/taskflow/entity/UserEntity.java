@@ -2,6 +2,7 @@ package com.projectManagement.taskflow.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.projectManagement.taskflow.enums.RoleEnum;
+import com.projectManagement.taskflow.mapper.ProjectMapper;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.Getter;
@@ -10,6 +11,7 @@ import lombok.Setter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Data
 @Getter
@@ -129,4 +131,16 @@ public class UserEntity {
         this.createdAt = createdAt;
     }
 
+    @Override
+    public String toString() {
+        return "UserEntity{" +
+                "id=" + id +
+                ", username='" + username + '\'' +
+                ", passwordHash='" + passwordHash + '\'' +
+                ", email='" + email + '\'' +
+                ", role=" + role +
+                ", tasks=" + tasks +
+                ", createdAt=" + createdAt +
+                '}';
+    }
 }

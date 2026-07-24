@@ -51,4 +51,14 @@ public class ProjectMember {
     public void setRoleInProject(RoleInProject roleInProject) {
         this.roleInProject = roleInProject;
     }
+
+    @Override
+    public String toString() {
+        return "ProjectMember{" +
+                "id=" + id +
+                ", project=" + project.getId() +
+                ", user=" + user.getId() +
+                ", roleInProject=" + roleInProject +
+                '}';
+    }
 }

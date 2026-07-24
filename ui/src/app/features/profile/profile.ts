@@ -4,13 +4,12 @@ import { UserModel } from '../../core/models/user.model';
 import { AbstractControl, FormControl, FormControlName, FormGroup, ReactiveFormsModule, ValidationErrors } from '@angular/forms';
 import { DatePipe } from '@angular/common';
 import { LoadingSpinner } from "../../shared/components/loading-spinner/loading-spinner";
-import { ValidationError, FormField } from '@angular/forms/signals';
 import { UserService } from '../../core/services/user.service';
 import { ChangePasswordDto } from '../../core/models/ChangePasswordDto';
 
 @Component({
   selector: 'app-profile',
-  imports: [ReactiveFormsModule, DatePipe, LoadingSpinner, FormField],
+  imports: [ReactiveFormsModule, DatePipe, LoadingSpinner],
   templateUrl: './profile.html',
   styleUrl: './profile.css',
 })

@@ -4,6 +4,29 @@
     <span class="inline-flex items-center justify-center size-6 rounded-md bg-gray-100 text-xs font-semibold text-gray-600">4</span>
   </div>
 
+  @for (comment of comments(); track $index) {
+    <div class="flex gap-3">
+      <div class="size-9 rounded-full bg-gradient-to-br from-indigo-400 to-purple-500 flex items-center justify-center text-sm font-semibold text-white flex-shrink-0 shadow-sm">AK</div>
+      <div class="flex-1 min-w-0">
+        <div class="bg-gray-50 rounded-xl p-4">
+          <div class="flex items-center justify-between mb-1.5">
+            <div class="flex items-center gap-2">
+              <span class="text-sm font-semibold text-gray-900">Alex Kim</span>
+              <span class="text-xs text-gray-400">·</span>
+              <span class="text-xs text-gray-400">2 hours ago</span>
+            </div>
+            <button class="p-1 rounded text-gray-400 hover:text-rose-500 hover:bg-gray-200 transition-colors opacity-0 group-hover:opacity-100">
+              <svg class="size-3.5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+          <p class="text-sm text-gray-600 leading-relaxed">{{comment.content}}</p>
+        </div>
+      </div>
+    </div>
+  }
+
   <!-- Comment List -->
   <div class="space-y-5 mb-8">
     <!-- Comment -->
@@ -111,7 +134,7 @@
     <div class="flex gap-3">
       <div class="size-9 rounded-full bg-gradient-to-br from-indigo-400 to-purple-500 flex items-center justify-center text-sm font-semibold text-white flex-shrink-0 shadow-sm">U</div>
       <div class="flex-1">
-        <textarea rows="3" placeholder="Write a comment..."
+        <textarea [(ngModel)]="commentText" rows="3" placeholder="Write a comment..."
           class="block w-full rounded-xl border-0 bg-gray-50 py-2.5 px-4 text-sm text-gray-900 ring-1 ring-inset ring-gray-200 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-500 transition-all duration-200 resize-none mb-3"></textarea>
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-2">
@@ -126,7 +149,7 @@
               </svg>
             </button>
           </div>
-          <button class="inline-flex items-center rounded-xl bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 transition-all duration-200">
+          <button (click)="onClickingComment()" class="inline-flex items-center rounded-xl bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 transition-all duration-200">
             Comment
           </button>
         </div>

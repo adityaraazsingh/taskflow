@@ -34,7 +34,7 @@
         <div class="flex items-center justify-between p-4 sm:px-6 hover:bg-gray-50 transition-colors">
           <div class="flex items-center gap-4">
             <div class="size-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-sm font-semibold text-white flex-shrink-0">
-              {{ member.username?.charAt(0)?.toUpperCase() || '?' }}
+              {{ member.username.substring(0,2).toUpperCase() }}
             </div>
             <div>
               <p class="text-sm font-medium text-gray-900">{{ member.username || 'Unknown' }}</p>

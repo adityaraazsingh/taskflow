@@ -8,7 +8,7 @@ import { RoleInProject } from '../../../core/enums/RoleInProject';
 
 @Component({
   selector: 'app-project-members',
-  imports: [NgClass],
+  imports: [],
   templateUrl: './project-members.html',
   styleUrl: './project-members.css',
 })

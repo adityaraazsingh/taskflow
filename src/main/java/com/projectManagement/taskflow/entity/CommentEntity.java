@@ -62,4 +62,15 @@ public class CommentEntity {
     public void setCommentator(UserEntity commentator) {
         this.commentator = commentator;
     }
+
+    @Override
+    public String toString() {
+        return "CommentEntity{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", content='" + content + '\'' +
+                ", task=" + task.getId() +
+                ", commentator=" + commentator.getId() +
+                '}';
+    }
 }
