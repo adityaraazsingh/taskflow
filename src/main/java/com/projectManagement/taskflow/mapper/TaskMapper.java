@@ -34,6 +34,7 @@ public class TaskMapper {
         dto.setStatus(entity.getStatus());
         dto.setPriority(entity.getPriority());
         dto.setDescription(entity.getDescription());
+        dto.setProjectId(entity.getProject().getId());
         dto.setDueDate(entity.getDueDate());
         dto.setCommentIds(entity.getComments().stream().map(CommentEntity::getId).collect(Collectors.toList()));
         dto.setTagIds(entity.getTags().stream().map(TagEntity::getId).collect(Collectors.toList()));

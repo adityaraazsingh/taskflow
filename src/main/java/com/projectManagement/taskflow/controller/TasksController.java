@@ -56,11 +56,17 @@ public class TasksController {
         return ResponseEntity.ok(taskService.updateTask(id, updatedTask));
     }
 
-    // "IN_PROGRESS" just this for change
     @PatchMapping("/{id}/status")
     public ResponseEntity<String> changeStatusOfTask(@PathVariable Long id,
                                                      @RequestBody StatusChangeRequestDto status){
         taskService.updateStatus(id, status.getStatus());
+        return ResponseEntity.ok(null);
+    }
+
+    @PatchMapping("/{id}/priority")
+    public ResponseEntity<String> changePriorityOfTask(@PathVariable Long id,
+                                                     @RequestBody PriorityChangeRequestDto dto){
+        taskService.updatePriority(id, dto.getPriority());
         return ResponseEntity.ok(null);
     }
 

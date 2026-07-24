@@ -9,7 +9,7 @@ export interface TaskModel {
     assigneeId?: number;
     dueDate: Date;
     tagsIds?: number[];
-    projectIds? : number[]; // projectId is being send in Url so it gets added in the backend
+    projectId? : number; // projectId is being send in Url so it gets added in the backend
     comments? : number[];
     priority: Priority;
     status: Status;   

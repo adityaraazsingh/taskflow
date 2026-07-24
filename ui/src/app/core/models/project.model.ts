@@ -1,8 +1,10 @@
+import { Status } from "../enums/Status";
+
 export interface ProjectModel{
     id?: number;
     name: string;
     description: string;
-    status: 'TODO' | 'IN_PROGRESS' | 'DONE';
+    status: Status;
     // userId: number;
     taskIds?: number[];
     projectMemberIds?: number[];

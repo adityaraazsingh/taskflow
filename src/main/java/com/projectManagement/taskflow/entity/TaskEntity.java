@@ -24,7 +24,7 @@ public class TaskEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private UserEntity assignee;
 
-    @OneToMany(mappedBy = "task")
+    @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CommentEntity> comments = new ArrayList<>();
 
     @JoinColumn(name = "project_id")

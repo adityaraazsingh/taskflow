@@ -14,8 +14,13 @@ public class TaskResponseDto {
     private Date dueDate;
     private Priority priority;
     private Status status;
+    private Long projectId;
     private List<Long> commentIds = new ArrayList<>();
     private List<Long> tagIds = new ArrayList<>();
+
+    public Long getProjectId() { return projectId; }
+
+    public void setProjectId(Long projectId) { this.projectId = projectId; }
 
     public Long getAssigneeId() {
         return assigneeId;

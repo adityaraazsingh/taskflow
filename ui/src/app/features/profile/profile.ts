@@ -6,6 +6,8 @@ import { DatePipe } from '@angular/common';
 import { LoadingSpinner } from "../../shared/components/loading-spinner/loading-spinner";
 import { UserService } from '../../core/services/user.service';
 import { ChangePasswordDto } from '../../core/models/ChangePasswordDto';
+import { ProfileModel } from '../../core/models/profile.model';
+import { ProfileService } from '../../core/services/profileService';
 
 @Component({
   selector: 'app-profile',
@@ -18,20 +20,35 @@ export class Profile {
   loading = signal(true);
   isPasswordSame = signal(false);
 
-  constructor(private authService : AuthService, private userService : UserService){
+  profileForm = new FormGroup({
+    avatarUrl : new FormControl(''),
+    firstName : new FormControl(),
+    lastName : new FormControl(),
+    bio : new FormControl(),
+  })
+
+  constructor(private authService : AuthService, private userService : UserService, private profileService : ProfileService){
     this.authService.me().subscribe(
       (next)=>{
         console.log("Users is laoded ",next);
         this.user = next;
         this.user.createdAt = new Date(this.user.createdAt!);
+        this.patchingValue()
         this.loading.set(false);
       }
     )
+
+    
   }
 
-  userForm = new FormGroup({
-
-  })
+  patchingValue(){
+    this.profileService.getProfileByUserId(this.user.id!).subscribe(
+      (next)=>{
+        console.log(next),
+        this.profileForm.patchValue(next)
+      }
+    )
+  }
 
   changePasswordForm = new FormGroup({
     currentPassword : new FormControl(),
@@ -61,5 +78,20 @@ export class Profile {
         console.log(err)
       }
     );
+  }
+
+  onSaveButtonClick(){
+    const payload :  ProfileModel ={
+      firstName : this.profileForm.controls.firstName.value,
+      lastName : this.profileForm.controls.lastName.value,
+      bio : this.profileForm.controls.bio.value,
+      userId : this.user.id,
+      avatarUrl : ' url '
+    }
+    this.profileService.saveProfileByUserId(payload).subscribe(
+      (next) =>{
+        console.log(next)
+      }
+    )
   }
 }

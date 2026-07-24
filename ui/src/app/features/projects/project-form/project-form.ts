@@ -2,6 +2,7 @@ import { Component, signal, output, input, OnInit } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ProjectService } from '../../../core/services/project.service';
 import { ProjectModel } from '../../../core/models/project.model';
+import { Status } from '../../../core/enums/Status';
 
 @Component({
   selector: 'app-project-form',
@@ -59,7 +60,7 @@ export class ProjectForm implements OnInit {
     const payload: ProjectModel = {
       name: this.projectForm.get('name')!.value ?? '',
       description: this.projectForm.get('description')!.value ?? '',
-      status: (this.projectForm.get('status')!.value ?? 'TODO') as 'TODO' | 'IN_PROGRESS' | 'DONE',
+      status: (this.projectForm.get('status')!.value ?? 'TODO') as Status,
       // userId: this.project()?.userId ?? 0,
       taskIds: this.project()?.taskIds ?? [],
       projectMemberIds: this.project()?.projectMemberIds ?? [],

@@ -5,6 +5,7 @@ import com.projectManagement.taskflow.dto.TaskResponseDto;
 import com.projectManagement.taskflow.dto.UserRequestDTO;
 import com.projectManagement.taskflow.dto.UserResponseDto;
 import com.projectManagement.taskflow.entity.*;
+import com.projectManagement.taskflow.enums.Priority;
 import com.projectManagement.taskflow.enums.Status;
 import com.projectManagement.taskflow.exception.ProjectNotFoundException;
 import com.projectManagement.taskflow.exception.TaskNotFoundException;
@@ -87,6 +88,17 @@ public class TaskService {
         taskRepo.save(task);
         return "Status Updated to "+task.getStatus();
     }
+
+    public String updatePriority(Long id , Priority priority){
+        UserEntity user = authService.getCurrentUser();
+        TaskEntity task = taskRepo.findById(id)
+                .orElseThrow(()->new RuntimeException("Task Not Found"));
+        task.setPriority(priority);
+        taskRepo.save(task);
+        return "Status Updated to "+task.getStatus();
+    }
+
+
 
 //   TODO : userId is not being used assignTask(Long id, Long userId ,UserEntity user)
     public String assignTask(Long id, UserRequestDTO dto){

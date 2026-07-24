@@ -8,6 +8,7 @@ import { TagModel } from "../models/tag.model";
 import { PageResponse } from "../models/PageResponse";
 import { Status } from "../enums/Status";
 import { statusChangeRequestDto } from "../models/statusChangeRequestDto";
+import { priorityChangeRequestDto } from "../models/priorityChangeRequestDto";
 
 @Injectable({
     providedIn: 'root'
@@ -36,6 +37,10 @@ export class TaskService{
     
     public changeStatusOfTask(id : number, newStatus : statusChangeRequestDto){
         return this.httpClient.patch<String>(`${this.url}/${id}/status`, newStatus);
+    }
+
+    public changePriorityOfTask(id : number, newPriority : priorityChangeRequestDto){
+        return this.httpClient.patch<String>(`${this.url}/${id}/priority`, newPriority);
     }
 
     public changeAssignee(taskId : number,user : UserModel){

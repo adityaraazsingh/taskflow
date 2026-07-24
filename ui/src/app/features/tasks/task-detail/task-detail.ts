@@ -11,10 +11,13 @@ import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angul
 import { Status } from '../../../core/enums/Status';
 import { Priority } from '../../../core/enums/Priority';
 import { statusChangeRequestDto } from '../../../core/models/statusChangeRequestDto';
+import { priorityChangeRequestDto } from '../../../core/models/priorityChangeRequestDto';
+import { TaskForm } from "../task-form/task-form";
+import { ConfirmDialog } from "../../../shared/components/confirm-dialog/confirm-dialog";
 
 @Component({
   selector: 'app-task-detail',
-  imports: [CommentList, DatePipe, FormsModule, ReactiveFormsModule],
+  imports: [CommentList, DatePipe, FormsModule, ReactiveFormsModule, TaskForm, ConfirmDialog],
   templateUrl: './task-detail.html',
   styleUrl: './task-detail.css',
 })
@@ -22,6 +25,8 @@ export class TaskDetail implements OnInit {
 
   task!: TaskModel;
   Status = Status;
+  editingTask = signal<boolean>(false);
+  deletingTask = signal<boolean>(false);
   status = signal<Status>(Status.TODO);
   priority = signal<Priority>(Priority.LOW);
   tags = signal<TagModel[]>([]);
@@ -55,6 +60,7 @@ export class TaskDetail implements OnInit {
     this.form.controls.status.patchValue(this.status());
     this.form.controls.priority.patchValue(this.priority()); 
     this.onChangingStatus()   
+    this.onChangingPriority()
   }
 
   onChangingStatus(){
@@ -63,6 +69,19 @@ export class TaskDetail implements OnInit {
         status : data
       }
       this.taskService.changeStatusOfTask(this.task.id!, payload).subscribe(
+        (next)=>{
+          console.log(next)
+        }
+      )
+    })
+  }
+
+  onChangingPriority(){
+    this.form.controls.priority.valueChanges.subscribe((data)=>{
+      const payload : priorityChangeRequestDto ={
+        priority : data
+      }
+      this.taskService.changePriorityOfTask(this.task.id!, payload).subscribe(
         (next)=>{
           console.log(next)
         }
@@ -116,6 +135,22 @@ export class TaskDetail implements OnInit {
     this.getTagsOnATask()
   }
 
+  toggleTheDialog(){
+    this.editingTask.set(!this.editingTask())
+  }
 
+  onClickDelete(){
+    this.deletingTask.set(!this.deletingTask())
+  }
+
+  deletingTaskWithId(){
+    this.taskService.deleteTask(this.task.id!).subscribe(
+      (next)=>{
+        console.log(next)
+      }
+    )
+    this.onClickDelete()
+    this.router.navigate([`projects/${this.task.projectId}`]);
+  }
 
 }
