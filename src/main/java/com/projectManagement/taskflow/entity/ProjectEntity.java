@@ -99,4 +99,18 @@ public class ProjectEntity {
     public void setCreatedAt(Date createdAt) {
         CreatedAt = createdAt;
     }
+
+    @Override
+    public String toString() {
+        return "ProjectEntity{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", status=" + status +
+                ", user=" + user.getId() +
+                ", tasks=" + tasks +
+                ", projectMembers=" + projectMembers +
+                ", CreatedAt=" + CreatedAt +
+                '}';
+    }
 }

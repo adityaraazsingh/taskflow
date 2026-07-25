@@ -1,7 +1,7 @@
 package com.projectManagement.taskflow.entity;
 
 import com.projectManagement.taskflow.enums.Status;
-import com.projectManagement.taskflow.enums.priority;
+import com.projectManagement.taskflow.enums.Priority;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -20,13 +20,15 @@ public class TaskEntity {
 
     private String description;
 
-    @ManyToOne
+    @JoinColumn(name = "assignee_id")
+    @ManyToOne(fetch = FetchType.LAZY)
     private UserEntity assignee;
 
-    @OneToMany(mappedBy = "task")
+    @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CommentEntity> comments = new ArrayList<>();
 
-    @ManyToOne
+    @JoinColumn(name = "project_id")
+    @ManyToOne(fetch = FetchType.LAZY)
     private ProjectEntity project;
 
     @ManyToMany
@@ -36,7 +38,7 @@ public class TaskEntity {
     private Status status;
 
     @Enumerated(EnumType.STRING)
-    private priority priority;
+    private Priority priority;
 
     private Date dueDate;
 
@@ -104,11 +106,11 @@ public class TaskEntity {
         this.status = status;
     }
 
-    public priority getPriority() {
+    public Priority getPriority() {
         return priority;
     }
 
-    public void setPriority(priority priority) {
+    public void setPriority(Priority priority) {
         this.priority = priority;
     }
 
@@ -134,5 +136,21 @@ public class TaskEntity {
 
     public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    @Override
+    public String toString() {
+        return "TaskEntity{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", description='" + description + '\'' +
+                ", assignee=" + assignee.getId() +
+                ", project=" + project.getId() +
+                ", status=" + status +
+                ", priority=" + priority +
+                ", dueDate=" + dueDate +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                '}';
     }
 }

@@ -53,4 +53,14 @@ public class TagEntity {
     public void setColorHex(String colorHex) {
         this.colorHex = colorHex;
     }
+
+    @Override
+    public String toString() {
+        return "TagEntity{" +
+                "id=" + id +
+                ", tasks=" + tasks +
+                ", name='" + name + '\'' +
+                ", colorHex='" + colorHex + '\'' +
+                '}';
+    }
 }

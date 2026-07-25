@@ -1,7 +1,9 @@
 package com.projectManagement.taskflow.controller;
 
 import com.projectManagement.taskflow.dto.UserRequestDTO;
+import com.projectManagement.taskflow.dto.UserResponseDto;
 import com.projectManagement.taskflow.entity.UserEntity;
+import com.projectManagement.taskflow.exception.UserNotFoundException;
 import com.projectManagement.taskflow.mapper.UserMapper;
 import com.projectManagement.taskflow.repository.UserRepo;
 import com.projectManagement.taskflow.service.AuthService;
@@ -16,6 +18,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RequestMapping("/api/users")
 @RestController
@@ -37,26 +40,29 @@ public class UsersController {
     private BCryptPasswordEncoder passwordEncoder;
 
     @GetMapping
-    private List<UserEntity> alLusers(){
-        return userRepo.findAll();
+    private List<UserResponseDto> alLusers(){
+        return userRepo.findAll().stream().map(userMapper::toDto).collect(Collectors.toList());
     }
 
-//    http://localhost:8080/api/users/me/User
+    @GetMapping("/{userId}")
+    public UserResponseDto getUserByUserId(@PathVariable Long userId){
+        return this.userMapper.toDto(userRepo.findById(userId).orElseThrow(()->new UserNotFoundException("User not Found")));
+    }
+
     @GetMapping("/me/{username}")
-    private ResponseEntity<UserEntity> getUserDetails(@PathVariable String username){
+    private ResponseEntity<UserResponseDto> getUserDetails(@PathVariable String username){
         return ResponseEntity.ok(userService.findByUsername(username));
     }
 
     @PostMapping("/signup")
-    private ResponseEntity<UserEntity> registerUser(@RequestBody UserRequestDTO dto){
+    private ResponseEntity<UserResponseDto> registerUser(@RequestBody UserRequestDTO dto){
         return ResponseEntity.status(HttpStatus.CREATED).body(authService.register(dto));
     }
 
     @GetMapping("/all")
-    private Page<UserEntity> getAllusers(@RequestParam(defaultValue = "0") int page,
+    private Page<UserResponseDto> getAllUsers(@RequestParam(defaultValue = "0") int page,
                                          @RequestParam(defaultValue = "10") int size){
         Pageable pageable = PageRequest.of(page, size);
         return userService.listUsers(pageable);
-
     }
 }

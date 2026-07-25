@@ -1,0 +1,10 @@
+:host {
+  display: block;
+}
+
+/* Smooth scroll for kanban columns if they overflow */
+@media (max-width: 768px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}

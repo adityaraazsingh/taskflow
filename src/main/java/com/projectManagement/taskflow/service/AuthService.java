@@ -3,6 +3,7 @@ package com.projectManagement.taskflow.service;
 import com.projectManagement.taskflow.dto.AuthResponse;
 import com.projectManagement.taskflow.dto.LoginCredentials;
 import com.projectManagement.taskflow.dto.UserRequestDTO;
+import com.projectManagement.taskflow.dto.UserResponseDto;
 import com.projectManagement.taskflow.entity.UserEntity;
 import com.projectManagement.taskflow.enums.RoleEnum;
 import com.projectManagement.taskflow.exception.InvalidCredentialsException;
@@ -38,11 +39,12 @@ public class AuthService {
     private UserRepo userRepo;
 
 
-    public UserEntity register(UserRequestDTO dto){
+    public UserResponseDto register(UserRequestDTO dto){
         String password = dto.getPassword();
         String passwordHash = passwordEncoder.encode(password);
         UserEntity user = userMapper.toEntity(dto, passwordHash);
-        return userRepo.save(user);
+        UserResponseDto userDto = userMapper.toDto(userRepo.save(user));
+        return userDto;
     }
 
     public AuthResponse login(LoginCredentials loginCredentials){
@@ -79,4 +81,6 @@ public class AuthService {
 
         return userRepo.findByUsername(username).orElseThrow(()->new UserNotFoundException("User not found"));
     }
+
+    //Todo: Write a IsExpired Method to check weather stored JWT in local storage has expired or not
 }

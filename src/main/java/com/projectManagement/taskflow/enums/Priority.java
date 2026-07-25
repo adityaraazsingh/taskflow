@@ -1,6 +1,6 @@
 package com.projectManagement.taskflow.enums;
 
-public enum priority{
+public enum Priority {
     LOW,
     MEDIUM,
     HIGH

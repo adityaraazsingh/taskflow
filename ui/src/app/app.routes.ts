@@ -12,6 +12,7 @@ export const routes: Routes = [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       { path: 'dashboard', loadComponent: () => import('./features/dashboard/dashboard').then(m => m.Dashboard) },
       { path: 'projects/:id', loadComponent: () => import('./features/projects/project-detail/project-detail').then(m => m.ProjectDetail) },
+      { path: 'allprojects', loadComponent: () => import('./features/projects/project-list/project-list').then(m => m.ProjectList) },
       { path: 'projects/:id/members', loadComponent: () => import('./features/projects/project-members/project-members').then(m => m.ProjectMembers) },
       { path: 'tasks/:id', loadComponent: () => import('./features/tasks/task-detail/task-detail').then(m => m.TaskDetail) },
       { path: 'profile', loadComponent: () => import('./features/profile/profile').then(m => m.Profile) },

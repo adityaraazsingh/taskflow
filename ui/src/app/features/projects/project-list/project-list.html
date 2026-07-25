@@ -1,1 +1,187 @@
-<p>project-list works!</p>
+<div class="space-y-6">
+  <!-- Header -->
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="text-2xl font-bold text-gray-900 tracking-tight">All Projects</h1>
+      <p class="mt-1 text-sm text-gray-500">Manage and oversee all your projects in one place</p>
+    </div>
+    <button (click)="onClickCreateProject()"
+      class="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:from-indigo-500 hover:to-purple-500 hover:shadow-md active:scale-95 transition-all duration-200">
+      <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+      </svg>
+      New Project
+    </button>
+  </div>
+
+  <!-- Search & Filter Bar -->
+  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div class="relative flex-1 max-w-md">
+      <svg class="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+      </svg>
+      <input type="text" placeholder="Search projects by name or description..."
+        class="w-full rounded-xl border-0 bg-white py-2.5 pl-9 pr-3 text-sm text-gray-900 ring-1 ring-inset ring-gray-200 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-500 transition-all duration-200"
+        [(ngModel)]="searchQuery" />
+      <!-- Search shortcut hint -->
+      <div class="absolute right-2.5 top-1/2 -translate-y-1/2 hidden sm:flex items-center gap-0.5">
+        <kbd class="hidden sm:inline-flex items-center px-1.5 py-0.5 text-[10px] font-medium text-gray-400 bg-gray-100 rounded">
+          ⌘K
+        </kbd>
+      </div>
+    </div>
+    <div class="flex items-center gap-2">
+      <!-- Active filter indicator -->
+      <div class="flex items-center gap-1.5 text-xs text-gray-400 mr-1">
+        <span class="font-medium text-gray-500">{{ filteredProjects().length }}</span> projects
+      </div>
+
+      <!-- Filter Button -->
+      <button id="filterBtn"
+        class="inline-flex items-center gap-1.5 rounded-xl px-4 py-2.5 text-sm font-medium text-gray-600 bg-white ring-1 ring-gray-200 hover:bg-gray-50 hover:ring-gray-300 active:scale-95 transition-all duration-200">
+        <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 01-.659 1.591l-5.432 5.432a2.25 2.25 0 00-.659 1.591v2.927a2.25 2.25 0 01-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 00-.659-1.591L3.659 7.409A2.25 2.25 0 013 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0112 3z" />
+        </svg>
+        Filter
+        <!-- Active filter dot indicator -->
+        @if (statusFilter || searchQuery()) {
+        <span class="size-15 rounded-full bg-indigo-500"></span>
+        }
+        <label>Status :</label>
+        <select [(ngModel)]="statusFilter" (ngModelChange)="fetchProjects()" class="ml-1 rounded-lg border-0 bg-gray-50 px-2 py-1 text-xs font-medium text-gray-600 ring-1 ring-gray-200 focus:ring-2 focus:ring-indigo-500">
+          <option [ngValue]="null">All</option>
+          <option [value]="Status.DONE">Done</option>
+          <option [value]="Status.IN_PROGRESS">In Progress</option>
+          <option [value]="Status.TODO">To Do</option>
+        </select>
+      </button>
+
+      <!-- Sort Button -->
+      <button id="sortBtn" (click)="toggleSortOrder()"
+        class="inline-flex items-center gap-1.5 rounded-xl px-4 py-2.5 text-sm font-medium text-gray-600 bg-white ring-1 ring-gray-200 hover:bg-gray-50 hover:ring-gray-300 active:scale-95 transition-all duration-200">
+        <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+        </svg>
+        Sort
+      </button>
+    </div>
+  </div>
+
+  <!-- Active Filters Pills -->
+  @if (statusFilter || searchQuery()) {
+  <div class="flex items-center gap-2 flex-wrap">
+    @if (statusFilter) {
+    <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-50 text-xs font-medium text-indigo-700 ring-1 ring-indigo-200">
+      Status: {{ statusFilter === 'TODO' ? 'To Do' : statusFilter === 'IN_PROGRESS' ? 'In Progress' : 'Done' }}
+      <button (click)="statusFilter=null; fetchProjects()" class="p-0.5 rounded hover:bg-indigo-100 transition-colors">
+        <svg class="size-3" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </span>
+    }
+    @if (searchQuery()) {
+    <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-purple-50 text-xs font-medium text-purple-700 ring-1 ring-purple-200">
+      Search: "{{ searchQuery() }}"
+      <button (click)="searchQuery.set('')" class="p-0.5 rounded hover:bg-purple-100 transition-colors">
+        <svg class="size-3" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </span>
+    }
+    <button (click)="clearFilters()" class="text-xs font-medium text-gray-500 hover:text-gray-700 transition-colors">
+      Clear all
+    </button>
+  </div>
+  }
+
+  <!-- Project Grid -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+    <!-- Project Card Repeated -->
+    @for (project of filteredProjects(); track project.id) {
+      <div class="group bg-white rounded-xl ring-1 ring-gray-200 overflow-hidden hover:shadow-lg hover:ring-indigo-200 transition-all duration-200 cursor-pointer"
+        (click)="navigateToProject(project.id!)">
+        <!-- Color accent bar -->
+        <div class="h-1.5 bg-gradient-to-r from-indigo-500 to-purple-500"></div>
+        <div class="p-5">
+          <div class="flex items-start justify-between mb-3">
+            <h3 class="font-semibold text-gray-900 group-hover:text-indigo-600 transition-colors">{{ project.name }}</h3>
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium flex-shrink-0 ml-2"
+                  [ngClass]="{
+                    'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200': project.status === 'IN_PROGRESS',
+                    'bg-amber-50 text-amber-700 ring-1 ring-amber-200': project.status === 'TODO',
+                    'bg-blue-50 text-blue-700 ring-1 ring-blue-200': project.status === 'DONE',
+                  }">
+              @if (project.status === 'IN_PROGRESS') {
+                <span class="size-15 rounded-full bg-emerald-500 mr-1.5"></span>
+              } @else if (project.status === 'TODO') {
+                <span class="size-15 rounded-full bg-amber-500 mr-1.5"></span>
+              } @else {
+                <span class="size-15 rounded-full bg-blue-500 mr-1.5"></span>
+              }
+              {{ project.status === 'IN_PROGRESS' ? 'In Progress' : project.status === 'TODO' ? 'To Do' : 'Completed' }}
+            </span>
+          </div>
+          <p class="text-sm text-gray-500 line-clamp-2 mb-4 min-h-[2.5rem]">{{ project.description }}</p>
+          <div class="flex items-center justify-between">
+            <div class="flex -space-x-2">
+              <div class="size-7 rounded-full bg-gradient-to-br from-indigo-400 to-indigo-600 ring-2 ring-white flex items-center justify-center text-[10px] font-semibold text-white shadow-sm">AK</div>
+              <div class="size-7 rounded-full bg-gradient-to-br from-emerald-400 to-emerald-600 ring-2 ring-white flex items-center justify-center text-[10px] font-semibold text-white shadow-sm">JR</div>
+              <div class="size-7 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 ring-2 ring-white flex items-center justify-center text-[10px] font-semibold text-white shadow-sm">SP</div>
+            </div>
+            <div class="flex items-center gap-3 text-xs text-gray-400">
+              <span class="flex items-center gap-1">
+                <svg class="size-3.5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
+                </svg>
+                {{ project.createdAt | date:'MMM d, yyyy' }}
+              </span>
+              <span class="flex items-center gap-1">
+                <svg class="size-3.5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                </svg>
+                <span>{{ project.projectMemberIds?.length || 0 }}</span>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+
+  <!-- Pagination -->
+  <div class="bg-white rounded-xl ring-1 ring-gray-200 overflow-hidden">
+    <app-pagination
+      [currentPage]="currentPage()"
+      [totalPages]="totalPages()"
+      [totalItems]="totalItems()"
+      (pageChange)="onPageChange($event)">
+    </app-pagination>
+  </div>
+
+  <!-- Empty State -->
+  @if (filteredProjects().length === 0) {
+    <div class="text-center py-20">
+      <div class="inline-flex items-center justify-center size-20 rounded-2xl bg-gradient-to-br from-indigo-50 to-purple-50 ring-1 ring-indigo-100 mb-5">
+        <svg class="size-9 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z" />
+        </svg>
+      </div>
+      <h3 class="text-xl font-semibold text-gray-900 mb-1">No projects yet</h3>
+      <p class="text-sm text-gray-500 mb-6 max-w-sm mx-auto">Get started by creating your first project and invite your team to collaborate.</p>
+      <button (click)="onClickCreateProject()"
+        class="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:from-indigo-500 hover:to-purple-500 hover:shadow-md active:scale-95 transition-all duration-200">
+        <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+        </svg>
+        Create Project
+      </button>
+    </div>
+  }
+</div>
+
+<!-- Project Form Modal -->
+@if(addingProject()){
+  <app-project-form (closeDialog)="onClickCreateProject()"></app-project-form>
+}

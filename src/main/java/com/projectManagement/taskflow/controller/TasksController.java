@@ -1,12 +1,12 @@
 package com.projectManagement.taskflow.controller;
 
-import com.projectManagement.taskflow.dto.CommentRequestDTO;
-import com.projectManagement.taskflow.dto.TagRequestDTO;
-import com.projectManagement.taskflow.dto.TaskRequestDTO;
+import com.projectManagement.taskflow.dto.*;
 import com.projectManagement.taskflow.entity.CommentEntity;
 import com.projectManagement.taskflow.entity.TaskEntity;
 import com.projectManagement.taskflow.entity.UserEntity;
 import com.projectManagement.taskflow.enums.Status;
+import com.projectManagement.taskflow.exception.TaskNotFoundException;
+import com.projectManagement.taskflow.mapper.TaskMapper;
 import com.projectManagement.taskflow.repository.TaskRepo;
 import com.projectManagement.taskflow.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,19 +20,14 @@ import org.springframework.scheduling.config.Task;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/tasks")
 public class TasksController {
 
     @Autowired
-    private TaskRepo taskRepo;
-
-    @Autowired
     private TaskService taskService;
-
-    @Autowired
-    private UserService userService;
 
     @Autowired
     private CommentService commentService;
@@ -41,28 +36,43 @@ public class TasksController {
     private TagService tagService;
 
     @Autowired
-    private AuthService authService;
+    private TaskMapper taskMapper;
+
+    @Autowired
+    private TaskRepo taskRepo;
+
+    @PostMapping("/project/{projectId}")
+    public ResponseEntity<TaskResponseDto> createTask(@RequestBody TaskRequestDTO dto, @PathVariable Long projectId){
+        return ResponseEntity.status(HttpStatus.CREATED).body(taskMapper.toDto(taskService.createTask(projectId,dto)));
+    }
 
     @GetMapping("/{id}")
-    public TaskEntity getTaskById(@PathVariable Long id){
+    public TaskResponseDto getTaskById(@PathVariable Long id){
         return taskService.getTaskById(id);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<TaskEntity> updateTaskById(@PathVariable Long id, @RequestBody TaskEntity updatedTask){
-        UserEntity user = authService.getCurrentUser();
-        return ResponseEntity.ok(taskService.updateTask(id, updatedTask, user));
+    public ResponseEntity<TaskResponseDto> updateTaskById(@PathVariable Long id, @RequestBody TaskRequestDTO updatedTask){
+        return ResponseEntity.ok(taskService.updateTask(id, updatedTask));
     }
 
-    // "IN_PROGRESS" just this for change
     @PatchMapping("/{id}/status")
-    public ResponseEntity<String> changeStatusOfTask(@PathVariable Long id, @RequestBody Status status){
-        UserEntity user = authService.getCurrentUser();
-        return ResponseEntity.ok(taskService.updateStatus(id, status, user));
+    public ResponseEntity<String> changeStatusOfTask(@PathVariable Long id,
+                                                     @RequestBody StatusChangeRequestDto status){
+        taskService.updateStatus(id, status.getStatus());
+        return ResponseEntity.ok(null);
+    }
+
+    @PatchMapping("/{id}/priority")
+    public ResponseEntity<String> changePriorityOfTask(@PathVariable Long id,
+                                                     @RequestBody PriorityChangeRequestDto dto){
+        taskService.updatePriority(id, dto.getPriority());
+        return ResponseEntity.ok(null);
     }
 
     @PatchMapping("/{id}/assignee")
-    public ResponseEntity<String> changeAssignee(@PathVariable Long id,@RequestBody UserEntity user){
+    public ResponseEntity<String> changeAssignee(@PathVariable Long id,
+                                                 @RequestBody UserRequestDTO user){
         return ResponseEntity.ok(taskService.assignTask(id, user));
     }
 
@@ -72,28 +82,36 @@ public class TasksController {
     }
 
     @GetMapping("/{id}/comments")
-    public Page<CommentEntity> getComments(@PathVariable Long id,
-                                           @RequestParam(defaultValue = "0") int page,
-                                           @RequestParam(defaultValue = "10") int size){
+    public Page<CommentResponseDto> getComments(@PathVariable Long id,
+                                                @RequestParam(defaultValue = "0") int page,
+                                                @RequestParam(defaultValue = "10") int size){
         Pageable pageable = PageRequest.of(page,size);
         return commentService.listCommentsForTask(id, pageable);
     }
 
-    //TODO: Add a logic to add users here
     @PostMapping("/{id}/comments")
-    public ResponseEntity<String> postCommentsForTask(@PathVariable Long id, @RequestBody List<CommentRequestDTO> comments){
-        UserEntity user = authService.getCurrentUser();
-        comments.forEach((comment)-> commentService.addComment(id,comment,user));
-        return ResponseEntity.ok("Added comments for task");
+    public ResponseEntity<String> postCommentsForTask(@PathVariable Long id,
+                                                      @RequestBody List<CommentRequestDTO> comments){
+        comments.forEach((comment)-> commentService.addComment(id,comment));
+        return ResponseEntity.status(HttpStatus.CREATED).body(null);
     }
 
-    @PostMapping("{id}/tags/{tagId}")
-    private ResponseEntity<String> addTasksPerTags(@PathVariable Long id, @PathVariable Long tagId){
-        return ResponseEntity.ok(tagService.AttachTagToTask(id, tagId));
+    @PostMapping("/{id}/tags/{tagId}")
+    private ResponseEntity<String> addTasksPerTags(@PathVariable Long id, @PathVariable Long tagId) {
+        tagService.AttachTagToTask(id, tagId);
+        return ResponseEntity.status(HttpStatus.CREATED).body(null);
     }
 
-    @DeleteMapping("{id}/tags/{tagId}")
+    @GetMapping("/{id}/tags")
+    private ResponseEntity<List<TagResponseDto>> getTagsOnATask(@PathVariable Long id){
+        TaskEntity task = taskRepo.findById(id).orElseThrow(()->new TaskNotFoundException("Task Not found"));
+        List<TagResponseDto> tags = task.getTags().stream().map((tag)->tagService.getTagById(tag.getId())).collect(Collectors.toList());
+        return ResponseEntity.ok(tags);
+    }
+
+    @DeleteMapping("/{id}/tags/{tagId}")
     private ResponseEntity<String> deleteTagForTask(@PathVariable Long id, @PathVariable Long tagId){
-        return ResponseEntity.ok(tagService.removeTagFromTask(id, tagId));
+        tagService.removeTagFromTask(id, tagId);
+        return ResponseEntity.noContent().build();
     }
 }

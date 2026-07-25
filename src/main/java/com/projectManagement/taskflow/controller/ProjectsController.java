@@ -1,10 +1,13 @@
 package com.projectManagement.taskflow.controller;
 
-import com.projectManagement.taskflow.dto.TaskRequestDTO;
+import com.projectManagement.taskflow.dto.*;
 import com.projectManagement.taskflow.entity.ProjectEntity;
-import com.projectManagement.taskflow.entity.TaskEntity;
 import com.projectManagement.taskflow.entity.UserEntity;
+import com.projectManagement.taskflow.enums.Priority;
 import com.projectManagement.taskflow.enums.RoleInProject;
+import com.projectManagement.taskflow.enums.Status;
+import com.projectManagement.taskflow.mapper.ProjectMapper;
+import com.projectManagement.taskflow.mapper.TaskMapper;
 import com.projectManagement.taskflow.repository.ProjectRepo;
 import com.projectManagement.taskflow.repository.TaskRepo;
 import com.projectManagement.taskflow.service.AuthService;
@@ -15,11 +18,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RequestMapping("/api/projects")
 @RestController
@@ -30,6 +36,9 @@ public class ProjectsController {
 
     @Autowired
     private TaskService taskService;
+
+    @Autowired
+    private TaskMapper taskMapper;
 
     @Autowired
     private ProjectRepo projectRepo;
@@ -43,25 +52,39 @@ public class ProjectsController {
     @Autowired
     private AuthService authService;
 
+    @Autowired
+    private ProjectMapper projectMapper;
+
     @GetMapping
     public List<ProjectEntity> getProjects(){
         return projectRepo.findAll();
     }
 
+    @GetMapping("/all")
+    public ResponseEntity<List<ProjectResponseDto>> getAllProjects(){
+        List<ProjectResponseDto> dtos = projectRepo.findAll().stream().map(projectMapper::toDto).collect(Collectors.toList());
+        return ResponseEntity.ok(dtos);
+    }
+
     @PostMapping
+    public ResponseEntity<ProjectResponseDto> createProject(@RequestBody ProjectRequestDto project){
+        return ResponseEntity.status(HttpStatus.CREATED).body(projectService.createProject(project));
+    }
+
+    @PostMapping("/all")
     public ResponseEntity<String> postProjects(@RequestBody List<ProjectEntity> projects){
         projectRepo.saveAll(projects);
         return ResponseEntity.status(HttpStatus.CREATED).body("Projects Created");
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ProjectEntity> getOneProject(@PathVariable Long id){
+    public ResponseEntity<ProjectResponseDto> getOneProject(@PathVariable Long id){
         return ResponseEntity.ok(projectService.getProjectById(id));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<String> createOrUpdateProject(@PathVariable Long id, @RequestBody ProjectEntity project){
-        projectService.createProject(project);
+    public ResponseEntity<String> updateProject(@PathVariable Long id, @RequestBody ProjectRequestDto project){
+        projectService.updateProject(id, project);
         return ResponseEntity.status(HttpStatus.CREATED).body("Project Created");
     }
 
@@ -76,40 +99,59 @@ public class ProjectsController {
     //    TODO: user fetching logic is incorrect
     //        "EDITOR" just send this nothing more than it
     @PostMapping("/{id}/members")
-    public ResponseEntity<String> addProjectPerMember(@PathVariable Long id, @RequestBody RoleInProject role){
-        UserEntity user = userService.findByUsername("Aditya");
-        projectService.addMember(id,user.getId(),role);
-        return ResponseEntity.ok("Member added to the Project with id "+ id);
+    public ResponseEntity<String> addProjectPerMember(@PathVariable Long id, @RequestBody AssigningUserRequestDto dto){
+        projectService.addMember(id, dto.getUserId(), dto.getRoleInProject());
+        return ResponseEntity.status(HttpStatus.CREATED).body(null);
     }
 
-    @DeleteMapping("/{id}/members/{userId}")
-    public ResponseEntity<String> deleteProjectForMember(@PathVariable Long id, @PathVariable Long userId){
-        projectService.removeMember(userId, id);
-        return ResponseEntity.ok("Member removed from Project");
+    @DeleteMapping("/{id}/members/{memberId}")
+    public ResponseEntity<String> deleteProjectForMember(@PathVariable Long id, @PathVariable Long memberId){
+        projectService.removeMember(memberId);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/{id}/tasks")
-    public Page<TaskEntity> getAllTaskOfProject(@RequestParam(defaultValue = "0") int page
+    public Page<TaskResponseDto> getAllTaskOfProject(@RequestParam(defaultValue = "0") int page
             , @RequestParam(defaultValue = "10") int size
             , @PathVariable Long id){
         Pageable pageable = PageRequest.of(page, size);
         return taskService.listTasksByProject(id, pageable);
     }
 
-    @PostMapping("/{id}/tasks")
-    public List<TaskEntity> postAllTaskOfProject(@PathVariable Long id,
-                                                 @RequestBody List<TaskRequestDTO> tasks){
-//        id = projectId here
-        UserEntity user = authService.getCurrentUser();
-        tasks.forEach((task)-> taskService.createTask(id,task,user));
-        return taskRepo.findByProject_id(id);
+    @PostMapping("/{projectId}/tasks")
+    public List<TaskResponseDto> postAllTaskOfProject(@PathVariable Long projectId,
+                                                      @RequestBody List<TaskRequestDTO> tasks){
+
+        tasks.forEach((task)-> taskService.createTask(projectId,task));
+        List<TaskResponseDto> tasksDto = taskRepo.findByProject_id(projectId)
+                .stream()
+                .map(task-> taskMapper.toDto(task))
+                .collect(Collectors.toList());
+
+        return tasksDto;
     }
 
-    @GetMapping("/user/{userId}")
-    private Page<ProjectEntity> getProjectsForUser(@PathVariable Long userId,
-                                                   @RequestParam(defaultValue = "0") int size,
-                                                   @RequestParam(defaultValue = "10") int page) {
-        Pageable pageable = PageRequest.of(page,size);
-        return projectService.listProjectsForUser(userId, pageable);
+    @GetMapping("/users/{projectId}")
+    public List<ProjectMemberResponseDto> getAllUsersForAProject(@PathVariable Long projectId ){
+        return projectService.listMembersOnAProject(projectId);
+    }
+
+//    @GetMapping("/user/{userId}")
+//    private Page<ProjectResponseDto> getProjectsForUser(@PathVariable Long userId,
+//                                                   @RequestParam(defaultValue = "0") int size,
+//                                                   @RequestParam(defaultValue = "10") int page) {
+//        Pageable pageable = PageRequest.of(page,size);
+//        return projectService.listProjectsForUser(userId, pageable);
+//    }
+
+    @GetMapping("/user")
+    private Page<ProjectResponseDto> getProjectsForCurrentUser(
+            @RequestParam(required = false) Status status,
+            @RequestParam(required = false) Priority priority,
+            @RequestParam(required = false) String name,
+            @PageableDefault(sort = "id", direction = Sort.Direction.DESC)
+            Pageable pageable){
+        UserEntity user = authService.getCurrentUser();;
+        return projectService.listProjectsForUser(user.getId(), status, priority, name, pageable);
     }
 }
