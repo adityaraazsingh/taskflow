@@ -3,7 +3,9 @@ package com.projectManagement.taskflow.controller;
 import com.projectManagement.taskflow.dto.*;
 import com.projectManagement.taskflow.entity.ProjectEntity;
 import com.projectManagement.taskflow.entity.UserEntity;
+import com.projectManagement.taskflow.enums.Priority;
 import com.projectManagement.taskflow.enums.RoleInProject;
+import com.projectManagement.taskflow.enums.Status;
 import com.projectManagement.taskflow.mapper.ProjectMapper;
 import com.projectManagement.taskflow.mapper.TaskMapper;
 import com.projectManagement.taskflow.repository.ProjectRepo;
@@ -134,19 +136,22 @@ public class ProjectsController {
         return projectService.listMembersOnAProject(projectId);
     }
 
-    @GetMapping("/user/{userId}")
-    private Page<ProjectResponseDto> getProjectsForUser(@PathVariable Long userId,
-                                                   @RequestParam(defaultValue = "0") int size,
-                                                   @RequestParam(defaultValue = "10") int page) {
-        Pageable pageable = PageRequest.of(page,size);
-        return projectService.listProjectsForUser(userId, pageable);
-    }
+//    @GetMapping("/user/{userId}")
+//    private Page<ProjectResponseDto> getProjectsForUser(@PathVariable Long userId,
+//                                                   @RequestParam(defaultValue = "0") int size,
+//                                                   @RequestParam(defaultValue = "10") int page) {
+//        Pageable pageable = PageRequest.of(page,size);
+//        return projectService.listProjectsForUser(userId, pageable);
+//    }
 
     @GetMapping("/user")
     private Page<ProjectResponseDto> getProjectsForCurrentUser(
+            @RequestParam(required = false) Status status,
+            @RequestParam(required = false) Priority priority,
+            @RequestParam(required = false) String name,
             @PageableDefault(sort = "id", direction = Sort.Direction.DESC)
             Pageable pageable){
         UserEntity user = authService.getCurrentUser();;
-        return projectService.listProjectsForUser(user.getId(), pageable);
+        return projectService.listProjectsForUser(user.getId(), status, priority, name, pageable);
     }
 }

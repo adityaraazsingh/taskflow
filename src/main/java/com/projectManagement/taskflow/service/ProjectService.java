@@ -6,11 +6,14 @@ import com.projectManagement.taskflow.dto.ProjectResponseDto;
 import com.projectManagement.taskflow.dto.UserResponseDto;
 import com.projectManagement.taskflow.entity.ProjectEntity;
 import com.projectManagement.taskflow.entity.ProjectMember;
+import com.projectManagement.taskflow.enums.Priority;
 import com.projectManagement.taskflow.enums.RoleEnum;
 import com.projectManagement.taskflow.enums.RoleInProject;
 import com.projectManagement.taskflow.entity.UserEntity;
+import com.projectManagement.taskflow.enums.Status;
 import com.projectManagement.taskflow.exception.ProjectNotFoundException;
 import com.projectManagement.taskflow.exception.UserNotFoundException;
+import com.projectManagement.taskflow.filter.ProjectSpecification;
 import com.projectManagement.taskflow.mapper.ProjectMapper;
 import com.projectManagement.taskflow.mapper.ProjectMemberMapper;
 import com.projectManagement.taskflow.repository.ProjectMemberRepo;
@@ -20,6 +23,7 @@ import com.projectManagement.taskflow.repository.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -53,7 +57,7 @@ public class ProjectService {
     @Autowired
     private TaskRepo taskRepo;
 
-//TODO: createProject(ProjectEntity project, UserEntity owner) See what it is
+    //TODO: createProject(ProjectEntity project, UserEntity owner) See what it is
     public ProjectResponseDto createProject(ProjectRequestDto dto){
         ProjectEntity entity = new ProjectEntity();
         UserEntity creator = authService.getCurrentUser();
@@ -76,16 +80,23 @@ public class ProjectService {
         );
     }
 
-    public Page<ProjectResponseDto> listProjectsForUser(Long userId, Pageable pageable){
+    public Page<ProjectResponseDto> listProjectsForUser(
+            Long userId,
+            Status status,
+            Priority priority,
+            String name,
+            Pageable pageable) {
+
         UserEntity user = authService.getCurrentUser();
-        Page<ProjectEntity> entity;
-        if(user.getRole() == RoleEnum.ADMIN){
-            entity = projectRepo.findAll(pageable);
-            return entity.map(projectMapper::toDto);
-        }else{
-            entity = projectRepo.findByUser_id(userId,pageable);
-            return entity.map(projectMapper::toDto);
-        }
+
+        boolean isAdmin = user.getRole() == RoleEnum.ADMIN;
+
+        Specification<ProjectEntity> spec = ProjectSpecification.filterProjects(
+                userId, status, priority, name, isAdmin);
+
+        Page<ProjectEntity> entity = projectRepo.findAll(spec, pageable);
+
+        return entity.map(projectMapper::toDto);
     }
 
     public ProjectResponseDto updateProject(Long id, ProjectRequestDto dto){

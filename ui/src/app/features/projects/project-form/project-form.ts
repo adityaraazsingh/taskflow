@@ -16,6 +16,7 @@ export class ProjectForm implements OnInit {
 
   selectedColor = signal('indigo');
   submitting = signal(false);
+  showBackdrop = signal(true);
 
   colors = [
     { value: 'indigo', class: 'bg-indigo-500', ring: 'ring-indigo-500' },

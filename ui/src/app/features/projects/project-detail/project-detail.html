@@ -172,8 +172,9 @@
 </div>
 }
 
+<!-- Edit Project Modal (project-form has its own backdrop) -->
 @if(editingProject){
-<app-project-form [project]="project()!"></app-project-form>
+<app-project-form (closeDialog)="onEditingProject()" [project]="project()!"></app-project-form>
 }
 
 @if(deletingProject){

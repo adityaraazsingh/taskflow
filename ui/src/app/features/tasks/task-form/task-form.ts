@@ -42,7 +42,7 @@ export class TaskForm implements OnInit{
   }
 
   closingAddingTaskDialog($event: any) {
-    this.closeDialog.emit($event);
+    this.closeDialog.emit();
   }
 
   submitTaskForm() {
@@ -62,7 +62,7 @@ export class TaskForm implements OnInit{
 
       this.taskService.updateTaskById(this.task()!.id! , this.task()!).subscribe(
         (next)=>{
-          window.alert("Updated Sucessfully");
+          this.closeDialog.emit();
         }
       );
 
@@ -78,12 +78,11 @@ export class TaskForm implements OnInit{
       // Create new task
       this.taskService.createTask(this.projectId()!, payload).subscribe(
         (next) => {
-          window.alert("Task created successfully");
+          this.closeDialog.emit();
         },
         (error) => {
           console.log(error);
         }
-  
       );
     }
   }

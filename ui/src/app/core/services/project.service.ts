@@ -8,6 +8,7 @@ import { PageResponse } from "../models/PageResponse";
 import { UserModel } from "../models/user.model";
 import { assigningUserRequestDto } from "../models/assigningUserRequestDto";
 import { projectMemberResponseDto } from "../models/projectMemberResponseDto";
+import { Status } from "../enums/Status";
 
 @Injectable({
     providedIn:'root'
@@ -65,15 +66,24 @@ export class ProjectService{
     public getProjectsForUser(userId : number, page : number, size : number){
         let params = new HttpParams()
             .set('page', page.toString())
-            .set('size', size.toString()); 
+            .set('size', size.toString()) 
+            
         return this.httpClient.get<ProjectModel[]>(`${this.url}/user/${userId}`, {params});
     }
 
-    public getProjectsForCurrentUser(page : number, size : number){
+    public getProjectsForCurrentUser(page : number, size : number, order : 'asc'|'desc', status : Status |null){
         let params = new HttpParams()
             .set('page', page.toString())
-            .set('size', size.toString()); 
-        return this.httpClient.get<PageResponse<ProjectModel>>(`${this.url}/user`, {params});
+            .set('size', size.toString())
+            .set('sort', 'id,'+order.toString())
+        console.log(status)
+        if(status){
+            params = params.set('status',status!.toString()); 
+            return this.httpClient.get<PageResponse<ProjectModel>>(`${this.url}/user`, {params});
+        }
+        else{
+            return this.httpClient.get<PageResponse<ProjectModel>>(`${this.url}/user`, {params});
+        }
     }
 
 }
