@@ -17,6 +17,7 @@ import { ProfileService } from '../../core/services/profileService';
 })
 export class Profile {
   user! : UserModel;
+  profile= signal<ProfileModel | null>(null);
   loading = signal(true);
   isPasswordSame = signal(false);
 
@@ -45,7 +46,8 @@ export class Profile {
     this.profileService.getProfileByUserId(this.user.id!).subscribe(
       (next)=>{
         console.log(next),
-        this.profileForm.patchValue(next)
+        this.profileForm.patchValue(next),
+        this.profile.set(next);
       }
     )
   }

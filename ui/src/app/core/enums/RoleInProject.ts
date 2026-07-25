@@ -1,5 +1,5 @@
 export enum RoleInProject{
-    OWNER,
-    EDITOR,
-    VIEWER
+    OWNER="OWNER",
+    EDITOR="EDITOR",
+    VIEWER="VIEWER"
 }

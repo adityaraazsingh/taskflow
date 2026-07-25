@@ -40,6 +40,7 @@ export class Login {
       this.authService.login(payload).subscribe({
         next : (response) => {
           localStorage.setItem("Token" , response.token);
+          this.authService.checkIfUserLoggedIn()
           this.router.navigate(['/dashboard']);
         },
         error : (error) => {

@@ -11,5 +11,5 @@ import java.util.Optional;
 public interface ProjectMemberRepo extends JpaRepository<ProjectMember, Long> {
     ProjectMember findByUser_idAndProject_id(Long userId, Long projectId);
 
-    Optional<ProjectMember> findAllByProject_id(Long projectId);
+    List<ProjectMember> findAllByProject_id(Long projectId);
 }

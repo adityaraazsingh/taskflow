@@ -3,8 +3,10 @@ package com.projectManagement.taskflow.service;
 import com.projectManagement.taskflow.dto.ProjectMemberResponseDto;
 import com.projectManagement.taskflow.dto.ProjectRequestDto;
 import com.projectManagement.taskflow.dto.ProjectResponseDto;
+import com.projectManagement.taskflow.dto.UserResponseDto;
 import com.projectManagement.taskflow.entity.ProjectEntity;
 import com.projectManagement.taskflow.entity.ProjectMember;
+import com.projectManagement.taskflow.enums.RoleEnum;
 import com.projectManagement.taskflow.enums.RoleInProject;
 import com.projectManagement.taskflow.entity.UserEntity;
 import com.projectManagement.taskflow.exception.ProjectNotFoundException;
@@ -46,6 +48,9 @@ public class ProjectService {
     private ProjectMemberMapper projectMemberMapper;
 
     @Autowired
+    private UserService userService;
+
+    @Autowired
     private TaskRepo taskRepo;
 
 //TODO: createProject(ProjectEntity project, UserEntity owner) See what it is
@@ -72,8 +77,15 @@ public class ProjectService {
     }
 
     public Page<ProjectResponseDto> listProjectsForUser(Long userId, Pageable pageable){
-        Page<ProjectEntity> entity = projectRepo.findByUser_id(userId,pageable);
-        return entity.map(projectMapper::toDto);
+        UserEntity user = authService.getCurrentUser();
+        Page<ProjectEntity> entity;
+        if(user.getRole() == RoleEnum.ADMIN){
+            entity = projectRepo.findAll(pageable);
+            return entity.map(projectMapper::toDto);
+        }else{
+            entity = projectRepo.findByUser_id(userId,pageable);
+            return entity.map(projectMapper::toDto);
+        }
     }
 
     public ProjectResponseDto updateProject(Long id, ProjectRequestDto dto){
@@ -114,15 +126,21 @@ public class ProjectService {
         return "User added successfully";
     }
 
-    public boolean removeMember(Long projectId, Long userId){
+    public boolean removeMember(Long memberId){
         UserEntity requester = authService.getCurrentUser();
-
-        ProjectMember projectMember = projectMemberRepo.findByUser_idAndProject_id(userId , projectId);
-        projectMemberRepo.delete(projectMember);
+        projectMemberRepo.deleteById(memberId);
         return true;
     }
 
-    public List<ProjectMemberResponseDto> listMembers(Long projectId){
+    public List<UserResponseDto> listAllUsersOnAProject(Long projectId){
+        List<ProjectMemberResponseDto> projectMembersDto = listMembersOnAProject(projectId);
+        List<UserResponseDto> userDtos = projectMembersDto.stream()
+                .map((member)->userService.findById(member.getUser().getId()))
+                .collect(Collectors.toList());
+        return userDtos;
+    }
+
+    public List<ProjectMemberResponseDto> listMembersOnAProject(Long projectId){
         return projectMemberRepo.findAllByProject_id(projectId)
                 .stream()
                 .map(projectMemberMapper::toDto)

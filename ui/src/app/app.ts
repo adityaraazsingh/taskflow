@@ -14,17 +14,19 @@ export class App {
   protected sidebarOpen = false;
   router = inject(Router);
 
-  user!: UserModel;
+  user = signal<UserModel | null>(null);
   loading = signal(true);
   constructor(private authService: AuthService) {
-    // this.authService.me().subscribe(
-    //   (next) => {
-    //     console.log("Users is laoded ", next);
-    //     this.user = next;
-    //     this.user.createdAt = new Date(this.user.createdAt!);
-    //     this.loading.set(false);
-    //   }
-    // )
+    if(authService.isUserLoggedIn()){
+      this.authService.me().subscribe(
+        (next) => {
+          console.log("Users is laoded ", next);
+          this.user.set(next);
+          this.user()!.createdAt = new Date(this.user()!.createdAt!);
+          this.loading.set(false);
+        }
+      )
+    }
   }
 
   protected toggleSidebar(): void {

@@ -17,8 +17,8 @@ export class Dashboard {
   addingProject : boolean = false;
   router = inject(Router);
   constructor(private projectService : ProjectService){
-    this.projectService.getAllProject().subscribe(
-      next => { this.projects.set(next) }
+    this.projectService.getProjectsForCurrentUser(0,20).subscribe(
+      next => { this.projects.set(next.content) }
     )
   }
 
