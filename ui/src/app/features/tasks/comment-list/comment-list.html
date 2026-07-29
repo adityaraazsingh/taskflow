@@ -4,7 +4,7 @@
     <span class="inline-flex items-center justify-center size-6 rounded-md bg-gray-100 text-xs font-semibold text-gray-600">4</span>
   </div>
 
-  @for (comment of comments(); track $index) {
+  @for (comment of allComments(); track $index) {
     <div class="flex gap-3">
       <div class="size-9 rounded-full bg-gradient-to-br from-indigo-400 to-purple-500 flex items-center justify-center text-sm font-semibold text-white flex-shrink-0 shadow-sm">AK</div>
       <div class="flex-1 min-w-0">

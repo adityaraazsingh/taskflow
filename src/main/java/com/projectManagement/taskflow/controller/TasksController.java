@@ -16,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.config.Task;
 import org.springframework.web.bind.annotation.*;
 
@@ -40,6 +41,19 @@ public class TasksController {
 
     @Autowired
     private TaskRepo taskRepo;
+
+    @Autowired
+    private SimpMessagingTemplate messagingTemplate;
+
+    @PostMapping("/{id}/comments")
+    public ResponseEntity<String> postCommentsForTask(@PathVariable Long id,
+                                                      @RequestBody List<CommentRequestDTO> comments){
+        comments.forEach((comment)-> {
+            CommentResponseDto dto = commentService.addComment(id, comment);
+            messagingTemplate.convertAndSend("/topic/comments", dto);
+        });
+        return ResponseEntity.status(HttpStatus.CREATED).body(null);
+    }
 
     @PostMapping("/project/{projectId}")
     public ResponseEntity<TaskResponseDto> createTask(@RequestBody TaskRequestDTO dto, @PathVariable Long projectId){
@@ -89,12 +103,7 @@ public class TasksController {
         return commentService.listCommentsForTask(id, pageable);
     }
 
-    @PostMapping("/{id}/comments")
-    public ResponseEntity<String> postCommentsForTask(@PathVariable Long id,
-                                                      @RequestBody List<CommentRequestDTO> comments){
-        comments.forEach((comment)-> commentService.addComment(id,comment));
-        return ResponseEntity.status(HttpStatus.CREATED).body(null);
-    }
+
 
     @PostMapping("/{id}/tags/{tagId}")
     private ResponseEntity<String> addTasksPerTags(@PathVariable Long id, @PathVariable Long tagId) {
