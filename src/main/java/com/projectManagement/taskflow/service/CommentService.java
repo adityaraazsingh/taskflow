@@ -39,14 +39,14 @@ public class CommentService {
     @Autowired
     private TaskRepo taskRepo;
 
-    public String addComment(Long taskId, CommentRequestDTO commentDTO){
+    public CommentResponseDto addComment(Long taskId, CommentRequestDTO commentDTO){
         UserEntity author = authService.getCurrentUser();
         TaskEntity task = taskRepo.findById(taskId).orElseThrow(() ->
                 new TaskNotFoundException("Task not found")
         );
         CommentEntity comment =  commentMapper.toEntity(commentDTO, author, task); ;
-        commentRepo.save(comment);
-        return "Comment Added Succesfully";
+
+        return commentMapper.toDto(commentRepo.save(comment));
     }
 
 //  TODO : make this pageable also
