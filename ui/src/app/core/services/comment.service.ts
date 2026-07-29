@@ -2,7 +2,8 @@ import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { environment } from "../../environment";
 import SockJS from 'sockjs-client';
-import { Client, over } from 'stompjs';
+// import { Client, over } from 'stompjs';
+import Stomp from 'stompjs';
 import { CommentModel } from "../models/comment.model";
 
 @Injectable({
@@ -13,12 +14,12 @@ export class CommentService{
     url : string = environment.apiUrl + '/comments';
     constructor(private httpClient:HttpClient){}
 
-    private stompClient: Client | null = null;
+    private stompClient: Stomp.Client | null = null;
     
 
     connect(onCommentReceived: (comment: CommentModel) => void) {
         const socket = new SockJS('http://localhost:8080/ws'); // backend endpoint
-        this.stompClient = over(socket);
+        this.stompClient = Stomp.over(socket);
 
         this.stompClient.connect(
             { Authorization: 'Bearer ' + localStorage.getItem('token') }, () => {
