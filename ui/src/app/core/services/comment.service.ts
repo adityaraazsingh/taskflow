@@ -15,6 +15,8 @@ import { CommentModel } from "../models/comment.model";
 
 export class CommentService {
   url: string = environment.apiUrl + '/comments';
+  apiUrl = environment.apiUrl;
+
 
   constructor(private httpClient: HttpClient) {}
 
@@ -23,10 +25,10 @@ export class CommentService {
   connect(onCommentReceived: (comment: CommentModel) => void) {
     this.stompClient = new Client({
       // If your backend supports raw WebSocket:
-      brokerURL: 'ws://localhost:8080/ws',
+      brokerURL: environment.brokerUrl,
 
       // If you need SockJS fallback:
-      webSocketFactory: () => new SockJS('http://localhost:8080/ws'),
+      webSocketFactory: () => new SockJS(environment.wsUrl),
 
       connectHeaders: {
         Authorization: 'Bearer ' + localStorage.getItem('token'),
