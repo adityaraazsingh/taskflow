@@ -1,6 +1,7 @@
 package com.projectManagement.taskflow.security;
 
 import com.projectManagement.taskflow.enums.RoleEnum;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
@@ -42,5 +43,13 @@ public class JwtUtil {
         return username.equals(extractUsername(token));
     }
 
+
+    public Claims parseClaims(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(getSignKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+    }
 
 }
