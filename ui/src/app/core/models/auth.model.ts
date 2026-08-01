@@ -1,5 +1,6 @@
 export interface AuthModel{
     username : string;
-    token : string;
+    accessToken : string;
+    refreshToken : string;
     role :  'ADMIN'|'USER';
 }

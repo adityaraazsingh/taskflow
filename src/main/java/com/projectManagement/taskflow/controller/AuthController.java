@@ -9,9 +9,12 @@ import com.projectManagement.taskflow.security.JwtUtil;
 import com.projectManagement.taskflow.service.AuthService;
 import com.projectManagement.taskflow.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -22,6 +25,9 @@ public class AuthController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private JwtUtil jwtUtil;
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@RequestBody LoginCredentials loginCredentials){
@@ -37,4 +43,22 @@ public class AuthController {
     public ResponseEntity<Boolean> changePassword(@RequestBody ChangePasswordRequestDto changePasswordRequest){
         return ResponseEntity.ok(userService.changePassword(changePasswordRequest));
     }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<?> refreshToken(@RequestBody Map<String, String> request) {
+        String refreshToken = request.get("refreshToken");
+        try {
+            String username = jwtUtil.extractUsername(refreshToken);
+            if (!jwtUtil.isTokenExpired(refreshToken)) {
+                // generate new access token
+                String newAccessToken = jwtUtil.generateTokens(username, RoleEnum.USER).get("accessToken");
+                return ResponseEntity.ok(Map.of("accessToken", newAccessToken));
+            } else {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Refresh token expired");
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid refresh token");
+        }
+    }
+
 }

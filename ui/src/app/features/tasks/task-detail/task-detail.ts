@@ -110,6 +110,7 @@ export class TaskDetail implements OnInit {
     this.taskService.getCommentsForTask(this.task.id!, 0, 20).subscribe(
       (data) => {
         this.comments.set(data.content)
+        console.log(data)
       }
     )
   }

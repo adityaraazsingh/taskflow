@@ -39,7 +39,8 @@ export class Login {
       console.log(payload);
       this.authService.login(payload).subscribe({
         next : (response) => {
-          localStorage.setItem("Token" , response.token);
+          localStorage.setItem("accessToken" , response.accessToken);
+          localStorage.setItem("refreshToken" , response.refreshToken);
           this.authService.checkIfUserLoggedIn()
           this.router.navigate(['/dashboard']);
         },

@@ -21,7 +21,7 @@ export class AuthService implements OnInit{
     }
 
     checkIfUserLoggedIn(){
-        const isLoggedIn = !!localStorage.getItem('Token'); 
+        const isLoggedIn = !!localStorage.getItem('accessToken'); 
         if (isLoggedIn) {
             this.isUserLoggedIn.set(true);
         } else {
@@ -41,6 +41,13 @@ export class AuthService implements OnInit{
     public me(){
         return this.httpClient.get<UserModel>(
             `${this.url}/auth/me`
+        );
+    }
+
+    public refresh(){
+        const refreshToken = localStorage.getItem("refreshToken");
+        return this.httpClient.post<AuthModel>(
+            `${this.url}/auth/refresh`, {"refreshToken" : refreshToken}
         );
     }
 

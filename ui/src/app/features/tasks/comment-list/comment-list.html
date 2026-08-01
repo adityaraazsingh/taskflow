@@ -1,19 +1,20 @@
 <div class="bg-white rounded-2xl ring-1 ring-gray-200 p-6 sm:p-8">
   <div class="flex items-center justify-between mb-6">
     <h2 class="text-lg font-semibold text-gray-900">Comments</h2>
-    <span class="inline-flex items-center justify-center size-6 rounded-md bg-gray-100 text-xs font-semibold text-gray-600">4</span>
+    <span class="inline-flex items-center justify-center size-6 rounded-md bg-gray-100 text-xs font-semibold text-gray-600">{{allComments().length}}</span>
   </div>
 
-  @for (comment of allComments(); track $index) {
-    <div class="flex gap-3">
-      <div class="size-9 rounded-full bg-gradient-to-br from-indigo-400 to-purple-500 flex items-center justify-center text-sm font-semibold text-white flex-shrink-0 shadow-sm">AK</div>
+  @for (comment of allComments(); track $index ) {
+    <div class="flex gap-3" (click)="replyingToAComment(comment.id!)" 
+    [ngClass]="isReplying()===comment.id?'text-yellow-500' : 'text-blue-500'">
+      <div class="size-9 rounded-full bg-gradient-to-br from-indigo-400 to-purple-500 flex items-center justify-center text-sm font-semibold text-white flex-shrink-0 shadow-sm">{{comment.name?.substring(0,2)?.toUpperCase()}}</div>
       <div class="flex-1 min-w-0">
         <div class="bg-gray-50 rounded-xl p-4">
           <div class="flex items-center justify-between mb-1.5">
             <div class="flex items-center gap-2">
-              <span class="text-sm font-semibold text-gray-900">Alex Kim</span>
+              <span class="text-sm font-semibold text-gray-900">{{comment.name}}</span>
               <span class="text-xs text-gray-400">·</span>
-              <span class="text-xs text-gray-400">2 hours ago</span>
+              <span class="text-xs text-gray-400">{{comment.createdAt | amTimeAgo : true}}</span>
             </div>
             <button class="p-1 rounded text-gray-400 hover:text-rose-500 hover:bg-gray-200 transition-colors opacity-0 group-hover:opacity-100">
               <svg class="size-3.5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
@@ -27,110 +28,31 @@
     </div>
   }
 
-  <!-- Comment List -->
-  <div class="space-y-5 mb-8">
-    <!-- Comment -->
-    <div class="flex gap-3">
-      <div class="size-9 rounded-full bg-gradient-to-br from-indigo-400 to-purple-500 flex items-center justify-center text-sm font-semibold text-white flex-shrink-0 shadow-sm">AK</div>
-      <div class="flex-1 min-w-0">
-        <div class="bg-gray-50 rounded-xl p-4">
-          <div class="flex items-center justify-between mb-1.5">
-            <div class="flex items-center gap-2">
-              <span class="text-sm font-semibold text-gray-900">Alex Kim</span>
-              <span class="text-xs text-gray-400">·</span>
-              <span class="text-xs text-gray-400">2 hours ago</span>
-            </div>
-            <button class="p-1 rounded text-gray-400 hover:text-rose-500 hover:bg-gray-200 transition-colors opacity-0 group-hover:opacity-100">
-              <svg class="size-3.5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          </div>
-          <p class="text-sm text-gray-600 leading-relaxed">I've started working on the token validation logic. Going with RS256 since it's more secure for distributed systems. Will also add refresh token support.</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- Comment -->
-    <div class="flex gap-3">
-      <div class="size-9 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center text-sm font-semibold text-white flex-shrink-0 shadow-sm">JR</div>
-      <div class="flex-1 min-w-0">
-        <div class="bg-gray-50 rounded-xl p-4">
-          <div class="flex items-center justify-between mb-1.5">
-            <div class="flex items-center gap-2">
-              <span class="text-sm font-semibold text-gray-900">Jane Rivera</span>
-              <span class="text-xs text-gray-400">·</span>
-              <span class="text-xs text-gray-400">Yesterday at 4:30 PM</span>
-            </div>
-            <button class="p-1 rounded text-gray-400 hover:text-rose-500 hover:bg-gray-200 transition-colors opacity-0 group-hover:opacity-100">
-              <svg class="size-3.5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          </div>
-          <p class="text-sm text-gray-600 leading-relaxed">Great choice! Make sure to add the public key endpoint so other services can verify tokens too. I can help with the API documentation if needed.</p>
-        </div>
-        <div class="flex items-center gap-2 mt-1.5 ml-2">
-          <button class="text-xs text-gray-400 hover:text-indigo-500 transition-colors flex items-center gap-1">
-            <svg class="size-3.5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M9 15L3 9m0 0l6-6M3 9h12a6 6 0 010 12h-3" />
-            </svg>
-            Reply
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Nested Reply -->
-    <div class="ml-12 flex gap-3">
-      <div class="size-9 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-sm font-semibold text-white flex-shrink-0 shadow-sm">AK</div>
-      <div class="flex-1 min-w-0">
-        <div class="bg-amber-50/50 rounded-xl p-4 ring-1 ring-amber-100">
-          <div class="flex items-center justify-between mb-1.5">
-            <div class="flex items-center gap-2">
-              <span class="text-sm font-semibold text-gray-900">Alex Kim</span>
-              <span class="text-xs text-gray-400">·</span>
-              <span class="text-xs text-gray-400">Yesterday at 5:15 PM</span>
-            </div>
-          </div>
-          <p class="text-sm text-gray-600 leading-relaxed">Thanks Jane! That would be really helpful. I'll set up the JWKS endpoint today and share the spec with you.</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- Comment -->
-    <div class="flex gap-3">
-      <div class="size-9 rounded-full bg-gradient-to-br from-sky-400 to-blue-500 flex items-center justify-center text-sm font-semibold text-white flex-shrink-0 shadow-sm">ML</div>
-      <div class="flex-1 min-w-0">
-        <div class="bg-gray-50 rounded-xl p-4">
-          <div class="flex items-center justify-between mb-1.5">
-            <div class="flex items-center gap-2">
-              <span class="text-sm font-semibold text-gray-900">Mike Lee</span>
-              <span class="text-xs text-gray-400">·</span>
-              <span class="text-xs text-gray-400">3 days ago</span>
-            </div>
-            <button class="p-1 rounded text-gray-400 hover:text-rose-500 hover:bg-gray-200 transition-colors opacity-0 group-hover:opacity-100">
-              <svg class="size-3.5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          </div>
-          <p class="text-sm text-gray-600 leading-relaxed">Should we also add rate limiting to the auth endpoints? Could be important for preventing brute force attacks.</p>
-        </div>
-        <div class="flex items-center gap-2 mt-1.5 ml-2">
-          <button class="text-xs text-gray-400 hover:text-indigo-500 transition-colors flex items-center gap-1">
-            <svg class="size-3.5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M9 15L3 9m0 0l6-6M3 9h12a6 6 0 010 12h-3" />
-            </svg>
-            Reply
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-
   <!-- Add Comment Form -->
   <div class="border-t border-gray-100 pt-5">
+    <div (click)="onCanclingReply()">
+      @if(isReplying()!=-1){
+        <div style="border: 1px black;">
+          <div class="flex-1 min-w-0">
+            <div class="bg-gray-50 rounded-xl p-4">
+              <div class="flex items-center justify-between mb-1.5">
+                <div class="flex items-center gap-2">
+                  <span class="text-sm font-semibold text-gray-900">{{replyingComment?.name}}</span>
+                  <span class="text-xs text-gray-400">·</span>
+                  <span class="text-xs text-gray-400">{{replyingComment?.createdAt | amTimeAgo : true}}</span>
+                </div>
+                <button class="p-1 rounded text-gray-400 hover:text-rose-500 hover:bg-gray-200 transition-colors opacity-0 group-hover:opacity-100">
+                  <svg class="size-3.5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+              <p class="text-sm text-gray-600 leading-relaxed">{{replyingComment?.content}}</p>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
     <div class="flex gap-3">
       <div class="size-9 rounded-full bg-gradient-to-br from-indigo-400 to-purple-500 flex items-center justify-center text-sm font-semibold text-white flex-shrink-0 shadow-sm">U</div>
       <div class="flex-1">

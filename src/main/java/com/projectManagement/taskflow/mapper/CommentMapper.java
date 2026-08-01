@@ -8,6 +8,8 @@ import com.projectManagement.taskflow.entity.TaskEntity;
 import com.projectManagement.taskflow.entity.UserEntity;
 import org.springframework.stereotype.Component;
 
+import java.util.Date;
+
 @Component
 public class CommentMapper {
     public CommentResponseDto toDto(CommentEntity entity){
@@ -17,12 +19,13 @@ public class CommentMapper {
         dto.setName(entity.getName());
         dto.setTaskId(entity.getTask().getId());
         dto.setUserId(entity.getCommentator().getId());
+        dto.setCreatedAt(entity.getCreatedAt());
         return dto;
     }
 
     public CommentEntity toEntity(CommentRequestDTO dto, UserEntity author, TaskEntity task){
         CommentEntity entity = new CommentEntity();
-        entity.setName(dto.getName());
+//        entity.setName(dto.getName());
         entity.setContent(dto.getContent());
         entity.setCommentator(author);
         entity.setTask(task);

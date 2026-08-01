@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.util.Date;
+
 @Data
 @Entity
 public class CommentEntity {
@@ -23,44 +25,11 @@ public class CommentEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private UserEntity commentator;
 
-    public Long getId() {
-        return id;
-    }
+    private Date createdAt;
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
-
-    public TaskEntity getTask() {
-        return task;
-    }
-
-    public void setTask(TaskEntity task) {
-        this.task = task;
-    }
-
-    public UserEntity getCommentator() {
-        return commentator;
-    }
-
-    public void setCommentator(UserEntity commentator) {
-        this.commentator = commentator;
+    @PrePersist
+    protected void createdAt(){
+        createdAt = new Date();
     }
 
     @Override

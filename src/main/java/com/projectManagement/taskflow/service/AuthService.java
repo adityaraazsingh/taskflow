@@ -20,6 +20,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Map;
+
 @Service
 public class AuthService {
 
@@ -60,8 +62,9 @@ public class AuthService {
             RoleEnum role = userRepo.findByUsername(username)
                     .orElseThrow(()->new UserNotFoundException("User not found"))
                     .getRole();
-            authResponse.setToken(jwtUtil.generateToken(
-                    loginCredentials.getUsername(),role));
+            Map<String, String> tokens = jwtUtil.generateTokens(loginCredentials.getUsername(),role);
+            authResponse.setAccessToken(tokens.get("accessToken"));
+            authResponse.setRefreshToken(tokens.get("refreshToken"));
             authResponse.setRole(role);
             authResponse.setUsername(username);
             return authResponse;

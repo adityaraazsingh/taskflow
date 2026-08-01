@@ -34,7 +34,8 @@ export class App {
   }
 
   protected onLogout(): void {
-    localStorage.removeItem('Token');
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
     this.router.navigate(['/login']);
     console.log('Logout clicked');
   }

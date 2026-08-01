@@ -4,6 +4,7 @@ import com.projectManagement.taskflow.dto.CommentRequestDTO;
 import com.projectManagement.taskflow.dto.CommentResponseDto;
 import com.projectManagement.taskflow.dto.TaskRequestDTO;
 import com.projectManagement.taskflow.entity.CommentEntity;
+import com.projectManagement.taskflow.entity.ProfileEntity;
 import com.projectManagement.taskflow.entity.TaskEntity;
 import com.projectManagement.taskflow.entity.UserEntity;
 import com.projectManagement.taskflow.exception.TaskNotFoundException;
@@ -39,12 +40,17 @@ public class CommentService {
     @Autowired
     private TaskRepo taskRepo;
 
+    @Autowired
+    private ProfileService profileService;
+
     public CommentResponseDto addComment(Long taskId, CommentRequestDTO commentDTO){
         UserEntity author = authService.getCurrentUser();
+        ProfileEntity profile = profileService.getProfileByUserId(author.getId());
         TaskEntity task = taskRepo.findById(taskId).orElseThrow(() ->
                 new TaskNotFoundException("Task not found")
         );
-        CommentEntity comment =  commentMapper.toEntity(commentDTO, author, task); ;
+        CommentEntity comment =  commentMapper.toEntity(commentDTO, author, task);
+        comment.setName(profile.getFirstName()+" "+profile.getLastName());
 
         return commentMapper.toDto(commentRepo.save(comment));
     }

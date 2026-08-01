@@ -31,7 +31,7 @@ export class CommentService {
       webSocketFactory: () => new SockJS(environment.wsUrl),
 
       connectHeaders: {
-        Authorization: 'Bearer ' + localStorage.getItem('token'),
+        Authorization: 'Bearer ' + localStorage.getItem('accessToken'),
       },
 
       reconnectDelay: 5000,
