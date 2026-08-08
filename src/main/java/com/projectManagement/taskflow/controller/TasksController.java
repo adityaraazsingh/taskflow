@@ -9,6 +9,7 @@ import com.projectManagement.taskflow.exception.TaskNotFoundException;
 import com.projectManagement.taskflow.mapper.TaskMapper;
 import com.projectManagement.taskflow.repository.TaskRepo;
 import com.projectManagement.taskflow.service.*;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -18,6 +19,7 @@ import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.config.Task;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -45,18 +47,19 @@ public class TasksController {
     @Autowired
     private SimpMessagingTemplate messagingTemplate;
 
-    @PostMapping("/{id}/comments")
-    public ResponseEntity<String> postCommentsForTask(@PathVariable Long id,
-                                                      @RequestBody List<CommentRequestDTO> comments){
+    @PreAuthorize("hasRole('ADMIN') or project_security.isProjectCreatorFromTaskId(#taskId) or project_security.isProjectMemberFromTaskId(#taskId)")
+    @PostMapping("/{taskId}/comments")
+    public ResponseEntity<String> postCommentsForTask(@PathVariable Long taskId,
+                                                      @Valid @RequestBody List<CommentRequestDTO> comments){
         comments.forEach((comment)-> {
-            CommentResponseDto dto = commentService.addComment(id, comment);
+            CommentResponseDto dto = commentService.addComment(taskId, comment);
             messagingTemplate.convertAndSend("/topic/comments", dto);
         });
         return ResponseEntity.status(HttpStatus.CREATED).body(null);
     }
 
     @PostMapping("/project/{projectId}")
-    public ResponseEntity<TaskResponseDto> createTask(@RequestBody TaskRequestDTO dto, @PathVariable Long projectId){
+    public ResponseEntity<TaskResponseDto> createTask(@Valid @RequestBody TaskRequestDTO dto, @PathVariable Long projectId){
         return ResponseEntity.status(HttpStatus.CREATED).body(taskMapper.toDto(taskService.createTask(projectId,dto)));
     }
 
@@ -66,33 +69,37 @@ public class TasksController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<TaskResponseDto> updateTaskById(@PathVariable Long id, @RequestBody TaskRequestDTO updatedTask){
+    public ResponseEntity<TaskResponseDto> updateTaskById(@PathVariable Long id, @Valid @RequestBody TaskRequestDTO updatedTask){
         return ResponseEntity.ok(taskService.updateTask(id, updatedTask));
     }
 
-    @PatchMapping("/{id}/status")
-    public ResponseEntity<String> changeStatusOfTask(@PathVariable Long id,
-                                                     @RequestBody StatusChangeRequestDto status){
-        taskService.updateStatus(id, status.getStatus());
+    @PreAuthorize("hasRole('ADMIN') or tasks_security.isAssignedToTask(#taskId)")
+    @PatchMapping("/{taskId}/status")
+    public ResponseEntity<String> changeStatusOfTask(@PathVariable Long taskId,
+                                                     @Valid @RequestBody StatusChangeRequestDto status){
+        taskService.updateStatus(taskId, status.getStatus());
         return ResponseEntity.ok(null);
     }
 
-    @PatchMapping("/{id}/priority")
-    public ResponseEntity<String> changePriorityOfTask(@PathVariable Long id,
-                                                     @RequestBody PriorityChangeRequestDto dto){
-        taskService.updatePriority(id, dto.getPriority());
+    @PreAuthorize("hasRole('ADMIN') or tasks_security.isAssignedToTask(#taskId) or project_security.isProjectCreatorFromTaskId(#taskId)")
+    @PatchMapping("/{taskId}/priority")
+    public ResponseEntity<String> changePriorityOfTask(@PathVariable Long taskId,
+                                                     @Valid @RequestBody PriorityChangeRequestDto dto){
+        taskService.updatePriority(taskId, dto.getPriority());
         return ResponseEntity.ok(null);
     }
 
-    @PatchMapping("/{id}/assignee")
-    public ResponseEntity<String> changeAssignee(@PathVariable Long id,
-                                                 @RequestBody UserRequestDTO user){
-        return ResponseEntity.ok(taskService.assignTask(id, user));
+    @PreAuthorize("hasRole('ADMIN') or tasks_security.isAssignedToTask(#taskId) or project_security.isProjectCreatorFromTaskId(#taskId)")
+    @PatchMapping("/{taskId}/assignee")
+    public ResponseEntity<String> changeAssignee(@PathVariable Long taskId,
+                                                 @Valid @RequestBody UserRequestDTO user){
+        return ResponseEntity.ok(taskService.assignTask(taskId, user));
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteTask(@PathVariable Long id){
-        return ResponseEntity.ok(taskService.deleteTask(id));
+    @PreAuthorize("hasRole('ADMIN') or tasks_security.isAssignedToTask(#taskId) or project_security.isProjectCreatorFromTaskId(#taskId)")
+    @DeleteMapping("/{taskId}")
+    public ResponseEntity<String> deleteTask(@PathVariable Long taskId){
+        return ResponseEntity.ok(taskService.deleteTask(taskId));
     }
 
     @GetMapping("/{id}/comments")

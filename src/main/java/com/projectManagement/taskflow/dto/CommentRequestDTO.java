@@ -1,22 +1,13 @@
 package com.projectManagement.taskflow.dto;
 
+import jakarta.validation.constraints.NotNull;
+import lombok.Data;
+
+@Data
 public class CommentRequestDTO {
+    @NotNull
     private String name;
+
+    @NotNull
     private String content;
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
 }

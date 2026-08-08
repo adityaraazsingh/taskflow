@@ -13,11 +13,9 @@ import { MomentModule } from 'ngx-moment';
   styleUrl: './comment-list.css',
 })
 export class CommentList {
-  // comments = input<CommentModel[]>([]);
   allComments= signal<CommentModel[]>([]);
   commentText : string = '';
   taskId = input.required<number>();
-  // isReplying = signal<boolean>(false);
   isReplying = signal<number>(-1);
 
   constructor(private taskService : TaskService , private commentService : CommentService){}
@@ -34,6 +32,11 @@ export class CommentList {
         ...current,comment
       ]);
     });
+  }
+
+  ngOnDestroy(): void {
+    this.commentService.disconnect();
+    // console.log("Disconnected from WebSocket");
   }
 
   onClickingComment(){

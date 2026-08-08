@@ -2,6 +2,7 @@ package com.projectManagement.taskflow.controller;
 
 import com.projectManagement.taskflow.entity.ProfileEntity;
 import com.projectManagement.taskflow.repository.ProfileRepo;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,7 +19,7 @@ public class ProfileController {
     }
 
     @PutMapping
-    private ProfileEntity addProfile(@RequestBody ProfileEntity profile){
+    private ProfileEntity addProfile(@Valid @RequestBody ProfileEntity profile){
         return profileRepo.save(profile);
     }
 }

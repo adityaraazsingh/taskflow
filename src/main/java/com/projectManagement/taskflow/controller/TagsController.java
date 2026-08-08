@@ -8,6 +8,7 @@ import com.projectManagement.taskflow.mapper.TagMapper;
 import com.projectManagement.taskflow.repository.TagRepo;
 import com.projectManagement.taskflow.service.TagService;
 import com.projectManagement.taskflow.service.TaskService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -38,7 +39,7 @@ public class TagsController {
 
     //TODO: however it needs improvement;
     @PostMapping
-    private List<TagResponseDto> postTags(@RequestBody List<TagRequestDTO> tags){
+    private List<TagResponseDto> postTags(@Valid @RequestBody List<TagRequestDTO> tags){
         return tagRepo.saveAll(
                 tags.stream().map(tagMapper::toEntity)
                         .collect(Collectors.toList()))

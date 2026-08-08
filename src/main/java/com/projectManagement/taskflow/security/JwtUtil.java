@@ -26,7 +26,7 @@ public class JwtUtil {
                 .setSubject(username)
                 .claim("role", role)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 30)) // 15 min
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 )) // 15 min
                 .signWith(getSignKey(), SignatureAlgorithm.HS256)
                 .compact();
         String refreshToken = Jwts.builder()
@@ -51,6 +51,21 @@ public class JwtUtil {
                     .parseClaimsJws(token)
                     .getBody()
                     .getSubject();
+        }catch(ExpiredJwtException ex){
+            return null;
+        }
+    }
+
+    public String getRole(String token){
+        try{
+            String role = Jwts.parserBuilder()
+                    .setSigningKey(getSignKey())
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody()
+                    .get("role",String.class);
+            System.out.println("Role of the user "+ role);
+            return role;
         }catch(ExpiredJwtException ex){
             return null;
         }

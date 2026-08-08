@@ -14,6 +14,7 @@ import com.projectManagement.taskflow.service.AuthService;
 import com.projectManagement.taskflow.service.ProjectService;
 import com.projectManagement.taskflow.service.TaskService;
 import com.projectManagement.taskflow.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -22,6 +23,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -60,6 +62,7 @@ public class ProjectsController {
         return projectRepo.findAll();
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/all")
     public ResponseEntity<List<ProjectResponseDto>> getAllProjects(){
         List<ProjectResponseDto> dtos = projectRepo.findAll().stream().map(projectMapper::toDto).collect(Collectors.toList());
@@ -67,7 +70,7 @@ public class ProjectsController {
     }
 
     @PostMapping
-    public ResponseEntity<ProjectResponseDto> createProject(@RequestBody ProjectRequestDto project){
+    public ResponseEntity<ProjectResponseDto> createProject(@Valid @RequestBody ProjectRequestDto project){
         return ResponseEntity.status(HttpStatus.CREATED).body(projectService.createProject(project));
     }
 
@@ -82,12 +85,14 @@ public class ProjectsController {
         return ResponseEntity.ok(projectService.getProjectById(id));
     }
 
+    @PreAuthorize("hasRole('ADMIN') or project_security.isProjectCreator(#projectId)")
     @PutMapping("/{id}")
-    public ResponseEntity<String> updateProject(@PathVariable Long id, @RequestBody ProjectRequestDto project){
+    public ResponseEntity<String> updateProject(@PathVariable Long id,@Valid @RequestBody ProjectRequestDto project){
         projectService.updateProject(id, project);
         return ResponseEntity.status(HttpStatus.CREATED).body("Project Created");
     }
 
+    @PreAuthorize("hasRole('ADMIN') or project_security.isProjectCreator(#projectId)")
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteProject(@PathVariable Long id){
         projectService.deleteProject(id);
@@ -98,14 +103,16 @@ public class ProjectsController {
     //TODO: NOT DONE COMPLETE IT
     //    TODO: user fetching logic is incorrect
     //        "EDITOR" just send this nothing more than it
+    @PreAuthorize("hasRole('ADMIN') or project_security.isProjectCreator(#projectId)")
     @PostMapping("/{id}/members")
-    public ResponseEntity<String> addProjectPerMember(@PathVariable Long id, @RequestBody AssigningUserRequestDto dto){
+    public ResponseEntity<String> addProjectPerMember(@PathVariable Long id,@Valid @RequestBody AssigningUserRequestDto dto){
         projectService.addMember(id, dto.getUserId(), dto.getRoleInProject());
         return ResponseEntity.status(HttpStatus.CREATED).body(null);
     }
 
+    @PreAuthorize("hasRole('ADMIN') or project_security.isProjectCreator(#projectId)")
     @DeleteMapping("/{id}/members/{memberId}")
-    public ResponseEntity<String> deleteProjectForMember(@PathVariable Long id, @PathVariable Long memberId){
+    public ResponseEntity<String> removeMemberFromProject(@PathVariable Long id, @PathVariable Long memberId){
         projectService.removeMember(memberId);
         return ResponseEntity.noContent().build();
     }
@@ -118,9 +125,10 @@ public class ProjectsController {
         return taskService.listTasksByProject(id, pageable);
     }
 
+    @PreAuthorize("hasRole('ADMIN') or project_security.isProjectCreator(#projectId) or project_security.isProjectMember(#projectId)")
     @PostMapping("/{projectId}/tasks")
     public List<TaskResponseDto> postAllTaskOfProject(@PathVariable Long projectId,
-                                                      @RequestBody List<TaskRequestDTO> tasks){
+                                                      @Valid @RequestBody List<TaskRequestDTO> tasks){
 
         tasks.forEach((task)-> taskService.createTask(projectId,task));
         List<TaskResponseDto> tasksDto = taskRepo.findByProject_id(projectId)
@@ -151,7 +159,7 @@ public class ProjectsController {
             @RequestParam(required = false) String name,
             @PageableDefault(sort = "id", direction = Sort.Direction.DESC)
             Pageable pageable){
-        UserEntity user = authService.getCurrentUser();;
+        UserEntity user = authService.getCurrentUser();
         return projectService.listProjectsForUser(user.getId(), status, priority, name, pageable);
     }
 }

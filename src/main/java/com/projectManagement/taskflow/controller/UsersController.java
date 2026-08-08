@@ -8,6 +8,7 @@ import com.projectManagement.taskflow.mapper.UserMapper;
 import com.projectManagement.taskflow.repository.UserRepo;
 import com.projectManagement.taskflow.service.AuthService;
 import com.projectManagement.taskflow.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -55,7 +56,7 @@ public class UsersController {
     }
 
     @PostMapping("/signup")
-    private ResponseEntity<UserResponseDto> registerUser(@RequestBody UserRequestDTO dto){
+    private ResponseEntity<UserResponseDto> registerUser(@Valid @RequestBody UserRequestDTO dto){
         return ResponseEntity.status(HttpStatus.CREATED).body(authService.register(dto));
     }
 

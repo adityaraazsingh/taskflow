@@ -8,6 +8,7 @@ import com.projectManagement.taskflow.enums.RoleEnum;
 import com.projectManagement.taskflow.security.JwtUtil;
 import com.projectManagement.taskflow.service.AuthService;
 import com.projectManagement.taskflow.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -40,7 +41,7 @@ public class AuthController {
     }
 
     @PostMapping("/password")
-    public ResponseEntity<Boolean> changePassword(@RequestBody ChangePasswordRequestDto changePasswordRequest){
+    public ResponseEntity<Boolean> changePassword(@Valid @RequestBody ChangePasswordRequestDto changePasswordRequest){
         return ResponseEntity.ok(userService.changePassword(changePasswordRequest));
     }
 

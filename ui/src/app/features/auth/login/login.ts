@@ -16,13 +16,13 @@ export class Login {
   isLoggingIn : boolean = true;
   
   loginForm = new FormGroup({
-    username : new FormControl(''),
-    password : new FormControl('123123'),
+    username : new FormControl('admin'),
+    password : new FormControl('Admin@123'),
   });
 
   signUpForm = new FormGroup({
     username : new FormControl(''),
-    password : new FormControl('123123'),
+    password : new FormControl(''),
     role : new FormControl(''),
     email: new FormControl('')
   });

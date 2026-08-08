@@ -1,24 +1,13 @@
 package com.projectManagement.taskflow.dto;
 
 import com.projectManagement.taskflow.enums.RoleInProject;
+import jakarta.validation.constraints.NotNull;
+import lombok.Data;
 
+@Data
 public class AssigningUserRequestDto {
+    @NotNull
     private RoleInProject roleInProject;
+    @NotNull
     private Long userId;
-
-    public RoleInProject getRoleInProject() {
-        return roleInProject;
-    }
-
-    public void setRoleInProject(RoleInProject roleInProject) {
-        this.roleInProject = roleInProject;
-    }
-
-    public Long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
 }
