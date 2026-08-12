@@ -30,20 +30,10 @@ public class MultiTenantConnectionProviderImpl
 
     @Override
     public Connection getConnection(String tenantIdentifier) throws SQLException {
-        System.out.println("TENANT RECEIVED: " + tenantIdentifier);
-//        TODO: remove this manual patching so it does not disturb the flow of data
-//        if(TenantContext.getTenant()!= null){
-//            tenantIdentifier = TenantContext.getTenant();
-//            System.out.println("Tenant Identifier takes value of "+ tenantIdentifier);
-//        }
         Connection connection = super.getConnection(tenantIdentifier);
-        System.out.println("BEFORE SCHEMA: " + connection.getSchema());
-
         try (Statement stmt = connection.createStatement()) {
             stmt.execute("SET SCHEMA " + tenantIdentifier);
         }
-        System.out.println("AFTER SCHEMA: " + connection.getSchema());
-
         return connection;
     }
 

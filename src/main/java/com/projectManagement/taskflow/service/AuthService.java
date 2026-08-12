@@ -49,29 +49,15 @@ public class AuthService {
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public UserResponseDto register(TenantUserRequestDto dto){
-        System.out.println(this.getClass());
-        System.out.println(
-                "TX ACTIVE: " +
-                        TransactionSynchronizationManager.isActualTransactionActive()
-        );
         try {
             TenantContext.setTenant(dto.getTenantName());
-            System.out.println("REGISTER TENANT: " + TenantContext.getTenant());
-            System.out.println(
-                    "REGISTER: " + TenantContext.getTenant()
-                            + " THREAD: " + Thread.currentThread().getName()
-            );
             UserRequestDTO userDto = new UserRequestDTO();
             userDto.setEmail(dto.getEmail());
             userDto.setRole(dto.getRole());
             userDto.setUsername(dto.getUsername());
 
             String passwordHash = passwordEncoder.encode(dto.getPassword());
-            System.out.println("BEFORE SAVE TENANT: " + TenantContext.getTenant());
-
             UserEntity user = userMapper.toEntity(userDto, passwordHash);
-            System.out.println("AFTER SAVE TENANT: " + TenantContext.getTenant());
-
             UserEntity saved = userRepo.save(user);
             userRepo.flush();   // 🔥 FORCE DB interaction
 
@@ -128,17 +114,3 @@ public class AuthService {
 
     //Todo: Write a IsExpired Method to check weather stored JWT in local storage has expired or not
 }
-
-//{
-//        "accessToken": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJURU5BTlQyMC9hZGkiLCJyb2xlIjoiQURNSU4iLCJ0ZW5hbnRJZCI6IlRFTkFOVDIwIiwiaWF0IjoxNzg2NDE0NjIwLCJleHAiOjE3ODY0MTgyMjB9.lwWdspSGV67gFeY93Z2PBtmxpbQCyGEOJ1o30iNBlIE",
-//        "refreshToken": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJURU5BTlQyMC9hZGkiLCJpYXQiOjE3ODY0MTQ2MjAsImV4cCI6MTc4NzAxOTQyMH0.moCDblmQdzYyxip8Z382nWvRQACC3CjwJYJcHYQgh9g",
-//        "role": "ADMIN",
-//        "username": "adi"
-//        }
-
-//{
-//        "accessToken": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJURU5BTlQyMS9hZGkiLCJyb2xlIjoiQURNSU4iLCJ0ZW5hbnRJZCI6IlRFTkFOVDIxIiwiaWF0IjoxNzg2NDE1MDc1LCJleHAiOjE3ODY0MTg2NzV9.lb-i6SsMCyx4ucOL3oqEMFKHTEx04gbe7AArxhzpFic",
-//        "refreshToken": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJURU5BTlQyMS9hZGkiLCJpYXQiOjE3ODY0MTUwNzUsImV4cCI6MTc4NzAxOTg3NX0.iEx5GHmuwdJeaUeKETsWbuGm0jtyYxVNWbVs-ejMgBM",
-//        "role": "ADMIN",
-//        "username": "adi"
-//        }

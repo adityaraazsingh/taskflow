@@ -42,7 +42,6 @@ public class TenantService {
             liquibase.setLiquibaseSchema(tenantName); // 🔥 Create seprate Dbchanelog sum , to avoid CheckSums Issue
             liquibase.afterPropertiesSet();
             TenantContext.setTenant(tenantName);
-            System.out.println("Inside Tenant Creator , setting Tenant to"+ tenantName);
             return "Tenant schema created: " + tenantName;
         } catch (Exception e) {
             e.printStackTrace();
