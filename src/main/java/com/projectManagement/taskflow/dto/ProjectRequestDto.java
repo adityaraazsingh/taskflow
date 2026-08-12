@@ -9,10 +9,10 @@ import java.util.List;
 
 @Data
 public class ProjectRequestDto {
-    @NotNull
+    @NotNull(message = "name can't be null")
     private String name;
     private String description;
-    @NotNull
+    @NotNull(message = "status can't be null")
     private Status status;
     private List<Long> taskIds = new ArrayList<>();
     private List<Long> projectMemberIds = new ArrayList<>();

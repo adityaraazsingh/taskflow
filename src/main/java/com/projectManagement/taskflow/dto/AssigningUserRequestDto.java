@@ -6,8 +6,8 @@ import lombok.Data;
 
 @Data
 public class AssigningUserRequestDto {
-    @NotNull
+    @NotNull(message = "Role in project can't be null")
     private RoleInProject roleInProject;
-    @NotNull
+    @NotNull(message = "userId can't be null")
     private Long userId;
 }

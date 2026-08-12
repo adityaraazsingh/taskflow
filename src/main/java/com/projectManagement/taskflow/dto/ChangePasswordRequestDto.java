@@ -5,8 +5,8 @@ import lombok.Data;
 
 @Data
 public class ChangePasswordRequestDto {
-    @NotNull
+    @NotNull(message = "current Password can't be null")
     private String currentPassword;
-    @NotNull
+    @NotNull(message = "New password can't be null")
     private String newPassword;
 }

@@ -1,5 +1,6 @@
 package com.projectManagement.taskflow.controller;
 
+import com.projectManagement.taskflow.dto.TenantUserRequestDto;
 import com.projectManagement.taskflow.dto.UserRequestDTO;
 import com.projectManagement.taskflow.dto.UserResponseDto;
 import com.projectManagement.taskflow.entity.UserEntity;
@@ -7,6 +8,7 @@ import com.projectManagement.taskflow.exception.UserNotFoundException;
 import com.projectManagement.taskflow.mapper.UserMapper;
 import com.projectManagement.taskflow.repository.UserRepo;
 import com.projectManagement.taskflow.service.AuthService;
+import com.projectManagement.taskflow.service.TenantService;
 import com.projectManagement.taskflow.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +40,9 @@ public class UsersController {
     private AuthService authService;
 
     @Autowired
+    private TenantService tenantService;
+
+    @Autowired
     private BCryptPasswordEncoder passwordEncoder;
 
     @GetMapping
@@ -56,7 +61,8 @@ public class UsersController {
     }
 
     @PostMapping("/signup")
-    private ResponseEntity<UserResponseDto> registerUser(@Valid @RequestBody UserRequestDTO dto){
+    private ResponseEntity<UserResponseDto> registerUser(@Valid @RequestBody TenantUserRequestDto dto){
+        tenantService.createTenant(dto.getTenantName());
         return ResponseEntity.status(HttpStatus.CREATED).body(authService.register(dto));
     }
 

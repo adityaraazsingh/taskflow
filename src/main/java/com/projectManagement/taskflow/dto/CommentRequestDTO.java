@@ -5,9 +5,9 @@ import lombok.Data;
 
 @Data
 public class CommentRequestDTO {
-    @NotNull
+    @NotNull(message = "name can't be null")
     private String name;
 
-    @NotNull
+    @NotNull(message = "content can't be null")
     private String content;
 }

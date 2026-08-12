@@ -6,9 +6,9 @@ import lombok.Data;
 
 @Data
 public class ProjectMemberRequestDto {
-    @NotNull
+    @NotNull(message = "projectId is null")
     private Long projectId;
-    @NotNull
+    @NotNull(message = "userId is null")
     private Long userId;
     private RoleInProject roleInProject;
 }
