@@ -15,11 +15,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
 
 @Service
+@Transactional
 public class UserService {
 
     @Autowired
@@ -34,11 +36,13 @@ public class UserService {
     @Autowired
     private UserMapper userMapper;
 
+    @Transactional(readOnly = true)
     public UserResponseDto findById(Long id){
         return userMapper.toDto(userRepo.findById(id)
                 .orElseThrow(()-> new UserNotFoundException("User not found")));
     }
 
+    @Transactional(readOnly = true)
     public UserResponseDto findByUsername(String username){
         UserEntity entity = userRepo.findByUsername(username).
                 orElseThrow(()-> new UserNotFoundException("User Not Found"));
@@ -65,6 +69,7 @@ public class UserService {
         return true;
     }
 
+    @Transactional(readOnly = true)
     public Page<UserResponseDto> listUsers(Pageable pageable){
         UserEntity requester = authService.getCurrentUser();
         if(requester.getRole()== RoleEnum.ADMIN){

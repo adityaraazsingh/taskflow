@@ -44,9 +44,6 @@ public class AuthService {
     @Autowired
     private UserRepo userRepo;
 
-    @Autowired
-    private TenantIdentifierResolver tenantIdentifierResolver;
-
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public UserResponseDto register(TenantUserRequestDto dto){
         try {
@@ -100,6 +97,7 @@ public class AuthService {
         }
     }
 
+    @Transactional
     public UserEntity getCurrentUser(){
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String username;

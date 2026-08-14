@@ -33,29 +33,27 @@ import java.util.stream.Collectors;
 @RestController
 public class ProjectsController {
 
-    @Autowired
-    private ProjectService projectService;
+    private final ProjectService projectService;
 
-    @Autowired
-    private TaskService taskService;
+    private final TaskService taskService;
 
-    @Autowired
-    private TaskMapper taskMapper;
+    private final TaskMapper taskMapper;
 
-    @Autowired
-    private ProjectRepo projectRepo;
+    private final ProjectRepo projectRepo;
 
-    @Autowired
-    private UserService userService;
+    private final TaskRepo taskRepo;
 
-    @Autowired
-    private TaskRepo taskRepo;
+    private final ProjectMapper projectMapper;
 
-    @Autowired
-    private AuthService authService;
-
-    @Autowired
-    private ProjectMapper projectMapper;
+    public ProjectsController(ProjectService projectService, TaskService taskService, TaskMapper taskMapper, ProjectRepo projectRepo, TaskRepo taskRepo, ProjectMapper projectMapper) {
+        this.projectService = projectService;
+        this.taskService = taskService;
+        this.taskMapper = taskMapper;
+        this.projectRepo = projectRepo;
+        this.taskRepo = taskRepo;
+        this.projectMapper = projectMapper;
+        System.out.println("Constructed Controller: " + this);
+    }
 
     @GetMapping
     public List<ProjectEntity> getProjects(){
@@ -153,13 +151,14 @@ public class ProjectsController {
 //    }
 
     @GetMapping("/user")
-    private Page<ProjectResponseDto> getProjectsForCurrentUser(
+    public Page<ProjectResponseDto> getProjectsForCurrentUser(
             @RequestParam(required = false) Status status,
             @RequestParam(required = false) Priority priority,
             @RequestParam(required = false) String name,
             @PageableDefault(sort = "id", direction = Sort.Direction.DESC)
             Pageable pageable){
-        UserEntity user = authService.getCurrentUser();
-        return projectService.listProjectsForUser(user.getId(), status, priority, name, pageable);
+        System.out.println("Controller used: " + this);
+        System.out.println("ProjectService: " + projectService);
+        return projectService.listProjectsForUser(status, priority, name, pageable);
     }
 }

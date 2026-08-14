@@ -29,23 +29,19 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/tasks")
 public class TasksController {
 
-    @Autowired
-    private TaskService taskService;
+    private final TagService tagService;
+    private final TaskMapper taskMapper;
+    private final TaskService taskService;
+    private final CommentService commentService;
+    private final SimpMessagingTemplate messagingTemplate;
 
-    @Autowired
-    private CommentService commentService;
-
-    @Autowired
-    private TagService tagService;
-
-    @Autowired
-    private TaskMapper taskMapper;
-
-    @Autowired
-    private TaskRepo taskRepo;
-
-    @Autowired
-    private SimpMessagingTemplate messagingTemplate;
+    public TasksController(TaskService taskService, CommentService commentService, TagService tagService, TaskMapper taskMapper, SimpMessagingTemplate messagingTemplate) {
+        this.taskService = taskService;
+        this.commentService = commentService;
+        this.tagService = tagService;
+        this.taskMapper = taskMapper;
+        this.messagingTemplate = messagingTemplate;
+    }
 
     @PreAuthorize("hasRole('ADMIN') or project_security.isProjectCreatorFromTaskId(#taskId) or project_security.isProjectMemberFromTaskId(#taskId)")
     @PostMapping("/{taskId}/comments")
@@ -110,23 +106,20 @@ public class TasksController {
         return commentService.listCommentsForTask(id, pageable);
     }
 
-
-
     @PostMapping("/{id}/tags/{tagId}")
-    private ResponseEntity<String> addTasksPerTags(@PathVariable Long id, @PathVariable Long tagId) {
+    public ResponseEntity<String> addTasksPerTags(@PathVariable Long id, @PathVariable Long tagId) {
         tagService.AttachTagToTask(id, tagId);
         return ResponseEntity.status(HttpStatus.CREATED).body(null);
     }
 
-    @GetMapping("/{id}/tags")
-    private ResponseEntity<List<TagResponseDto>> getTagsOnATask(@PathVariable Long id){
-        TaskEntity task = taskRepo.findById(id).orElseThrow(()->new TaskNotFoundException("Task Not found"));
-        List<TagResponseDto> tags = task.getTags().stream().map((tag)->tagService.getTagById(tag.getId())).collect(Collectors.toList());
+    @GetMapping("/{taskId}/tags")
+    public ResponseEntity<List<TagResponseDto>> getTagsOnATask(@PathVariable Long taskId){
+        List<TagResponseDto> tags = tagService.getTagsByTaskId(taskId);
         return ResponseEntity.ok(tags);
     }
 
     @DeleteMapping("/{id}/tags/{tagId}")
-    private ResponseEntity<String> deleteTagForTask(@PathVariable Long id, @PathVariable Long tagId){
+    public ResponseEntity<String> deleteTagForTask(@PathVariable Long id, @PathVariable Long tagId){
         tagService.removeTagFromTask(id, tagId);
         return ResponseEntity.noContent().build();
     }

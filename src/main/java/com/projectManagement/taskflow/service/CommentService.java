@@ -16,26 +16,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
+@Transactional
 public class CommentService {
 
     @Autowired
     private CommentRepo commentRepo;
 
     @Autowired
-    private TaskService taskService;
-
-    @Autowired
     private AuthService authService;
 
     @Autowired
     private CommentMapper commentMapper;
-
-    @Autowired
-    private TaskMapper taskMapper;
 
     @Autowired
     private TaskRepo taskRepo;
@@ -56,6 +52,7 @@ public class CommentService {
     }
 
 //  TODO : make this pageable also
+    @Transactional(readOnly = true)
     public Page<CommentResponseDto> listCommentsForTask(Long taskId, Pageable pageable){
         Page<CommentEntity> comments = commentRepo.findAllByTask_id(taskId, pageable);
         return comments.map(commentMapper::toDto);

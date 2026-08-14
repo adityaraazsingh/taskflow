@@ -3,7 +3,6 @@ package com.projectManagement.taskflow.service;
 import com.projectManagement.taskflow.dto.TaskRequestDTO;
 import com.projectManagement.taskflow.dto.TaskResponseDto;
 import com.projectManagement.taskflow.dto.UserRequestDTO;
-import com.projectManagement.taskflow.dto.UserResponseDto;
 import com.projectManagement.taskflow.entity.*;
 import com.projectManagement.taskflow.enums.Priority;
 import com.projectManagement.taskflow.enums.Status;
@@ -11,36 +10,34 @@ import com.projectManagement.taskflow.exception.ProjectNotFoundException;
 import com.projectManagement.taskflow.exception.TaskNotFoundException;
 import com.projectManagement.taskflow.exception.UserNotFoundException;
 import com.projectManagement.taskflow.mapper.TaskMapper;
-import com.projectManagement.taskflow.mapper.UserMapper;
 import com.projectManagement.taskflow.repository.ProjectRepo;
 import com.projectManagement.taskflow.repository.TaskRepo;
 import com.projectManagement.taskflow.repository.UserRepo;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 
 @Service
+@Transactional
 public class TaskService {
 
-    @Autowired
-    private TaskRepo taskRepo;
-    @Autowired
-    private ProjectRepo projectRepo;
+    private final TaskRepo taskRepo;
+    private final ProjectRepo projectRepo;
+    private final UserRepo userRepo;
+    private final AuthService authService;
+    private final TaskMapper taskMapper;
 
-    @Autowired
-    private UserRepo userRepo;
+    public TaskService(TaskRepo taskRepo, ProjectRepo projectRepo, UserRepo userRepo, AuthService authService, TaskMapper taskMapper) {
+        this.taskRepo = taskRepo;
+        this.projectRepo = projectRepo;
+        this.userRepo = userRepo;
+        this.authService = authService;
+        this.taskMapper = taskMapper;
+    }
 
-    @Autowired
-    private AuthService authService;
-
-    @Autowired
-    private TaskMapper taskMapper;
-
-    @Autowired
-    private UserMapper userMapper;
 
     public TaskEntity createTask(Long projectId , TaskRequestDTO taskDTO){
         ProjectEntity project = projectRepo.findById(projectId)
@@ -54,6 +51,7 @@ public class TaskService {
         return taskRepo.save(task);
     }
 
+    @Transactional(readOnly = true)
     public TaskResponseDto getTaskById(Long id){
         UserEntity user = authService.getCurrentUser();
         TaskEntity task = taskRepo.findById(id)
@@ -62,6 +60,8 @@ public class TaskService {
     }
 
 //TODO: Add TaskFilter
+
+    @Transactional(readOnly = true)
     public Page<TaskResponseDto> listTasksByProject(Long projectId, Pageable pageable){
         Page<TaskEntity> tasks = taskRepo.findByProject_id(projectId, pageable);
         return tasks.map(taskMapper::toDto);

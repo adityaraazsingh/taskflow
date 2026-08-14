@@ -25,37 +25,42 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 public class ProjectService {
 
-    @Autowired
-    private ProjectRepo projectRepo;
+    private final ProjectRepo projectRepo;
 
-    @Autowired
-    private UserRepo userrepo;
+    private final UserRepo userrepo;
 
-    @Autowired
-    private ProjectMemberRepo projectMemberRepo;
+    private final ProjectMemberRepo projectMemberRepo;
 
-    @Autowired
-    private AuthService authService;
+    private final AuthService authService;
 
-    @Autowired
-    private ProjectMapper projectMapper;
+    private final ProjectMapper projectMapper;
 
-    @Autowired
-    private ProjectMemberMapper projectMemberMapper;
+    private final ProjectMemberMapper projectMemberMapper;
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
 
-    @Autowired
-    private TaskRepo taskRepo;
+    private final TaskRepo taskRepo;
+
+    public ProjectService(ProjectRepo projectRepo, UserRepo userrepo, ProjectMemberRepo projectMemberRepo, AuthService authService, ProjectMapper projectMapper, ProjectMemberMapper projectMemberMapper, UserService userService, TaskRepo taskRepo) {
+        this.projectRepo = projectRepo;
+        this.userrepo = userrepo;
+        this.projectMemberRepo = projectMemberRepo;
+        this.authService = authService;
+        this.projectMapper = projectMapper;
+        this.projectMemberMapper = projectMemberMapper;
+        this.userService = userService;
+        this.taskRepo = taskRepo;
+    }
 
     //TODO: createProject(ProjectEntity project, UserEntity owner) See what it is
     public ProjectResponseDto createProject(ProjectRequestDto dto){
@@ -69,7 +74,8 @@ public class ProjectService {
         return projectMapper.toDto(projectRepo.save(entity));
     }
 
-    //TODO: getProjectById(Long id, UserEntity user) See what it is
+    //TODO: getProjectById(Long id, UserEntity user) See what it
+    @Transactional(readOnly = true)
     public ProjectResponseDto getProjectById(Long id){
         UserEntity user = authService.getCurrentUser();
         return projectMapper.toDto(
@@ -80,8 +86,8 @@ public class ProjectService {
         );
     }
 
+    @Transactional(readOnly = true)
     public Page<ProjectResponseDto> listProjectsForUser(
-            Long userId,
             Status status,
             Priority priority,
             String name,
@@ -90,6 +96,7 @@ public class ProjectService {
         UserEntity user = authService.getCurrentUser();
 
         boolean isAdmin = user.getRole() == RoleEnum.ADMIN;
+        Long userId = user.getId();
 
         Specification<ProjectEntity> spec = ProjectSpecification.filterProjects(
                 userId, status, priority, name, isAdmin);
@@ -143,6 +150,7 @@ public class ProjectService {
         return true;
     }
 
+    @Transactional(readOnly = true)
     public List<UserResponseDto> listAllUsersOnAProject(Long projectId){
         List<ProjectMemberResponseDto> projectMembersDto = listMembersOnAProject(projectId);
         List<UserResponseDto> userDtos = projectMembersDto.stream()
@@ -151,6 +159,7 @@ public class ProjectService {
         return userDtos;
     }
 
+    @Transactional(readOnly = true)
     public List<ProjectMemberResponseDto> listMembersOnAProject(Long projectId){
         return projectMemberRepo.findAllByProject_id(projectId)
                 .stream()
