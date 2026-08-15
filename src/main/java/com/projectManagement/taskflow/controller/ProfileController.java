@@ -1,25 +1,28 @@
 package com.projectManagement.taskflow.controller;
 
 import com.projectManagement.taskflow.entity.ProfileEntity;
-import com.projectManagement.taskflow.repository.ProfileRepo;
+import com.projectManagement.taskflow.service.ProfileService;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RequestMapping("/api/profile")
 @RestController
 public class ProfileController {
 
-    @Autowired
-    private ProfileRepo profileRepo;
-//    http://localhost:8080/api/profile/5
+    private final ProfileService profileService;
+
+    public ProfileController(ProfileService profileService) {
+        this.profileService = profileService;
+    }
+
+
     @GetMapping("/{userId}")
-    private ProfileEntity getProfile(@PathVariable Long userId){
-        return profileRepo.findByUserId(userId).orElseThrow(()->new RuntimeException("Profile not found"));
+    public ProfileEntity getProfile(@PathVariable Long userId){
+        return profileService.getProfileByUserId(userId);
     }
 
     @PutMapping
-    private ProfileEntity addProfile(@Valid @RequestBody ProfileEntity profile){
-        return profileRepo.save(profile);
+    public ProfileEntity addProfile(@Valid @RequestBody ProfileEntity profile){
+        return profileService.saveProfile(profile);
     }
 }

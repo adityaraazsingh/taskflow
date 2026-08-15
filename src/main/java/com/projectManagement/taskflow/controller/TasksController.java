@@ -1,24 +1,16 @@
 package com.projectManagement.taskflow.controller;
 
 import com.projectManagement.taskflow.dto.*;
-import com.projectManagement.taskflow.entity.CommentEntity;
-import com.projectManagement.taskflow.entity.TaskEntity;
-import com.projectManagement.taskflow.entity.UserEntity;
-import com.projectManagement.taskflow.enums.Status;
-import com.projectManagement.taskflow.exception.TaskNotFoundException;
+import com.projectManagement.taskflow.mapper.PageMapper;
 import com.projectManagement.taskflow.mapper.TaskMapper;
-import com.projectManagement.taskflow.repository.TaskRepo;
 import com.projectManagement.taskflow.service.*;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.scheduling.config.Task;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,19 +26,21 @@ public class TasksController {
     private final TaskService taskService;
     private final CommentService commentService;
     private final SimpMessagingTemplate messagingTemplate;
+    private final PageMapper pageMapper;
 
-    public TasksController(TaskService taskService, CommentService commentService, TagService tagService, TaskMapper taskMapper, SimpMessagingTemplate messagingTemplate) {
+    public TasksController(TaskService taskService, CommentService commentService, TagService tagService, TaskMapper taskMapper, SimpMessagingTemplate messagingTemplate, PageMapper pageMapper) {
         this.taskService = taskService;
         this.commentService = commentService;
         this.tagService = tagService;
         this.taskMapper = taskMapper;
         this.messagingTemplate = messagingTemplate;
+        this.pageMapper = pageMapper;
     }
 
     @PreAuthorize("hasRole('ADMIN') or project_security.isProjectCreatorFromTaskId(#taskId) or project_security.isProjectMemberFromTaskId(#taskId)")
     @PostMapping("/{taskId}/comments")
     public ResponseEntity<String> postCommentsForTask(@PathVariable Long taskId,
-                                                      @Valid @RequestBody List<CommentRequestDTO> comments){
+                                                      @RequestBody List<@Valid CommentRequestDTO> comments){
         comments.forEach((comment)-> {
             CommentResponseDto dto = commentService.addComment(taskId, comment);
             messagingTemplate.convertAndSend("/topic/comments", dto);
@@ -99,7 +93,7 @@ public class TasksController {
     }
 
     @GetMapping("/{id}/comments")
-    public Page<CommentResponseDto> getComments(@PathVariable Long id,
+    public PageResponseDto<CommentResponseDto> getComments(@PathVariable Long id,
                                                 @RequestParam(defaultValue = "0") int page,
                                                 @RequestParam(defaultValue = "10") int size){
         Pageable pageable = PageRequest.of(page,size);

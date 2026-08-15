@@ -2,20 +2,11 @@ package com.projectManagement.taskflow.controller;
 
 import com.projectManagement.taskflow.dto.*;
 import com.projectManagement.taskflow.entity.ProjectEntity;
-import com.projectManagement.taskflow.entity.UserEntity;
 import com.projectManagement.taskflow.enums.Priority;
-import com.projectManagement.taskflow.enums.RoleInProject;
 import com.projectManagement.taskflow.enums.Status;
-import com.projectManagement.taskflow.mapper.ProjectMapper;
-import com.projectManagement.taskflow.mapper.TaskMapper;
-import com.projectManagement.taskflow.repository.ProjectRepo;
-import com.projectManagement.taskflow.repository.TaskRepo;
-import com.projectManagement.taskflow.service.AuthService;
 import com.projectManagement.taskflow.service.ProjectService;
 import com.projectManagement.taskflow.service.TaskService;
-import com.projectManagement.taskflow.service.UserService;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -34,36 +25,17 @@ import java.util.stream.Collectors;
 public class ProjectsController {
 
     private final ProjectService projectService;
-
     private final TaskService taskService;
 
-    private final TaskMapper taskMapper;
-
-    private final ProjectRepo projectRepo;
-
-    private final TaskRepo taskRepo;
-
-    private final ProjectMapper projectMapper;
-
-    public ProjectsController(ProjectService projectService, TaskService taskService, TaskMapper taskMapper, ProjectRepo projectRepo, TaskRepo taskRepo, ProjectMapper projectMapper) {
+    public ProjectsController(ProjectService projectService, TaskService taskService) {
         this.projectService = projectService;
         this.taskService = taskService;
-        this.taskMapper = taskMapper;
-        this.projectRepo = projectRepo;
-        this.taskRepo = taskRepo;
-        this.projectMapper = projectMapper;
-        System.out.println("Constructed Controller: " + this);
-    }
-
-    @GetMapping
-    public List<ProjectEntity> getProjects(){
-        return projectRepo.findAll();
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/all")
     public ResponseEntity<List<ProjectResponseDto>> getAllProjects(){
-        List<ProjectResponseDto> dtos = projectRepo.findAll().stream().map(projectMapper::toDto).collect(Collectors.toList());
+        List<ProjectResponseDto> dtos = projectService.getAllProjects();
         return ResponseEntity.ok(dtos);
     }
 
@@ -74,7 +46,7 @@ public class ProjectsController {
 
     @PostMapping("/all")
     public ResponseEntity<String> postProjects(@RequestBody List<ProjectEntity> projects){
-        projectRepo.saveAll(projects);
+        projectService.saveALl(projects);
         return ResponseEntity.status(HttpStatus.CREATED).body("Projects Created");
     }
 
@@ -97,10 +69,6 @@ public class ProjectsController {
         return ResponseEntity.ok("Project Deleted");
     }
 
-    //POST: /api/projects/{id}/members
-    //TODO: NOT DONE COMPLETE IT
-    //    TODO: user fetching logic is incorrect
-    //        "EDITOR" just send this nothing more than it
     @PreAuthorize("hasRole('ADMIN') or project_security.isProjectCreator(#projectId)")
     @PostMapping("/{id}/members")
     public ResponseEntity<String> addProjectPerMember(@PathVariable Long id,@Valid @RequestBody AssigningUserRequestDto dto){
@@ -111,12 +79,12 @@ public class ProjectsController {
     @PreAuthorize("hasRole('ADMIN') or project_security.isProjectCreator(#projectId)")
     @DeleteMapping("/{id}/members/{memberId}")
     public ResponseEntity<String> removeMemberFromProject(@PathVariable Long id, @PathVariable Long memberId){
-        projectService.removeMember(memberId);
+        projectService.removeMember(id, memberId);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/{id}/tasks")
-    public Page<TaskResponseDto> getAllTaskOfProject(@RequestParam(defaultValue = "0") int page
+    public PageResponseDto<TaskResponseDto> getAllTaskOfProject(@RequestParam(defaultValue = "0") int page
             , @RequestParam(defaultValue = "10") int size
             , @PathVariable Long id){
         Pageable pageable = PageRequest.of(page, size);
@@ -127,13 +95,8 @@ public class ProjectsController {
     @PostMapping("/{projectId}/tasks")
     public List<TaskResponseDto> postAllTaskOfProject(@PathVariable Long projectId,
                                                       @Valid @RequestBody List<TaskRequestDTO> tasks){
-
         tasks.forEach((task)-> taskService.createTask(projectId,task));
-        List<TaskResponseDto> tasksDto = taskRepo.findByProject_id(projectId)
-                .stream()
-                .map(task-> taskMapper.toDto(task))
-                .collect(Collectors.toList());
-
+        List<TaskResponseDto> tasksDto = taskService.getTasksByProjectId(projectId);
         return tasksDto;
     }
 
@@ -142,23 +105,13 @@ public class ProjectsController {
         return projectService.listMembersOnAProject(projectId);
     }
 
-//    @GetMapping("/user/{userId}")
-//    private Page<ProjectResponseDto> getProjectsForUser(@PathVariable Long userId,
-//                                                   @RequestParam(defaultValue = "0") int size,
-//                                                   @RequestParam(defaultValue = "10") int page) {
-//        Pageable pageable = PageRequest.of(page,size);
-//        return projectService.listProjectsForUser(userId, pageable);
-//    }
-
     @GetMapping("/user")
-    public Page<ProjectResponseDto> getProjectsForCurrentUser(
+    public PageResponseDto<ProjectResponseDto> getProjectsForCurrentUser(
             @RequestParam(required = false) Status status,
             @RequestParam(required = false) Priority priority,
             @RequestParam(required = false) String name,
             @PageableDefault(sort = "id", direction = Sort.Direction.DESC)
             Pageable pageable){
-        System.out.println("Controller used: " + this);
-        System.out.println("ProjectService: " + projectService);
         return projectService.listProjectsForUser(status, priority, name, pageable);
     }
 }

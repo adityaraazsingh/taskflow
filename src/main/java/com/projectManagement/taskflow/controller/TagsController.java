@@ -2,7 +2,6 @@ package com.projectManagement.taskflow.controller;
 
 import com.projectManagement.taskflow.dto.TagRequestDTO;
 import com.projectManagement.taskflow.dto.TagResponseDto;
-import com.projectManagement.taskflow.mapper.TagMapper;
 import com.projectManagement.taskflow.service.TagService;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
@@ -13,11 +12,9 @@ import java.util.List;
 public class TagsController {
 
     private final TagService tagService;
-    private final TagMapper tagMapper;
 
-    public TagsController(TagService tagService, TagMapper tagMapper) {
+    public TagsController(TagService tagService) {
         this.tagService = tagService;
-        this.tagMapper = tagMapper;
     }
 
     @GetMapping

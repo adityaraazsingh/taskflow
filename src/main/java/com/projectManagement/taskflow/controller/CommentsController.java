@@ -1,9 +1,6 @@
 package com.projectManagement.taskflow.controller;
 
-import com.projectManagement.taskflow.repository.CommentRepo;
 import com.projectManagement.taskflow.service.CommentService;
-import jakarta.annotation.Resource;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -12,15 +9,16 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 public class CommentsController {
 
-    @Autowired
-    private CommentRepo commentRepo;
+    private final CommentService commentService;
 
-    @Autowired
-    private CommentService commentService;
+    public CommentsController(CommentService commentService) {
+        this.commentService = commentService;
+    }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN') or comment_security.isOwner(#id)")
     public ResponseEntity<String> deleteComments(@PathVariable Long id){
+        commentService.deleteComment(id);
         return ResponseEntity.noContent().build();
     }
 }

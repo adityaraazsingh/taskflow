@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Transactional
 @Service
 public class ProfileService {
 
@@ -15,6 +16,10 @@ public class ProfileService {
     @Transactional(readOnly = true)
     public ProfileEntity getProfileByUserId(Long userId){
         return profileRepo.findByUserId(userId).orElseThrow(()-> new RuntimeException("Profile not found for the User Id"));
+    }
+
+    public ProfileEntity saveProfile(ProfileEntity profile){
+        return profileRepo.save(profile);
     }
 
 }

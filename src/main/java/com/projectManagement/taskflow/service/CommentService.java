@@ -2,6 +2,7 @@ package com.projectManagement.taskflow.service;
 
 import com.projectManagement.taskflow.dto.CommentRequestDTO;
 import com.projectManagement.taskflow.dto.CommentResponseDto;
+import com.projectManagement.taskflow.dto.PageResponseDto;
 import com.projectManagement.taskflow.dto.TaskRequestDTO;
 import com.projectManagement.taskflow.entity.CommentEntity;
 import com.projectManagement.taskflow.entity.ProfileEntity;
@@ -9,10 +10,12 @@ import com.projectManagement.taskflow.entity.TaskEntity;
 import com.projectManagement.taskflow.entity.UserEntity;
 import com.projectManagement.taskflow.exception.TaskNotFoundException;
 import com.projectManagement.taskflow.mapper.CommentMapper;
+import com.projectManagement.taskflow.mapper.PageMapper;
 import com.projectManagement.taskflow.mapper.TaskMapper;
 import com.projectManagement.taskflow.repository.CommentRepo;
 import com.projectManagement.taskflow.repository.TaskRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -24,20 +27,21 @@ import java.util.List;
 @Transactional
 public class CommentService {
 
-    @Autowired
-    private CommentRepo commentRepo;
+    private final CommentRepo commentRepo;
+    private final AuthService authService;
+    private final CommentMapper commentMapper;
+    private final TaskRepo taskRepo;
+    private final PageMapper pageMapper;
+    private final ProfileService profileService;
 
-    @Autowired
-    private AuthService authService;
-
-    @Autowired
-    private CommentMapper commentMapper;
-
-    @Autowired
-    private TaskRepo taskRepo;
-
-    @Autowired
-    private ProfileService profileService;
+    public CommentService(CommentRepo commentRepo, AuthService authService, CommentMapper commentMapper, TaskRepo taskRepo, PageMapper pageMapper, ProfileService profileService) {
+        this.commentRepo = commentRepo;
+        this.authService = authService;
+        this.commentMapper = commentMapper;
+        this.taskRepo = taskRepo;
+        this.pageMapper = pageMapper;
+        this.profileService = profileService;
+    }
 
     public CommentResponseDto addComment(Long taskId, CommentRequestDTO commentDTO){
         UserEntity author = authService.getCurrentUser();
@@ -53,9 +57,10 @@ public class CommentService {
 
 //  TODO : make this pageable also
     @Transactional(readOnly = true)
-    public Page<CommentResponseDto> listCommentsForTask(Long taskId, Pageable pageable){
+    @Cacheable(value = "task-comments", keyGenerator = "tenantKeyGenerator")
+    public PageResponseDto<CommentResponseDto> listCommentsForTask(Long taskId, Pageable pageable){
         Page<CommentEntity> comments = commentRepo.findAllByTask_id(taskId, pageable);
-        return comments.map(commentMapper::toDto);
+        return pageMapper.toDto(comments.map(commentMapper::toDto));
     }
 
 //  TODO: Write logic for failure too
