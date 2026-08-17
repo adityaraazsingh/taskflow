@@ -35,7 +35,7 @@ public class TenantService {
             // 2. Run Liquibase for this schema
             SpringLiquibase liquibase = new SpringLiquibase();
             liquibase.setDataSource(sharedDataSource);
-            liquibase.setChangeLog("classpath:dbchangelog.h2.sql");
+            liquibase.setChangeLog("classpath:db.changelog-master.xml");
             Map<String, String> params = new HashMap<>();
             params.put("schemaName", tenantName);
             liquibase.setChangeLogParameters(params);
