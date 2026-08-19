@@ -9,16 +9,20 @@ import com.projectManagement.taskflow.enums.RoleInProject;
 import com.projectManagement.taskflow.entity.UserEntity;
 import com.projectManagement.taskflow.enums.Status;
 import com.projectManagement.taskflow.exception.ProjectNotFoundException;
-import com.projectManagement.taskflow.exception.UserNotFoundException;
 import com.projectManagement.taskflow.filter.ProjectSpecification;
 import com.projectManagement.taskflow.mapper.PageMapper;
 import com.projectManagement.taskflow.mapper.ProjectMapper;
 import com.projectManagement.taskflow.mapper.ProjectMemberMapper;
+import com.projectManagement.taskflow.notification.MemberChangeData;
+import com.projectManagement.taskflow.notification.NotificationEvent;
+import com.projectManagement.taskflow.notification.NotificationEventEnum;
+import com.projectManagement.taskflow.notification.NotificationPublisher;
 import com.projectManagement.taskflow.repository.ProjectMemberRepo;
 import com.projectManagement.taskflow.repository.ProjectRepo;
 import com.projectManagement.taskflow.repository.TaskRepo;
 import com.projectManagement.taskflow.repository.UserRepo;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.projectManagement.taskflow.tenant.TenantContext;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
@@ -44,8 +48,10 @@ public class ProjectService {
     private final UserService userService;
     private final TaskRepo taskRepo;
     private final PageMapper pageMapper;
+//    private final RabbitTemplate rabbitTemplate;
+    private final NotificationPublisher notificationPublisher;
 
-    public ProjectService(ProjectRepo projectRepo, UserRepo userrepo, ProjectMemberRepo projectMemberRepo, AuthService authService, ProjectMapper projectMapper, ProjectMemberMapper projectMemberMapper, UserService userService, TaskRepo taskRepo, PageMapper pageMapper) {
+    public ProjectService(ProjectRepo projectRepo, UserRepo userrepo, ProjectMemberRepo projectMemberRepo, AuthService authService, ProjectMapper projectMapper, ProjectMemberMapper projectMemberMapper, UserService userService, TaskRepo taskRepo, PageMapper pageMapper, RabbitTemplate rabbitTemplate, NotificationPublisher notificationPublisher) {
         this.projectRepo = projectRepo;
         this.userrepo = userrepo;
         this.projectMemberRepo = projectMemberRepo;
@@ -55,6 +61,8 @@ public class ProjectService {
         this.userService = userService;
         this.taskRepo = taskRepo;
         this.pageMapper = pageMapper;
+//        this.rabbitTemplate = rabbitTemplate;
+        this.notificationPublisher = notificationPublisher;
     }
 
     //TODO: createProject(ProjectEntity project, UserEntity owner) See what it is
@@ -158,6 +166,15 @@ public class ProjectService {
         projectMember.setRoleInProject(roleInProject);
 
         projectMemberRepo.save(projectMember);
+
+        MemberChangeData data = new MemberChangeData(
+                userOpt.get().getId(),
+                userOpt.get().getUsername(),
+                projectOpt.get().getId(),
+                projectOpt.get().getName()
+        );
+
+        notificationPublisher.publishMemberChange(data);
 
         return "User added successfully";
     }

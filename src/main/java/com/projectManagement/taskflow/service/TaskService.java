@@ -12,9 +12,14 @@ import com.projectManagement.taskflow.exception.TaskNotFoundException;
 import com.projectManagement.taskflow.exception.UserNotFoundException;
 import com.projectManagement.taskflow.mapper.PageMapper;
 import com.projectManagement.taskflow.mapper.TaskMapper;
+import com.projectManagement.taskflow.notification.NotificationEvent;
+import com.projectManagement.taskflow.notification.NotificationEventEnum;
+import com.projectManagement.taskflow.notification.TaskAssignedData;
 import com.projectManagement.taskflow.repository.ProjectRepo;
 import com.projectManagement.taskflow.repository.TaskRepo;
 import com.projectManagement.taskflow.repository.UserRepo;
+import com.projectManagement.taskflow.tenant.TenantContext;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
@@ -36,14 +41,16 @@ public class TaskService {
     private final AuthService authService;
     private final TaskMapper taskMapper;
     private final PageMapper pageMapper;
+    private final RabbitTemplate rabbitTemplate;
 
-    public TaskService(TaskRepo taskRepo, ProjectRepo projectRepo, UserRepo userRepo, AuthService authService, TaskMapper taskMapper, PageMapper pageMapper) {
+    public TaskService(TaskRepo taskRepo, ProjectRepo projectRepo, UserRepo userRepo, AuthService authService, TaskMapper taskMapper, PageMapper pageMapper, RabbitTemplate rabbitTemplate) {
         this.taskRepo = taskRepo;
         this.projectRepo = projectRepo;
         this.userRepo = userRepo;
         this.authService = authService;
         this.taskMapper = taskMapper;
         this.pageMapper = pageMapper;
+        this.rabbitTemplate = rabbitTemplate;
     }
 
 
@@ -132,9 +139,34 @@ public class TaskService {
                 .orElseThrow(()->new RuntimeException("Task Not Found"));
         UserEntity user = userRepo.findByUsername(dto.getUsername()).orElseThrow(()-> new UserNotFoundException("User with 'Username' Not found"));
         user.getTasks().add(task);
+
         userRepo.save(user);
         task.setAssignee(user);
         taskRepo.save(task);
+
+        // Create event data
+        TaskAssignedData data = new TaskAssignedData(
+                task.getId(),
+                task.getTitle(),
+                user.getId(),
+                user.getUsername()
+        );
+
+        // Create event
+        NotificationEvent event =
+                new NotificationEvent(
+                        NotificationEventEnum.TASK_CREATED,
+                        TenantContext.getTenant(),
+                        data.toString()
+                );
+
+        // Publish
+        rabbitTemplate.convertAndSend(
+                "task.exchange",
+                "task.assigned",
+                event
+        );
+
         return "Task is assigned to user with user id : "+user.getId();
     }
 

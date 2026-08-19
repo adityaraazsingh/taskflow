@@ -69,7 +69,7 @@ public class ProjectsController {
         return ResponseEntity.ok("Project Deleted");
     }
 
-    @PreAuthorize("hasRole('ADMIN') or project_security.isProjectCreator(#projectId)")
+//    @PreAuthorize("hasRole('ADMIN') or project_security.isProjectCreator(#projectId)")
     @PostMapping("/{id}/members")
     public ResponseEntity<String> addProjectPerMember(@PathVariable Long id,@Valid @RequestBody AssigningUserRequestDto dto){
         projectService.addMember(id, dto.getUserId(), dto.getRoleInProject());

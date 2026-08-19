@@ -2,6 +2,7 @@ package com.projectManagement.taskflow.config;
 
 import com.projectManagement.taskflow.entity.*;
 import com.projectManagement.taskflow.enums.*;
+import com.projectManagement.taskflow.notification.NotificationEventEnum;
 import com.projectManagement.taskflow.repository.*;
 import com.projectManagement.taskflow.service.TenantService;
 import com.projectManagement.taskflow.tenant.TenantContext;
@@ -37,6 +38,7 @@ public class DataInitializer {
             CommentRepo commentRepo,
             ProjectMemberRepo projectMemberRepo,
             ProfileRepo profileRepo,
+            ActivityRepo activityRepo,
             BCryptPasswordEncoder passwordEncoder
     ) {
         return args -> {
@@ -455,6 +457,37 @@ public class DataInitializer {
                 ));
                 log.info("✅ Created {} comments", commentRepo.count());
 
+                // ══════════════════════════════════════════════
+                // 9. ACTIVITIES  — sample activity log entries
+                // ══════════════════════════════════════════════
+                activityRepo.saveAll(List.of(
+                        createActivity(NotificationEventEnum.PROJECT_CREATED, taskflowApp.getId(), null,
+                                "Project 'TaskFlow Platform' was created by Admin"),
+                        createActivity(NotificationEventEnum.TASK_CREATED, taskflowApp.getId(), tf1.getId(),
+                                "Task 'Set up CI/CD pipeline' was created"),
+                        createActivity(NotificationEventEnum.TASK_UPDATED, taskflowApp.getId(), tf1.getId(),
+                                "Task 'Set up CI/CD pipeline' status changed to DONE"),
+                        createActivity(NotificationEventEnum.COMMENT_ADDED, taskflowApp.getId(), tf1.getId(),
+                                "Admin commented on 'Set up CI/CD pipeline'"),
+                        createActivity(NotificationEventEnum.TASK_CREATED, taskflowApp.getId(), tf2.getId(),
+                                "Task 'Implement user authentication' was created"),
+                        createActivity(NotificationEventEnum.TASK_UPDATED, taskflowApp.getId(), tf2.getId(),
+                                "Task 'Implement user authentication' status changed to DONE"),
+                        createActivity(NotificationEventEnum.TASK_CREATED, ecomBackend.getId(), ec1.getId(),
+                                "Task 'Product catalogue service' was created"),
+                        createActivity(NotificationEventEnum.MEMBER_CHANGED, ecomBackend.getId(), null,
+                                "Ethan Lee was added as EDITOR to 'E-Commerce Backend'"),
+                        createActivity(NotificationEventEnum.TASK_CREATED, devopsInfra.getId(), di1.getId(),
+                                "Task 'Kubernetes cluster setup' was created"),
+                        createActivity(NotificationEventEnum.TASK_UPDATED, devopsInfra.getId(), di1.getId(),
+                                "Task 'Kubernetes cluster setup' status changed to DONE"),
+                        createActivity(NotificationEventEnum.PROJECT_CREATED, analyticsDashboard.getId(), null,
+                                "Project 'Data Analytics Dashboard' was created by Diana"),
+                        createActivity(NotificationEventEnum.TASK_CREATED, analyticsDashboard.getId(), ad1.getId(),
+                                "Task 'Set up Kafka data pipeline' was created")
+                ));
+                log.info("✅ Created {} activity log entries", activityRepo.count());
+
                 log.info("✨ Database seeding complete! ✨");
             } finally {
                 TenantContext.clear();
@@ -539,6 +572,16 @@ public class DataInitializer {
         c.setName(name);
         c.setContent(content);
         return c;
+    }
+
+    private ActivityEntity createActivity(NotificationEventEnum eventName,
+                                         Long projectId, Long taskId, String data) {
+        ActivityEntity a = new ActivityEntity();
+        a.setEventName(eventName);
+        a.setProjectId(projectId);
+        a.setTaskId(taskId);
+        a.setData(data);
+        return a;
     }
 
     /** Returns a Date relative to today. Negative = past, positive = future. */

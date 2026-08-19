@@ -1,9 +1,6 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { environment } from "../../environment";
-// import SockJS from 'sockjs-client';
-// import { Client, over } from 'stompjs';
-// import Stomp from 'stompjs';
 import { Client, StompSubscription } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 import { CommentModel } from "../models/comment.model";
@@ -28,7 +25,6 @@ export class CommentService {
       // If your backend supports raw WebSocket:
       brokerURL: environment.brokerUrl,
 
-      // If you need SockJS fallback:
       webSocketFactory: () => new SockJS(environment.wsUrl),
 
       connectHeaders: {
