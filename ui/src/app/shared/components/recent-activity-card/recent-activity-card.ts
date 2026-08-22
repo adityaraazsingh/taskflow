@@ -1,26 +1,37 @@
-import { Component, inject, Inject, input } from '@angular/core';
+import { Component,signal, inject, Inject, input } from '@angular/core';
 import { NotificationService } from '../../../core/services/notification.service';
 import { ActivityService } from '../../../core/services/activity.service';
 import { NotificationModel } from '../../../core/models/NotificationModel';
+import { Router } from '@angular/router';
+import { environment } from "../../../environment";
+import { Observable } from 'rxjs/internal/Observable';
+import { AsyncPipe } from '@angular/common';
+
 
 @Component({
   selector: 'app-recent-activity-card',
-  imports: [],
+  imports: [AsyncPipe],
   templateUrl: './recent-activity-card.html',
   styleUrl: './recent-activity-card.css',
 })
 export class RecentActivityCard {
-  // recentActivityStatus = input.required<string>();
-  notificationService = inject(NotificationService);
-  activityService = inject(ActivityService);
-  notifications: NotificationModel[] = [];
+  notifications$ = new Observable<NotificationModel[]>();
+  
+  url = environment.frontEndUrl;
+  
+  constructor(
+    private notificationService: NotificationService, 
+    private router : Router
+  ) {
+    this.notifications$ = this.notificationService.notificationsObs$;
+  }
 
   ngOnInit() {
-    this.activityService.getActivity().subscribe((activities: NotificationModel[]) => {
-      this.notifications = activities;
-      console.log('Recent activities:', activities);
-    });
+    this.notificationService.loadNotifications();
+    this.notificationService.connect();
   }
-}
 
-      
+  navigateToTheEvent(notification: NotificationModel) {
+    this.router.navigate([`/projects/${notification.data?.['projectId']}`]);
+  }
+}     

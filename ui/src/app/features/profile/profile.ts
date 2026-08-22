@@ -8,6 +8,7 @@ import { UserService } from '../../core/services/user.service';
 import { ChangePasswordDto } from '../../core/models/ChangePasswordDto';
 import { ProfileModel } from '../../core/models/profile.model';
 import { ProfileService } from '../../core/services/profileService';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-profile',
@@ -16,8 +17,8 @@ import { ProfileService } from '../../core/services/profileService';
   styleUrl: './profile.css',
 })
 export class Profile {
-  user! : UserModel;
-  profile= signal<ProfileModel | null>(null);
+  user = signal<UserModel|null>(null);
+  profile = signal<ProfileModel | null>(null);
   loading = signal(true);
   isPasswordSame = signal(false);
 
@@ -29,27 +30,14 @@ export class Profile {
   })
 
   constructor(private authService : AuthService, private userService : UserService, private profileService : ProfileService){
-    this.authService.me().subscribe(
-      (next)=>{
-        console.log("Users is laoded ",next);
-        this.user = next;
-        this.user.createdAt = new Date(this.user.createdAt!);
-        this.patchingValue()
-        this.loading.set(false);
-      }
-    )
-
-    
+    this.profile.set(this.profileService.profileSignal());
+    this.user.set(this.authService.userSignal())
+    this.patchingValue()
+    this.loading.set(false)
   }
 
   patchingValue(){
-    this.profileService.getProfileByUserId(this.user.id!).subscribe(
-      (next)=>{
-        console.log(next),
-        this.profileForm.patchValue(next),
-        this.profile.set(next);
-      }
-    )
+    this.profileForm.patchValue(this.profile()!)
   }
 
   changePasswordForm = new FormGroup({
@@ -87,7 +75,7 @@ export class Profile {
       firstName : this.profileForm.controls.firstName.value,
       lastName : this.profileForm.controls.lastName.value,
       bio : this.profileForm.controls.bio.value,
-      userId : this.user.id,
+      userId : this.user()!.id,
       avatarUrl : ' url '
     }
     this.profileService.saveProfileByUserId(payload).subscribe(

@@ -1,5 +1,8 @@
+import { NotificationEventEnum } from "../enums/NotificationEventEnum";
+
 export interface NotificationModel {
-  eventType: string;
+  eventType: NotificationEventEnum;
   message: string;
   tenantSchema: string;
+  data?: Record<string, any>;
 }

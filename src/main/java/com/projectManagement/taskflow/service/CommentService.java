@@ -57,7 +57,7 @@ public class CommentService {
 
 //  TODO : make this pageable also
     @Transactional(readOnly = true)
-    @Cacheable(value = "task-comments", keyGenerator = "tenantKeyGenerator")
+//    @Cacheable(value = "task-comments", keyGenerator = "tenantKeyGenerator")
     public PageResponseDto<CommentResponseDto> listCommentsForTask(Long taskId, Pageable pageable){
         Page<CommentEntity> comments = commentRepo.findAllByTask_id(taskId, pageable);
         return pageMapper.toDto(comments.map(commentMapper::toDto));

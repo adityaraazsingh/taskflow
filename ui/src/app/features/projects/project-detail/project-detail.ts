@@ -11,6 +11,7 @@ import { Status } from '../../../core/enums/Status';
 import { DatePipe } from '@angular/common';
 import { ProjectForm } from "../project-form/project-form";
 import { ConfirmDialog } from "../../../shared/components/confirm-dialog/confirm-dialog";
+import { CommentService } from '../../../core/services/comment.service';
 
 @Component({
   selector: 'app-project-detail',
@@ -42,14 +43,16 @@ export class ProjectDetail {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private projectService: ProjectService
+    private projectService: ProjectService,
+    private commentService: CommentService
   ) {
     this.projectId = +this.route.snapshot.paramMap.get('id')!;
-
+    
     // Fetch project details
     this.projectService.getOneProject(this.projectId).subscribe({
       next: (project) => {
         this.project.set(project);
+        this.commentService.loadCommentsForAllTasks(this.project()?.taskIds!);
       },
       error: (err) => {
         console.error('Error fetching project', err);

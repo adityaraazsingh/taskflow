@@ -28,7 +28,7 @@ import { ProfileModel } from '../../../core/models/profile.model';
 export class TaskDetail implements OnInit {
 
   task!: TaskModel;
-  user = signal<ProfileModel | null>(null);
+  profile = signal<ProfileModel | null>(null);
   Status = Status;
   editingTask = signal<boolean>(false);
   deletingTask = signal<boolean>(false);
@@ -59,12 +59,7 @@ export class TaskDetail implements OnInit {
       this.priority.set(this.task.priority)
     }
 
-    this.profileService.getProfileByUserId(this.task.assigneeId!).subscribe(
-      (next) => {
-        console.log(next)
-        this.user.set(next)
-      }
-    )
+    this.profile.set(this.profileService.profileSignal())
 
   }
 

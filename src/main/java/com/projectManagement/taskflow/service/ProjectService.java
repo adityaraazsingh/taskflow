@@ -31,7 +31,9 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -167,14 +169,10 @@ public class ProjectService {
 
         projectMemberRepo.save(projectMember);
 
-        MemberChangeData data = new MemberChangeData(
-                userOpt.get().getId(),
-                userOpt.get().getUsername(),
-                projectOpt.get().getId(),
-                projectOpt.get().getName()
-        );
-
-        notificationPublisher.publishMemberChange(data);
+        Map<String, Object> map = new HashMap<>();
+        map.put("projectId",projectOpt.get().getId());
+        String message = "New member added " + userOpt.get().getUsername() + " to project " + projectOpt.get().getName();
+        notificationPublisher.publishNotification(message, projectId, map, NotificationEventEnum.MEMBER_CHANGED);
 
         return "User added successfully";
     }
@@ -185,6 +183,17 @@ public class ProjectService {
     )
     public boolean removeMember(Long projectId, Long memberId){
         UserEntity requester = authService.getCurrentUser();
+
+
+//        MemberChangeData data = new MemberChangeData(
+//                userOpt.get().getId(),
+//                userOpt.get().getUsername(),
+//                projectOpt.get().getId(),
+//                projectOpt.get().getName()
+//        );
+//
+//        notificationPublisher.publishMemberChange(data);
+
         projectMemberRepo.deleteById(memberId);
         return true;
     }

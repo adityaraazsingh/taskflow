@@ -145,27 +145,27 @@ public class TaskService {
         taskRepo.save(task);
 
         // Create event data
-        TaskAssignedData data = new TaskAssignedData(
-                task.getId(),
-                task.getTitle(),
-                user.getId(),
-                user.getUsername()
-        );
-
-        // Create event
-        NotificationEvent event =
-                new NotificationEvent(
-                        NotificationEventEnum.TASK_CREATED,
-                        TenantContext.getTenant(),
-                        data.toString()
-                );
-
-        // Publish
-        rabbitTemplate.convertAndSend(
-                "task.exchange",
-                "task.assigned",
-                event
-        );
+//        TaskAssignedData data = new TaskAssignedData(
+//                task.getId(),
+//                task.getTitle(),
+//                user.getId(),
+//                user.getUsername()
+//        );
+//
+//        // Create event
+//        NotificationEvent event =
+//                new NotificationEvent(
+//                        NotificationEventEnum.TASK_CREATED,
+//                        TenantContext.getTenant(),
+//                        data.toString()
+//                );
+//
+//        // Publish
+//        rabbitTemplate.convertAndSend(
+//                "task.exchange",
+//                "task.assigned",
+//                event
+//        );
 
         return "Task is assigned to user with user id : "+user.getId();
     }

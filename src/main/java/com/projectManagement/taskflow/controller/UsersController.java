@@ -6,6 +6,7 @@ import com.projectManagement.taskflow.dto.UserResponseDto;
 import com.projectManagement.taskflow.service.AuthService;
 import com.projectManagement.taskflow.service.TenantService;
 import com.projectManagement.taskflow.service.UserService;
+import com.projectManagement.taskflow.tenant.TenantContext;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -42,7 +43,8 @@ public class UsersController {
 
     @GetMapping("/me/{username}")
     public ResponseEntity<UserResponseDto> getUserDetails(@PathVariable String username){
-        return ResponseEntity.ok(userService.findByUsername(username));
+        String fullUsername = TenantContext.getTenant()+"/"+username;
+        return ResponseEntity.ok(userService.findByUsername(fullUsername));
     }
 
     @PostMapping("/signup")

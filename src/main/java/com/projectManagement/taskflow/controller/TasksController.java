@@ -43,7 +43,7 @@ public class TasksController {
                                                       @RequestBody List<@Valid CommentRequestDTO> comments){
         comments.forEach((comment)-> {
             CommentResponseDto dto = commentService.addComment(taskId, comment);
-            messagingTemplate.convertAndSend("/topic/comments", dto);
+            messagingTemplate.convertAndSend("/topic/comments/"+taskId, dto);
         });
         return ResponseEntity.status(HttpStatus.CREATED).body(null);
     }

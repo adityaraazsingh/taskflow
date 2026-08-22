@@ -1,9 +1,6 @@
 package com.projectManagement.taskflow.config;
 
-import org.springframework.amqp.core.Binding;
-import org.springframework.amqp.core.BindingBuilder;
-import org.springframework.amqp.core.Queue;
-import org.springframework.amqp.core.TopicExchange;
+import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.support.converter.JacksonJsonMessageConverter;
@@ -30,6 +27,19 @@ public class RabbitMQConfig {
     public TopicExchange memberExchange() {
         return new TopicExchange("member.exchange");
     }
+
+    @Bean
+    public Declarables rabbitDeclarables() {
+        Queue memberQueue = new Queue("member.notification.queue");
+        TopicExchange memberExchange = new TopicExchange("member.exchange");
+
+        return new Declarables(
+                memberQueue,
+                memberExchange,
+                BindingBuilder.bind(memberQueue).to(memberExchange).with("member.*")
+        );
+    }
+
 
     @Bean
     public Binding memberBinding(

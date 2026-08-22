@@ -6,15 +6,19 @@ import { AuthModel } from "../models/auth.model";
 import { UserModel } from "../models/user.model";
 import { ChangePasswordDto } from "../models/ChangePasswordDto";
 import { Router } from "@angular/router";
+import { BehaviorSubject } from "rxjs";
+import { UserService } from "./user.service";
+import { ProfileService } from "./profileService";
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService implements OnInit{
     url : string = environment.apiUrl;
+    public userSignal = signal<UserModel | null>(null);
     public isUserLoggedIn = signal<boolean | null>(null)
 
-    constructor(private httpClient:HttpClient, private router : Router){}
+    constructor(private httpClient:HttpClient, private router : Router, private userService : UserService, private profileService : ProfileService){}
 
     ngOnInit(): void {
         this.checkIfUserLoggedIn();
@@ -34,14 +38,26 @@ export class AuthService implements OnInit{
         return this.httpClient.post<AuthModel>(
             `${this.url}/auth/login`,
             payload
-        );
+        ).subscribe({
+        next : (response) => {
+          localStorage.setItem("accessToken" , response.accessToken);
+          localStorage.setItem("refreshToken" , response.refreshToken);
+          this.checkIfUserLoggedIn()
+          this.router.navigate(['/dashboard']);
+          this.userService.getUserWithUsername(response.username).subscribe((data)=>{
+                this.userSignal.set(data)
+                this.profileService.getProfileByUserId(data.id!)
+          })
+        },
+        error : (error) => {
+          console.error(error);
+        }
+      });
     }
 
     
     public me(){
-        return this.httpClient.get<UserModel>(
-            `${this.url}/auth/me`
-        );
+        return this.userSignal()
     }
 
     public refresh(){

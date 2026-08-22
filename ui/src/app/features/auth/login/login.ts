@@ -4,6 +4,8 @@ import { AuthService } from '../../../core/services/auth.service';
 import { LoginRequest } from '../../../core/models/loginRequest.model';
 import { UserModel } from '../../../core/models/user.model';
 import { Router } from '@angular/router';
+import { UserService } from '../../../core/services/user.service';
+import { BehaviorSubject, Observable } from 'rxjs';
 
 @Component({
   selector: 'app-login',
@@ -14,9 +16,11 @@ import { Router } from '@angular/router';
 export class Login {
 
   isLoggingIn : boolean = true;
+  // user$ = new BehaviorSubject<UserModel | null>(null);
+  // userObservable$ = this.user$.asObservable();
   
   loginForm = new FormGroup({
-    username : new FormControl('admin'),
+    username : new FormControl('DefaultTENANT/admin'),
     password : new FormControl('Admin@123'),
   });
 
@@ -28,6 +32,7 @@ export class Login {
   });
 
   authService = inject(AuthService);
+  userService = inject(UserService);
   router = inject(Router);
 
   onLoginClick(){
@@ -37,17 +42,7 @@ export class Login {
         password: this.loginForm.value.password!
       };
       console.log(payload);
-      this.authService.login(payload).subscribe({
-        next : (response) => {
-          localStorage.setItem("accessToken" , response.accessToken);
-          localStorage.setItem("refreshToken" , response.refreshToken);
-          this.authService.checkIfUserLoggedIn()
-          this.router.navigate(['/dashboard']);
-        },
-        error : (error) => {
-          console.error(error);
-        }
-      });
+      this.authService.login(payload);
     }else{
       const payload : UserModel = {
         username: this.signUpForm.value.username!,

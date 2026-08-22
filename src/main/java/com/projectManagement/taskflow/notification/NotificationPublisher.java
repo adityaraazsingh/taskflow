@@ -7,6 +7,8 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Map;
+
 //@Transactional
 @Service
 public class NotificationPublisher {
@@ -19,19 +21,18 @@ public class NotificationPublisher {
         this.activityService = activityService;
     }
 
-    public void publishMemberChange(MemberChangeData data) {
-        NotificationEventEnum eventName = NotificationEventEnum.MEMBER_CHANGED;
+    public void publishNotification(String message, Long projectId, Map<String, Object> map, NotificationEventEnum eventName) {
         String tenantName = TenantContext.getTenant();
-        String message = "New member added " + data.memberName() + " to project " + data.projectTitle();
         NotificationEvent event = new NotificationEvent(
                 eventName,
                 tenantName,
-                message
+                message,
+                map
         );
 
         ActivityEntity activity = new ActivityEntity();
         activity.setEventName(eventName);
-        activity.setProjectId(data.projectId());
+        activity.setProjectId(projectId);
         activity.setData(message);
 
         activityService.postActivity(activity);
