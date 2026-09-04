@@ -15,12 +15,16 @@ public class TagEntity {
     private Long id;
 
     @JsonIgnore
-    @ManyToMany(mappedBy = "tags")
+    @ManyToMany(mappedBy = "tags", fetch = FetchType.EAGER)
     private List<TaskEntity> tasks = new ArrayList<>();
 
     private String name;
 
     private String colorHex;
+
+    public Long getId() {
+        return id;
+    }
 
     @Override
     public String toString() {

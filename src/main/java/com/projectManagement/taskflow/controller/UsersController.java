@@ -1,68 +1,61 @@
 package com.projectManagement.taskflow.controller;
 
-import com.projectManagement.taskflow.dto.UserRequestDTO;
+import com.projectManagement.taskflow.dto.PageResponseDto;
+import com.projectManagement.taskflow.dto.TenantUserRequestDto;
 import com.projectManagement.taskflow.dto.UserResponseDto;
-import com.projectManagement.taskflow.entity.UserEntity;
-import com.projectManagement.taskflow.exception.UserNotFoundException;
-import com.projectManagement.taskflow.mapper.UserMapper;
-import com.projectManagement.taskflow.repository.UserRepo;
 import com.projectManagement.taskflow.service.AuthService;
+import com.projectManagement.taskflow.service.TenantService;
 import com.projectManagement.taskflow.service.UserService;
+import com.projectManagement.taskflow.tenant.TenantContext;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RequestMapping("/api/users")
 @RestController
 public class UsersController {
 
-    @Autowired
-    private UserRepo userRepo;
+    private final UserService userService;
+    private final AuthService authService;
+    private final TenantService tenantService;
 
-    @Autowired
-    private UserService userService;
-
-    @Autowired
-    private UserMapper userMapper;
-
-    @Autowired
-    private AuthService authService;
-
-    @Autowired
-    private BCryptPasswordEncoder passwordEncoder;
+    public UsersController(UserService userService, AuthService authService, TenantService tenantService) {
+        this.userService = userService;
+        this.authService = authService;
+        this.tenantService = tenantService;
+    }
 
     @GetMapping
     private List<UserResponseDto> alLusers(){
-        return userRepo.findAll().stream().map(userMapper::toDto).collect(Collectors.toList());
+        return userService.findAllUsers();
     }
 
     @GetMapping("/{userId}")
     public UserResponseDto getUserByUserId(@PathVariable Long userId){
-        return this.userMapper.toDto(userRepo.findById(userId).orElseThrow(()->new UserNotFoundException("User not Found")));
+        return this.userService.findById(userId);
     }
 
     @GetMapping("/me/{username}")
-    private ResponseEntity<UserResponseDto> getUserDetails(@PathVariable String username){
-        return ResponseEntity.ok(userService.findByUsername(username));
+    public ResponseEntity<UserResponseDto> getUserDetails(@PathVariable String username){
+        String fullUsername = TenantContext.getTenant()+"/"+username;
+        return ResponseEntity.ok(userService.findByUsername(fullUsername));
     }
 
     @PostMapping("/signup")
-    private ResponseEntity<UserResponseDto> registerUser(@Valid @RequestBody UserRequestDTO dto){
+    public ResponseEntity<UserResponseDto> registerUser(@Valid @RequestBody TenantUserRequestDto dto){
+        tenantService.createTenant(dto.getTenantName());
         return ResponseEntity.status(HttpStatus.CREATED).body(authService.register(dto));
     }
 
     @GetMapping("/all")
-    private Page<UserResponseDto> getAllUsers(@RequestParam(defaultValue = "0") int page,
-                                         @RequestParam(defaultValue = "10") int size){
+    public PageResponseDto<UserResponseDto> getAllUsers(@RequestParam(defaultValue = "0") int page,
+                                                        @RequestParam(defaultValue = "10") int size){
         Pageable pageable = PageRequest.of(page, size);
         return userService.listUsers(pageable);
     }

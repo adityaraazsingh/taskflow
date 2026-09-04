@@ -10,10 +10,10 @@ import lombok.Setter;
 
 @Data
 public class UserRequestDTO {
-    @NotNull
+    @NotNull(message = "username can't be null")
     private String username;
     private String password;
-    @NotNull
+    @NotNull(message = "role can't be null")
     private RoleEnum role;
     @Email
     private String email;

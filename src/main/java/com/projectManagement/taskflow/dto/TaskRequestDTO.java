@@ -9,9 +9,9 @@ import java.util.Date;
 
 @Data
 public class TaskRequestDTO {
-    @NotNull
+    @NotNull(message = "title can't be null")
     private String title;
-    @NotNull
+    @NotNull(message = "Description can't be null")
     private String description;
     private Date dueDate;
     private Priority priority;

@@ -6,6 +6,6 @@ import lombok.Data;
 
 @Data
 public class PriorityChangeRequestDto {
-    @NotNull
+    @NotNull(message = "priority can't be null")
     private Priority priority;
 }

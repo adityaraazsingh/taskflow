@@ -2,8 +2,6 @@ package com.projectManagement.taskflow.security;
 
 import com.projectManagement.taskflow.dto.ProjectResponseDto;
 import com.projectManagement.taskflow.dto.TaskResponseDto;
-import com.projectManagement.taskflow.entity.ProjectEntity;
-import com.projectManagement.taskflow.entity.TaskEntity;
 import com.projectManagement.taskflow.entity.UserEntity;
 import com.projectManagement.taskflow.service.AuthService;
 import com.projectManagement.taskflow.service.ProjectService;
@@ -36,8 +34,6 @@ public class ProjectSecurity {
 
         return isProjectMember(project.getProjectId());
     }
-
-
 
     public boolean isProjectCreator(Long projectId){
         Long userIdOfProject = projectService.getProjectById(projectId).getUserId();

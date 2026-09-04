@@ -10,24 +10,35 @@ import com.projectManagement.taskflow.repository.TagRepo;
 import com.projectManagement.taskflow.repository.TaskRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
+@Transactional
 public class TagService {
-    @Autowired
-    private TagRepo tagRepo;
 
-    @Autowired
-    private TaskRepo taskRepo;
+    private final TagRepo tagRepo;
+    private final TaskRepo taskRepo;
+    private final TagMapper tagMapper;
 
-    @Autowired
-    private TagMapper tagMapper;
-
+    public TagService(TagRepo tagRepo, TaskRepo taskRepo, TagMapper tagMapper) {
+        this.tagRepo = tagRepo;
+        this.taskRepo = taskRepo;
+        this.tagMapper = tagMapper;
+    }
 
     public TagResponseDto createTag(TagRequestDTO tagRequest){
         TagEntity tag = tagMapper.toEntity(tagRequest);
         return tagMapper.toDto(tagRepo.save(tag));
     }
 
+    public List<TagResponseDto> getAllTags(){
+        return tagRepo.findAll().stream().map(tagMapper::toDto).collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
     public TagResponseDto getTagById(Long id){
         TagEntity tag = tagRepo.findById(id).orElseThrow(()->new RuntimeException("Tag Not Found"));
         return tagMapper.toDto(tag);
@@ -67,5 +78,23 @@ public class TagService {
         taskRepo.save(task);
 
         return "Successfully removed the Tag";
+    }
+
+    public List<TagResponseDto> getTagsByTaskId(Long taskId) {
+        TaskEntity task = taskRepo.findById(taskId).orElseThrow(()-> new TaskNotFoundException("Task Not Found"));
+        List<Long> tagIds = task.getTags().stream().map(TagEntity::getId).collect(Collectors.toList());
+
+        return tagIds.stream().map((id)-> tagMapper.toDto(tagRepo.findById(id).orElseThrow(
+                ()-> new RuntimeException("Tag not found")
+        ))).collect(Collectors.toList());
+    }
+
+    public List<TagResponseDto> postTags(List<TagRequestDTO> tags){
+        return tagRepo.saveAll(
+                        tags.stream().map(tagMapper::toEntity)
+                                .collect(Collectors.toList()))
+                .stream()
+                .map(tagMapper::toDto)
+                .collect(Collectors.toList());
     }
 }

@@ -1,9 +1,7 @@
 package com.projectManagement.taskflow.security;
 
 import com.projectManagement.taskflow.enums.RoleEnum;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Component;
 
@@ -11,6 +9,7 @@ import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 
 @Component
 public class JwtUtil {
@@ -25,8 +24,9 @@ public class JwtUtil {
         String accessToken = Jwts.builder()
                 .setSubject(username)
                 .claim("role", role)
+                .claim("tenantId",username.split("/")[0])
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 )) // 15 min
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 6 )) // 1 min
                 .signWith(getSignKey(), SignatureAlgorithm.HS256)
                 .compact();
         String refreshToken = Jwts.builder()
@@ -67,6 +67,20 @@ public class JwtUtil {
             System.out.println("Role of the user "+ role);
             return role;
         }catch(ExpiredJwtException ex){
+            return null;
+        }
+    }
+
+    public <T> T extractClaim(String token, Function<Claims,T > resolver){
+        try{
+            Claims claims = Jwts.parserBuilder()
+                    .setSigningKey(getSignKey())
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+
+            return resolver.apply(claims);
+        }catch (ExpiredJwtException e){
             return null;
         }
     }

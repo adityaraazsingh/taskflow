@@ -1,9 +1,6 @@
 package com.projectManagement.taskflow.service;
 
-import com.projectManagement.taskflow.dto.ProjectMemberResponseDto;
-import com.projectManagement.taskflow.dto.ProjectRequestDto;
-import com.projectManagement.taskflow.dto.ProjectResponseDto;
-import com.projectManagement.taskflow.dto.UserResponseDto;
+import com.projectManagement.taskflow.dto.*;
 import com.projectManagement.taskflow.entity.ProjectEntity;
 import com.projectManagement.taskflow.entity.ProjectMember;
 import com.projectManagement.taskflow.enums.Priority;
@@ -12,50 +9,63 @@ import com.projectManagement.taskflow.enums.RoleInProject;
 import com.projectManagement.taskflow.entity.UserEntity;
 import com.projectManagement.taskflow.enums.Status;
 import com.projectManagement.taskflow.exception.ProjectNotFoundException;
-import com.projectManagement.taskflow.exception.UserNotFoundException;
 import com.projectManagement.taskflow.filter.ProjectSpecification;
+import com.projectManagement.taskflow.mapper.PageMapper;
 import com.projectManagement.taskflow.mapper.ProjectMapper;
 import com.projectManagement.taskflow.mapper.ProjectMemberMapper;
+import com.projectManagement.taskflow.notification.MemberChangeData;
+import com.projectManagement.taskflow.notification.NotificationEvent;
+import com.projectManagement.taskflow.notification.NotificationEventEnum;
+import com.projectManagement.taskflow.notification.NotificationPublisher;
 import com.projectManagement.taskflow.repository.ProjectMemberRepo;
 import com.projectManagement.taskflow.repository.ProjectRepo;
 import com.projectManagement.taskflow.repository.TaskRepo;
 import com.projectManagement.taskflow.repository.UserRepo;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.projectManagement.taskflow.tenant.TenantContext;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 public class ProjectService {
 
-    @Autowired
-    private ProjectRepo projectRepo;
+    private final ProjectRepo projectRepo;
+    private final UserRepo userrepo;
+    private final ProjectMemberRepo projectMemberRepo;
+    private final AuthService authService;
+    private final ProjectMapper projectMapper;
+    private final ProjectMemberMapper projectMemberMapper;
+    private final UserService userService;
+    private final TaskRepo taskRepo;
+    private final PageMapper pageMapper;
+//    private final RabbitTemplate rabbitTemplate;
+    private final NotificationPublisher notificationPublisher;
 
-    @Autowired
-    private UserRepo userrepo;
-
-    @Autowired
-    private ProjectMemberRepo projectMemberRepo;
-
-    @Autowired
-    private AuthService authService;
-
-    @Autowired
-    private ProjectMapper projectMapper;
-
-    @Autowired
-    private ProjectMemberMapper projectMemberMapper;
-
-    @Autowired
-    private UserService userService;
-
-    @Autowired
-    private TaskRepo taskRepo;
+    public ProjectService(ProjectRepo projectRepo, UserRepo userrepo, ProjectMemberRepo projectMemberRepo, AuthService authService, ProjectMapper projectMapper, ProjectMemberMapper projectMemberMapper, UserService userService, TaskRepo taskRepo, PageMapper pageMapper, RabbitTemplate rabbitTemplate, NotificationPublisher notificationPublisher) {
+        this.projectRepo = projectRepo;
+        this.userrepo = userrepo;
+        this.projectMemberRepo = projectMemberRepo;
+        this.authService = authService;
+        this.projectMapper = projectMapper;
+        this.projectMemberMapper = projectMemberMapper;
+        this.userService = userService;
+        this.taskRepo = taskRepo;
+        this.pageMapper = pageMapper;
+//        this.rabbitTemplate = rabbitTemplate;
+        this.notificationPublisher = notificationPublisher;
+    }
 
     //TODO: createProject(ProjectEntity project, UserEntity owner) See what it is
     public ProjectResponseDto createProject(ProjectRequestDto dto){
@@ -65,11 +75,23 @@ public class ProjectService {
         entity.setDescription(dto.getDescription());
         entity.setStatus(dto.getStatus());
         entity.setUser(creator);
-// TODO : We are not setting taskIds and ProjectMemberIDs, creator should be the first projectMember
         return projectMapper.toDto(projectRepo.save(entity));
     }
 
-    //TODO: getProjectById(Long id, UserEntity user) See what it is
+    public List<ProjectResponseDto> getAllProjects(){
+        return projectRepo.findAll().stream().map(projectMapper::toDto).collect(Collectors.toList());
+    }
+
+    public List<ProjectEntity> saveALl(List<ProjectEntity> projects){
+        return projectRepo.saveAll(projects);
+    }
+
+    //TODO: getProjectById(Long id, UserEntity user) See what it
+    @Transactional(readOnly = true)
+    @Cacheable(
+            value = "projects",
+            key = "T(com.projectManagement.taskflow.tenant.TenantContext).getTenant() + ':project:' + #id"
+    )
     public ProjectResponseDto getProjectById(Long id){
         UserEntity user = authService.getCurrentUser();
         return projectMapper.toDto(
@@ -80,8 +102,8 @@ public class ProjectService {
         );
     }
 
-    public Page<ProjectResponseDto> listProjectsForUser(
-            Long userId,
+    @Transactional(readOnly = true)
+    public PageResponseDto<ProjectResponseDto> listProjectsForUser(
             Status status,
             Priority priority,
             String name,
@@ -90,15 +112,20 @@ public class ProjectService {
         UserEntity user = authService.getCurrentUser();
 
         boolean isAdmin = user.getRole() == RoleEnum.ADMIN;
+        Long userId = user.getId();
 
         Specification<ProjectEntity> spec = ProjectSpecification.filterProjects(
                 userId, status, priority, name, isAdmin);
 
         Page<ProjectEntity> entity = projectRepo.findAll(spec, pageable);
 
-        return entity.map(projectMapper::toDto);
+        return pageMapper.toDto(entity.map(projectMapper::toDto));
     }
 
+    @CacheEvict(
+            value = "projects",
+            key = "T(com.projectManagement.taskflow.tenant.TenantContext).getTenant() + ':project:' + #id"
+    )
     public ProjectResponseDto updateProject(Long id, ProjectRequestDto dto){
         UserEntity user = authService.getCurrentUser();
         ProjectEntity entity = projectRepo.findById(id)
@@ -112,12 +139,20 @@ public class ProjectService {
         return projectMapper.toDto(projectRepo.save(entity));
     }
 
+    @CacheEvict(
+            value = "projects",
+            key = "T(com.projectManagement.taskflow.tenant.TenantContext).getTenant() + ':project:' + #id"
+    )
     public boolean deleteProject(Long id){
          authService.getCurrentUser();
          projectRepo.deleteById(id);
          return true;
     }
 
+    @CacheEvict(
+            value = "project-members",
+            key = "T(com.projectManagement.taskflow.tenant.TenantContext).getTenant() + ':project-members:' + #projectId"
+    )
     public String addMember(Long projectId, Long userId, RoleInProject roleInProject) {
 
         Optional<ProjectEntity> projectOpt = projectRepo.findById(projectId);
@@ -134,15 +169,40 @@ public class ProjectService {
 
         projectMemberRepo.save(projectMember);
 
+        Map<String, Object> map = new HashMap<>();
+        map.put("projectId",projectOpt.get().getId());
+        String message = "New member added " + userOpt.get().getUsername() + " to project " + projectOpt.get().getName();
+        notificationPublisher.publishNotification(message, projectId, map, NotificationEventEnum.MEMBER_CHANGED);
+
         return "User added successfully";
     }
 
-    public boolean removeMember(Long memberId){
+    @CacheEvict(
+            value = "project-members",
+            key = "T(com.projectManagement.taskflow.tenant.TenantContext).getTenant() + ':project-members:' + #projectId"
+    )
+    public boolean removeMember(Long projectId, Long memberId){
         UserEntity requester = authService.getCurrentUser();
+
+
+//        MemberChangeData data = new MemberChangeData(
+//                userOpt.get().getId(),
+//                userOpt.get().getUsername(),
+//                projectOpt.get().getId(),
+//                projectOpt.get().getName()
+//        );
+//
+//        notificationPublisher.publishMemberChange(data);
+
         projectMemberRepo.deleteById(memberId);
         return true;
     }
 
+    @Transactional(readOnly = true)
+    @Cacheable(
+            value = "project-members",
+            key = "T(com.projectManagement.taskflow.tenant.TenantContext).getTenant() + ':project-members:' + #projectId"
+    )
     public List<UserResponseDto> listAllUsersOnAProject(Long projectId){
         List<ProjectMemberResponseDto> projectMembersDto = listMembersOnAProject(projectId);
         List<UserResponseDto> userDtos = projectMembersDto.stream()
@@ -151,6 +211,11 @@ public class ProjectService {
         return userDtos;
     }
 
+    @Transactional(readOnly = true)
+    @Cacheable(
+            value = "project-members",
+            key = "T(com.projectManagement.taskflow.tenant.TenantContext).getTenant() + ':project-members:' + #projectId"
+    )
     public List<ProjectMemberResponseDto> listMembersOnAProject(Long projectId){
         return projectMemberRepo.findAllByProject_id(projectId)
                 .stream()

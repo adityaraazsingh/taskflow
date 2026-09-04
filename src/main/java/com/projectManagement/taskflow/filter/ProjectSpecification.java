@@ -5,10 +5,12 @@ import com.projectManagement.taskflow.enums.Priority;
 import com.projectManagement.taskflow.enums.Status;
 import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Component
 public class ProjectSpecification {
 
     public static Specification<ProjectEntity> filterProjects(

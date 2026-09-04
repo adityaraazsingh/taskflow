@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, effect, OnInit, signal } from '@angular/core';
 import { AuthService } from '../../core/services/auth.service';
 import { UserModel } from '../../core/models/user.model';
 import { AbstractControl, FormControl, FormControlName, FormGroup, ReactiveFormsModule, ValidationErrors } from '@angular/forms';
@@ -8,6 +8,7 @@ import { UserService } from '../../core/services/user.service';
 import { ChangePasswordDto } from '../../core/models/ChangePasswordDto';
 import { ProfileModel } from '../../core/models/profile.model';
 import { ProfileService } from '../../core/services/profileService';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-profile',
@@ -15,9 +16,9 @@ import { ProfileService } from '../../core/services/profileService';
   templateUrl: './profile.html',
   styleUrl: './profile.css',
 })
-export class Profile {
-  user! : UserModel;
-  profile= signal<ProfileModel | null>(null);
+export class Profile implements OnInit{
+  user = signal<UserModel|null>(null);
+  profile = signal<ProfileModel | null>(null);
   loading = signal(true);
   isPasswordSame = signal(false);
 
@@ -28,28 +29,27 @@ export class Profile {
     bio : new FormControl(),
   })
 
-  constructor(private authService : AuthService, private userService : UserService, private profileService : ProfileService){
-    this.authService.me().subscribe(
-      (next)=>{
-        console.log("Users is laoded ",next);
-        this.user = next;
-        this.user.createdAt = new Date(this.user.createdAt!);
-        this.patchingValue()
-        this.loading.set(false);
-      }
-    )
+  
 
-    
+  constructor(private authService : AuthService, private userService : UserService, private profileService : ProfileService){
+    this.profileService.getProfileByUserId();
+    this.profile = this.profileService.profileSignal;
+    this.user.set(this.authService.userSignal())
+    effect(() => {
+      const profile = this.profile();
+      if (profile) {
+        this.patchingValue()
+      }
+    });
+  }
+  
+  ngOnInit(): void {
+    this.patchingValue()
+    this.loading.set(false)
   }
 
   patchingValue(){
-    this.profileService.getProfileByUserId(this.user.id!).subscribe(
-      (next)=>{
-        console.log(next),
-        this.profileForm.patchValue(next),
-        this.profile.set(next);
-      }
-    )
+    this.profileForm.patchValue(this.profile()!)
   }
 
   changePasswordForm = new FormGroup({
@@ -87,7 +87,7 @@ export class Profile {
       firstName : this.profileForm.controls.firstName.value,
       lastName : this.profileForm.controls.lastName.value,
       bio : this.profileForm.controls.bio.value,
-      userId : this.user.id,
+      userId : this.user()!.id,
       avatarUrl : ' url '
     }
     this.profileService.saveProfileByUserId(payload).subscribe(

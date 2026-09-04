@@ -3,53 +3,51 @@ import { CommentModel } from '../../../core/models/comment.model';
 import { CommentService } from '../../../core/services/comment.service';
 import { TaskService } from '../../../core/services/task.service';
 import { FormsModule } from '@angular/forms';
-import { DatePipe, NgClass } from '@angular/common';
+import { AsyncPipe, DatePipe, NgClass } from '@angular/common';
 import { MomentModule } from 'ngx-moment';
+import { map, Observable } from 'rxjs';
+import { ProfileService } from '../../../core/services/profileService';
 
 @Component({
   selector: 'app-comment-list',
-  imports: [FormsModule, MomentModule, NgClass],
+  imports: [FormsModule, MomentModule, NgClass, AsyncPipe],
   templateUrl: './comment-list.html',
   styleUrl: './comment-list.css',
 })
 export class CommentList {
-  allComments= signal<CommentModel[]>([]);
+  // allComments = signal<CommentModel[]>([]);
+  allComments$ = new Observable<CommentModel[]>();
   commentText : string = '';
   taskId = input.required<number>();
   isReplying = signal<number>(-1);
 
-  constructor(private taskService : TaskService , private commentService : CommentService){}
+  constructor(private taskService : TaskService , private commentService : CommentService, private profileService : ProfileService){}
 
   ngOnInit(): void {
-    this.taskService.getCommentsForTask(this.taskId()! , 0 , 10).subscribe(
-      next =>{
-        this.allComments.set(next.content)
-      }
+    this.commentService.connect();
+    this.commentService.loadCommentsForAllTasks([this.taskId()]);
+    this.commentService.connectToTask(this.taskId());
+    this.allComments$ = this.commentService.comments$.pipe(
+      map(map => map.get(this.taskId()) || [])
     );
-
-    this.commentService.connect((comment) => {
-      this.allComments.update(current => [
-        ...current,comment
-      ]);
-    });
   }
 
-  ngOnDestroy(): void {
-    this.commentService.disconnect();
-    // console.log("Disconnected from WebSocket");
+  ngOnDestroy() {
+    this.commentService.unsubscribeTask(this.taskId());
   }
 
   onClickingComment(){
     const comments : CommentModel[] = [];
     const payload : CommentModel = {
+      name : this.profileService.profileSignal()?.firstName || 'Unknown',
       content : this.commentText
     }
     comments.push(payload);
     
     this.taskService.postCommentsForTask(this.taskId(),comments).subscribe(
       (next)=>{
-        console.log(next)
         this.commentText=''
+        ,this.commentService.loadCommentsForAllTasks([this.taskId()]);
       }
     );
   }
@@ -58,9 +56,9 @@ export class CommentList {
     this.isReplying.set(commentId);
   }
 
-  get replyingComment() {
-    return this.allComments().find(c => c.id === this.isReplying()) || null;
-  }
+  // get replyingComment() {
+    // return this.allComments().find(c => c.id === this.isReplying()) || null;
+  // }
 
   onCanclingReply(){
     this.isReplying.set(-1)

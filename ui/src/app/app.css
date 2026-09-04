@@ -17,7 +17,7 @@
   background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
   display: flex;
   flex-direction: column;
-  position: fixed;
+  /* position: fixed; */
   top: 0;
   left: 0;
   bottom: 0;
@@ -86,7 +86,7 @@
 
 /* Main Content */
 .main-content {
-  margin-left: 260px;
+  /* margin-left: 260px; */
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -125,7 +125,7 @@
 
 /* Hamburger Button */
 .mobile-menu-btn {
-  display: none;
+  /* display: none; */
   align-items: center;
   justify-content: center;
   width: 2.25rem;
