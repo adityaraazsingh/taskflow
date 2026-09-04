@@ -6,6 +6,7 @@ import { Router } from '@angular/router';
 import { environment } from "../../../environment";
 import { Observable } from 'rxjs/internal/Observable';
 import { AsyncPipe } from '@angular/common';
+import { map } from 'rxjs';
 
 
 @Component({
@@ -23,7 +24,14 @@ export class RecentActivityCard {
     private notificationService: NotificationService, 
     private router : Router
   ) {
-    this.notifications$ = this.notificationService.notificationsObs$;
+    this.notifications$ = this.notificationService.notificationsObs$.pipe(
+      map( notifications => notifications.filter(n => {
+          const createdAt = new Date(n.createdAt!).getTime();
+          const now = Date.now();
+          const diffHours = (now - createdAt) / (1000 * 60 * 60);
+          return diffHours <= 24;
+        }))
+    );
   }
 
   ngOnInit() {
