@@ -3,7 +3,6 @@ package com.projectManagement.taskflow.service;
 import com.projectManagement.taskflow.dto.CommentRequestDTO;
 import com.projectManagement.taskflow.dto.CommentResponseDto;
 import com.projectManagement.taskflow.dto.PageResponseDto;
-import com.projectManagement.taskflow.dto.TaskRequestDTO;
 import com.projectManagement.taskflow.entity.CommentEntity;
 import com.projectManagement.taskflow.entity.ProfileEntity;
 import com.projectManagement.taskflow.entity.TaskEntity;
@@ -11,17 +10,12 @@ import com.projectManagement.taskflow.entity.UserEntity;
 import com.projectManagement.taskflow.exception.TaskNotFoundException;
 import com.projectManagement.taskflow.mapper.CommentMapper;
 import com.projectManagement.taskflow.mapper.PageMapper;
-import com.projectManagement.taskflow.mapper.TaskMapper;
 import com.projectManagement.taskflow.repository.CommentRepo;
 import com.projectManagement.taskflow.repository.TaskRepo;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 @Transactional

@@ -5,4 +5,5 @@ export interface NotificationModel {
   message: string;
   tenantSchema: string;
   data?: Record<string, any>;
+  createdAt?: Date;
 }

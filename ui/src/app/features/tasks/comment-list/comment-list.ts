@@ -46,8 +46,8 @@ export class CommentList {
     
     this.taskService.postCommentsForTask(this.taskId(),comments).subscribe(
       (next)=>{
-        this.commentText='',
-        this.commentService.loadCommentsForAllTasks([this.taskId()]);
+        this.commentText=''
+        ,this.commentService.loadCommentsForAllTasks([this.taskId()]);
       }
     );
   }

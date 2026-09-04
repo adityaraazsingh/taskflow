@@ -46,9 +46,19 @@ export class ProjectDetail {
     private projectService: ProjectService,
     private commentService: CommentService
   ) {
-    this.projectId = +this.route.snapshot.paramMap.get('id')!;
+    this.route.paramMap.subscribe(
+      params => {
+        this.projectId = +params.get('id')!;
+        this.loadInitValue();
+      }
+    )
+    // this.projectId = +this.route.snapshot.paramMap.get('id')!;
     
     // Fetch project details
+    // this.loadInitValue()
+  }
+
+  loadInitValue(){
     this.projectService.getOneProject(this.projectId).subscribe({
       next: (project) => {
         this.project.set(project);

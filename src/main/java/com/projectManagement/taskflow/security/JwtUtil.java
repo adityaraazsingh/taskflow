@@ -26,7 +26,7 @@ public class JwtUtil {
                 .claim("role", role)
                 .claim("tenantId",username.split("/")[0])
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 )) // 15 min
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 6 )) // 1 min
                 .signWith(getSignKey(), SignatureAlgorithm.HS256)
                 .compact();
         String refreshToken = Jwts.builder()

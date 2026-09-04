@@ -5,7 +5,6 @@ import com.projectManagement.taskflow.mapper.PageMapper;
 import com.projectManagement.taskflow.mapper.TaskMapper;
 import com.projectManagement.taskflow.service.*;
 import jakarta.validation.Valid;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -15,7 +14,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/tasks")
@@ -37,7 +35,7 @@ public class TasksController {
         this.pageMapper = pageMapper;
     }
 
-    @PreAuthorize("hasRole('ADMIN') or project_security.isProjectCreatorFromTaskId(#taskId) or project_security.isProjectMemberFromTaskId(#taskId)")
+    @PreAuthorize("hasRole('ADMIN') or @project_security.isProjectCreatorFromTaskId(#taskId) or @project_security.isProjectMemberFromTaskId(#taskId)")
     @PostMapping("/{taskId}/comments")
     public ResponseEntity<String> postCommentsForTask(@PathVariable Long taskId,
                                                       @RequestBody List<@Valid CommentRequestDTO> comments){
@@ -63,7 +61,7 @@ public class TasksController {
         return ResponseEntity.ok(taskService.updateTask(id, updatedTask));
     }
 
-    @PreAuthorize("hasRole('ADMIN') or tasks_security.isAssignedToTask(#taskId)")
+    @PreAuthorize("hasRole('ADMIN') or @tasks_security.isAssignedToTask(#taskId)")
     @PatchMapping("/{taskId}/status")
     public ResponseEntity<String> changeStatusOfTask(@PathVariable Long taskId,
                                                      @Valid @RequestBody StatusChangeRequestDto status){
@@ -71,7 +69,7 @@ public class TasksController {
         return ResponseEntity.ok(null);
     }
 
-    @PreAuthorize("hasRole('ADMIN') or tasks_security.isAssignedToTask(#taskId) or project_security.isProjectCreatorFromTaskId(#taskId)")
+    @PreAuthorize("hasRole('ADMIN') or @tasks_security.isAssignedToTask(#taskId) or @project_security.isProjectCreatorFromTaskId(#taskId)")
     @PatchMapping("/{taskId}/priority")
     public ResponseEntity<String> changePriorityOfTask(@PathVariable Long taskId,
                                                      @Valid @RequestBody PriorityChangeRequestDto dto){
@@ -79,14 +77,15 @@ public class TasksController {
         return ResponseEntity.ok(null);
     }
 
-    @PreAuthorize("hasRole('ADMIN') or tasks_security.isAssignedToTask(#taskId) or project_security.isProjectCreatorFromTaskId(#taskId)")
+    @PreAuthorize("hasRole('ADMIN') or @tasks_security.isAssignedToTask(#taskId) " +
+            "or @project_security.isProjectCreatorFromTaskId(#taskId)")
     @PatchMapping("/{taskId}/assignee")
     public ResponseEntity<String> changeAssignee(@PathVariable Long taskId,
                                                  @Valid @RequestBody UserRequestDTO user){
         return ResponseEntity.ok(taskService.assignTask(taskId, user));
     }
 
-    @PreAuthorize("hasRole('ADMIN') or tasks_security.isAssignedToTask(#taskId) or project_security.isProjectCreatorFromTaskId(#taskId)")
+    @PreAuthorize("hasRole('ADMIN') or @tasks_security.isAssignedToTask(#taskId) or @project_security.isProjectCreatorFromTaskId(#taskId)")
     @DeleteMapping("/{taskId}")
     public ResponseEntity<String> deleteTask(@PathVariable Long taskId){
         return ResponseEntity.ok(taskService.deleteTask(taskId));

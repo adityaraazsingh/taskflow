@@ -18,7 +18,7 @@ export class AuthService implements OnInit{
     public userSignal = signal<UserModel | null>(null);
     public isUserLoggedIn = signal<boolean | null>(null)
 
-    constructor(private httpClient:HttpClient, private router : Router, private userService : UserService, private profileService : ProfileService){}
+    constructor(private httpClient:HttpClient, private router : Router){}
 
     ngOnInit(): void {
         this.checkIfUserLoggedIn();
@@ -44,10 +44,11 @@ export class AuthService implements OnInit{
           localStorage.setItem("refreshToken" , response.refreshToken);
           this.checkIfUserLoggedIn()
           this.router.navigate(['/dashboard']);
-          this.userService.getUserWithUsername(response.username).subscribe((data)=>{
-                this.userSignal.set(data)
-                this.profileService.getProfileByUserId(data.id!)
-          })
+          this.me();
+        //   this.userService.getUserWithUsername(response.username).subscribe((data)=>{
+        //         this.userSignal.set(data)
+        //         this.profileService.getProfileByUserId(data.id!)
+        //   })
         },
         error : (error) => {
           console.error(error);
@@ -57,7 +58,14 @@ export class AuthService implements OnInit{
 
     
     public me(){
-        return this.userSignal()
+        this.httpClient.get<UserModel>(`${this.url}/auth/me`).subscribe(
+            (data) => {
+                this.userSignal.set(data),
+                console.log(data)
+            }
+        );
+        console.log("me is running");
+        // return this.userSignal()
     }
 
     public refresh(){

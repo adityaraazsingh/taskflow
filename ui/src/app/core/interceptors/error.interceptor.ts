@@ -17,13 +17,11 @@ export class ErrorInterceptor implements HttpInterceptor {
           if (refreshToken) {
             return this.authService.refresh().pipe(
               switchMap((res: AuthModel) => {
-                console.log("Token refreshed successfully:", res);
-                // Save new access token (and refresh token if backend issues a new one)
                 localStorage.setItem("accessToken", res.accessToken);
                 if (res.refreshToken) {
-                  console.log("New refresh token received:", res.refreshToken);
                   localStorage.setItem("refreshToken", res.refreshToken);
                 }
+                this.authService.me(); // Update user info after refreshing token
 
                 const newReq = req.clone({
                   setHeaders: { Authorization: `Bearer ${res.accessToken}` }

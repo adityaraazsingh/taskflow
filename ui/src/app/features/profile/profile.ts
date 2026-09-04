@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, effect, OnInit, signal } from '@angular/core';
 import { AuthService } from '../../core/services/auth.service';
 import { UserModel } from '../../core/models/user.model';
 import { AbstractControl, FormControl, FormControlName, FormGroup, ReactiveFormsModule, ValidationErrors } from '@angular/forms';
@@ -16,7 +16,7 @@ import { Observable } from 'rxjs';
   templateUrl: './profile.html',
   styleUrl: './profile.css',
 })
-export class Profile {
+export class Profile implements OnInit{
   user = signal<UserModel|null>(null);
   profile = signal<ProfileModel | null>(null);
   loading = signal(true);
@@ -29,9 +29,21 @@ export class Profile {
     bio : new FormControl(),
   })
 
+  
+
   constructor(private authService : AuthService, private userService : UserService, private profileService : ProfileService){
-    this.profile.set(this.profileService.profileSignal());
+    this.profileService.getProfileByUserId();
+    this.profile = this.profileService.profileSignal;
     this.user.set(this.authService.userSignal())
+    effect(() => {
+      const profile = this.profile();
+      if (profile) {
+        this.patchingValue()
+      }
+    });
+  }
+  
+  ngOnInit(): void {
     this.patchingValue()
     this.loading.set(false)
   }

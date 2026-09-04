@@ -2,22 +2,22 @@ import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { environment } from "../../environment";
 import { Client, StompSubscription } from '@stomp/stompjs';
-import SockJS from 'sockjs-client';
 import { CommentModel } from "../models/comment.model";
 import { BehaviorSubject, forkJoin } from "rxjs";
 import { TaskService } from "./task.service";
 
 @Injectable({
-    providedIn:'root'
+  providedIn: 'root'
 })
 
 export class CommentService {
   url: string = environment.apiUrl + '/comments';
   private taskSubscriptions = new Map<number, StompSubscription>();
   private commentsMap$ = new BehaviorSubject<Map<number, CommentModel[]>>(new Map());
+  private isConnected$ = new BehaviorSubject<boolean>(false);
   public comments$ = this.commentsMap$.asObservable();
 
-  constructor(private httpClient: HttpClient, private TaskService : TaskService) {}
+  constructor(private httpClient: HttpClient, private TaskService: TaskService) { }
 
   private stompClient: Client | null = null;
 
@@ -39,8 +39,9 @@ export class CommentService {
   }
 
   connect() {
+    if (this.stompClient) return; // prevent multiple connections
+
     this.stompClient = new Client({
-      webSocketFactory: () => new SockJS(environment.wsUrl),
       connectHeaders: {
         Authorization: 'Bearer ' + localStorage.getItem('accessToken'),
       },
@@ -48,36 +49,36 @@ export class CommentService {
     });
 
     this.stompClient.onConnect = () => {
-      console.log("WS Connected");
+      this.isConnected$.next(true);
+    };
+
+    this.stompClient.onDisconnect = () => {
+      this.isConnected$.next(false);
     };
 
     this.stompClient.activate();
   }
 
   connectToTask(taskId: number) {
-    console.log("Trying to subscribe. Connected?", this.stompClient?.connected);
-    if (!this.stompClient || !this.stompClient.connected) {
-      console.log("Not connected yet");
-      return;
-    }
+    this.isConnected$.subscribe((connected) => {
+      if (!connected) return;
+      if (this.taskSubscriptions.has(taskId)) return;
 
-    const sub = this.stompClient.subscribe(
-      `/topic/comments/${taskId}`,
-      (message) => {
-        const incoming: CommentModel[] = JSON.parse(message.body);
+      const sub = this.stompClient!.subscribe(
+        `/topic/comments/${taskId}`,
+        (message) => {
+          const incoming: CommentModel = JSON.parse(message.body);
+          const map = new Map(this.commentsMap$.value);
+          const existing = map.get(taskId) || [];
+          const updated = [...existing, incoming]
+            .filter((v, i, arr) => arr.findIndex(c => c.id === v.id) === i);
+          map.set(taskId, updated);
+          this.commentsMap$.next(map);
+        }
+      );
 
-        const map = new Map(this.commentsMap$.value);
-        const existing = map.get(taskId) || [];
-
-        const updated = [...existing, ...incoming]
-          .filter((v, i, arr) => arr.findIndex(c => c.id === v.id) === i);
-
-        map.set(taskId, updated);
-        this.commentsMap$.next(map);
-      }
-    );
-
-    this.taskSubscriptions.set(taskId, sub);
+      this.taskSubscriptions.set(taskId, sub);
+    });
   }
 
   unsubscribeTask(taskId: number) {

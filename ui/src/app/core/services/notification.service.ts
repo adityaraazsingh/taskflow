@@ -1,9 +1,7 @@
-import { Injectable } from "@angular/core";
+import { Injectable, OnInit } from "@angular/core";
 import { environment } from "../../environment";
 import { Client, StompSubscription } from "@stomp/stompjs";
-import { CommentModel } from "../models/comment.model";
 import { HttpClient } from "@angular/common/http";
-import SockJS from "sockjs-client";
 import { NotificationModel } from "../models/NotificationModel";
 import { BehaviorSubject } from "rxjs";
 
@@ -11,7 +9,7 @@ import { BehaviorSubject } from "rxjs";
   providedIn: 'root'
 })
 
-export class NotificationService {
+export class NotificationService implements OnInit {
   private stompClient: Client | null = null;
   private subscription: StompSubscription | undefined;
   
@@ -22,6 +20,10 @@ export class NotificationService {
 
   constructor(private httpClient: HttpClient) { }
 
+  ngOnInit() {
+    this.loadNotifications();
+  }
+
   loadNotifications() {
     this.httpClient.get<NotificationModel[]>(`${this.url}/activity`)
       .subscribe(data => this.notifications$.next(data));
@@ -29,10 +31,12 @@ export class NotificationService {
 
   connect() {
     if (this.stompClient?.active) return; 
+    const token = typeof window !== 'undefined'
+      ? localStorage.getItem('accessToken')
+      : null;
     this.stompClient = new Client({
-      webSocketFactory: () => new SockJS(environment.wsUrl),
       connectHeaders: {
-        Authorization: 'Bearer ' + localStorage.getItem('accessToken'),
+        Authorization: 'Bearer ' + token,
       },
       reconnectDelay: 5000,
     });
