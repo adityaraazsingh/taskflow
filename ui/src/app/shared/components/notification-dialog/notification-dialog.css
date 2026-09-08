@@ -1,3 +1,8 @@
+:host{
+  height: 60vh;
+  scroll-behavior: auto;
+}
+
 .backdrop {
   position: fixed;
   top: 0;
@@ -14,6 +19,9 @@
   left: 50%;
   transform: translate(-50%, -50%);
   width: 900px;
+  max-height: 80vh;
+  overflow-y: auto;
+  scroll-behavior: auto;
   background: #fff;
   border-radius: 8px;
   box-shadow: 0 8px 20px rgba(0,0,0,0.25);

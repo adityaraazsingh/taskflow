@@ -14,6 +14,7 @@ import com.projectManagement.taskflow.mapper.PageMapper;
 import com.projectManagement.taskflow.mapper.TaskMapper;
 import com.projectManagement.taskflow.notification.NotificationEvent;
 import com.projectManagement.taskflow.notification.NotificationEventEnum;
+import com.projectManagement.taskflow.notification.NotificationPublisher;
 import com.projectManagement.taskflow.notification.TaskAssignedData;
 import com.projectManagement.taskflow.repository.ProjectRepo;
 import com.projectManagement.taskflow.repository.TaskRepo;
@@ -28,7 +29,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -42,8 +45,9 @@ public class TaskService {
     private final TaskMapper taskMapper;
     private final PageMapper pageMapper;
     private final RabbitTemplate rabbitTemplate;
+    private final NotificationPublisher notificationPublisher;
 
-    public TaskService(TaskRepo taskRepo, ProjectRepo projectRepo, UserRepo userRepo, AuthService authService, TaskMapper taskMapper, PageMapper pageMapper, RabbitTemplate rabbitTemplate) {
+    public TaskService(TaskRepo taskRepo, ProjectRepo projectRepo, UserRepo userRepo, AuthService authService, TaskMapper taskMapper, PageMapper pageMapper, RabbitTemplate rabbitTemplate, NotificationPublisher notificationPublisher) {
         this.taskRepo = taskRepo;
         this.projectRepo = projectRepo;
         this.userRepo = userRepo;
@@ -51,6 +55,7 @@ public class TaskService {
         this.taskMapper = taskMapper;
         this.pageMapper = pageMapper;
         this.rabbitTemplate = rabbitTemplate;
+        this.notificationPublisher = notificationPublisher;
     }
 
 
@@ -62,6 +67,11 @@ public class TaskService {
         Date now = new Date();
         task.setCreatedAt(now);
         task.setUpdatedAt(now);
+
+        Map<String, Object> map = new HashMap<>();
+        String message = "Task '"+ task.getTitle() + "' is created in project "+ project.getName() ;
+        map.put("projectId",projectId);
+        notificationPublisher.publishNotification(message, projectId, map, NotificationEventEnum.TASK_CREATED);
 
         return taskRepo.save(task);
     }
@@ -100,6 +110,11 @@ public class TaskService {
         entity.setStatus(updateTaskRequest.getStatus());
         entity.setDueDate(updateTaskRequest.getDueDate());
 
+        Map<String, Object> map = new HashMap<>();
+        String message = "Task '"+ entity.getTitle() + "' is updated" ;
+        map.put("taskId",id);
+        notificationPublisher.publishNotification(message, id, map, NotificationEventEnum.TASK_UPDATED);
+
         return taskMapper.toDto(taskRepo.save(entity));
     }
 
@@ -112,6 +127,12 @@ public class TaskService {
         TaskEntity task = taskRepo.findById(id)
                 .orElseThrow(()->new RuntimeException("Task Not Found"));
         task.setStatus(status);
+
+        Map<String, Object> map = new HashMap<>();
+        String message = "Task's updated to " + task.getStatus();
+        map.put("taskId",id);
+        notificationPublisher.publishNotification(message, id, map, NotificationEventEnum.TASK_UPDATED);
+
         taskRepo.save(task);
         return "Status Updated to "+task.getStatus();
     }
@@ -125,6 +146,12 @@ public class TaskService {
         TaskEntity task = taskRepo.findById(id)
                 .orElseThrow(()->new RuntimeException("Task Not Found"));
         task.setPriority(priority);
+
+        Map<String, Object> map = new HashMap<>();
+        String message = "Task's priority updated to " + task.getPriority();
+        map.put("taskId",id);
+        notificationPublisher.publishNotification(message, id, map, NotificationEventEnum.TASK_UPDATED);
+
         taskRepo.save(task);
         return "Status Updated to "+task.getStatus();
     }
@@ -144,28 +171,10 @@ public class TaskService {
         task.setAssignee(user);
         taskRepo.save(task);
 
-        // Create event data
-//        TaskAssignedData data = new TaskAssignedData(
-//                task.getId(),
-//                task.getTitle(),
-//                user.getId(),
-//                user.getUsername()
-//        );
-//
-//        // Create event
-//        NotificationEvent event =
-//                new NotificationEvent(
-//                        NotificationEventEnum.TASK_CREATED,
-//                        TenantContext.getTenant(),
-//                        data.toString()
-//                );
-//
-//        // Publish
-//        rabbitTemplate.convertAndSend(
-//                "task.exchange",
-//                "task.assigned",
-//                event
-//        );
+        Map<String, Object> map = new HashMap<>();
+        String message = "Task assigned to " + task.getAssignee();
+        map.put("taskId",id);
+        notificationPublisher.publishNotification(message, id, map, NotificationEventEnum.TASK_UPDATED);
 
         return "Task is assigned to user with user id : "+user.getId();
     }
@@ -177,6 +186,12 @@ public class TaskService {
             key = "T(com.projectManagement.taskflow.tenant.TenantContext).getTenant() + ':project-task:' + #id"
     )
     public String deleteTask(Long id){
+
+        Map<String, Object> map = new HashMap<>();
+        String message = "Task '"+ id + "' is deleted" ;
+        map.put("taskId",id);
+        notificationPublisher.publishNotification(message, id, map, NotificationEventEnum.TASK_DELETED);
+
         taskRepo.deleteById(id);
         return "Task with "+id+" deleted successfully";
     }

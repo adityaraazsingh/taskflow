@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Map;
 
-//@Transactional
+@Transactional
 @Service
 public class NotificationPublisher {
 
@@ -39,7 +39,7 @@ public class NotificationPublisher {
         activity.setData(message);
 
         activityService.postActivity(activity);
-        rabbitTemplate.convertAndSend("member.exchange", "member.assigned", event);
+        rabbitTemplate.convertAndSend(eventName.getExchange(),eventName.getRoutingKey(),event);
     }
 
 }

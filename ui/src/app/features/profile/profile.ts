@@ -1,4 +1,4 @@
-import { Component, effect, OnInit, signal } from '@angular/core';
+import { Component, effect, OnInit, output, signal } from '@angular/core';
 import { AuthService } from '../../core/services/auth.service';
 import { UserModel } from '../../core/models/user.model';
 import { AbstractControl, FormControl, FormControlName, FormGroup, ReactiveFormsModule, ValidationErrors } from '@angular/forms';
@@ -21,6 +21,7 @@ export class Profile implements OnInit{
   profile = signal<ProfileModel | null>(null);
   loading = signal(true);
   isPasswordSame = signal(false);
+  firstName = output<String>();
 
   profileForm = new FormGroup({
     avatarUrl : new FormControl(''),
@@ -28,8 +29,6 @@ export class Profile implements OnInit{
     lastName : new FormControl(),
     bio : new FormControl(),
   })
-
-  
 
   constructor(private authService : AuthService, private userService : UserService, private profileService : ProfileService){
     this.profileService.getProfileByUserId();
@@ -44,6 +43,7 @@ export class Profile implements OnInit{
   }
   
   ngOnInit(): void {
+    this.firstName.emit(this.profile()?.firstName!);
     this.patchingValue()
     this.loading.set(false)
   }

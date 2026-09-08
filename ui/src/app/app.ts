@@ -3,6 +3,9 @@ import { RouterOutlet, RouterLink, RouterLinkActive, Router } from '@angular/rou
 import { UserModel } from './core/models/user.model';
 import { AuthService } from './core/services/auth.service';
 import { NotificationDialog } from "./shared/components/notification-dialog/notification-dialog";
+import { ProjectService } from './core/services/project.service';
+import { ProfileService } from './core/services/profileService';
+import { ProfileModel } from './core/models/profile.model';
 
 @Component({
   selector: 'app-root',
@@ -14,21 +17,22 @@ export class App {
   protected readonly title = signal('ui');
   protected sidebarOpen = false;
   protected notificationDialogOpen = false;
+  firstNameProfile = signal<ProfileModel>({
+    id: 0,
+    userId: 0,
+    firstName: '',  
+    lastName: '',
+    bio: '',
+    avatarUrl: ''
+  });
   router = inject(Router);
+
 
   user = signal<UserModel | null>(null);
   loading = signal(true);
-  constructor(private authService: AuthService) {
-    if(authService.isUserLoggedIn()){
-      // this.authService.me().subscribe(
-      //   (next) => {
-      //     console.log("Users is laoded ", next);
-      //     this.user.set(next);
-      //     this.user()!.createdAt = new Date(this.user()!.createdAt!);
-      //     this.loading.set(false);
-      //   }
-      // )
-    }
+  constructor(private authService: AuthService, private profileService : ProfileService) {
+    this.firstNameProfile = this.profileService.profileSignal;
+    authService.me()
   }
 
   protected toggleSidebar(): void {

@@ -7,11 +7,12 @@ import { environment } from "../../../environment";
 import { Observable } from 'rxjs/internal/Observable';
 import { AsyncPipe } from '@angular/common';
 import { map } from 'rxjs';
+import { NotficationMessage } from "../notfication-message/notfication-message";
 
 
 @Component({
   selector: 'app-recent-activity-card',
-  imports: [AsyncPipe],
+  imports: [AsyncPipe, NotficationMessage],
   templateUrl: './recent-activity-card.html',
   styleUrl: './recent-activity-card.css',
 })
@@ -30,7 +31,10 @@ export class RecentActivityCard {
           const now = Date.now();
           const diffHours = (now - createdAt) / (1000 * 60 * 60);
           return diffHours <= 24;
-        }))
+        })
+        .slice()
+        .reverse()
+      )
     );
   }
 

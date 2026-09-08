@@ -6,9 +6,6 @@ import { AuthModel } from "../models/auth.model";
 import { UserModel } from "../models/user.model";
 import { ChangePasswordDto } from "../models/ChangePasswordDto";
 import { Router } from "@angular/router";
-import { BehaviorSubject } from "rxjs";
-import { UserService } from "./user.service";
-import { ProfileService } from "./profileService";
 
 @Injectable({
   providedIn: 'root'
@@ -45,10 +42,6 @@ export class AuthService implements OnInit{
           this.checkIfUserLoggedIn()
           this.router.navigate(['/dashboard']);
           this.me();
-        //   this.userService.getUserWithUsername(response.username).subscribe((data)=>{
-        //         this.userSignal.set(data)
-        //         this.profileService.getProfileByUserId(data.id!)
-        //   })
         },
         error : (error) => {
           console.error(error);
@@ -60,12 +53,8 @@ export class AuthService implements OnInit{
     public me(){
         this.httpClient.get<UserModel>(`${this.url}/auth/me`).subscribe(
             (data) => {
-                this.userSignal.set(data),
-                console.log(data)
-            }
+                this.userSignal.set(data)            }
         );
-        console.log("me is running");
-        // return this.userSignal()
     }
 
     public refresh(){

@@ -1,0 +1,24 @@
+:host{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10pt;
+}
+
+/* created / added → green */
+.event-success {
+  background-color: #dcfce7; /* bg-green-100 */
+  color: #16a34a;            /* text-green-600 */
+}
+
+/* updated / changed → blue */
+.event-info {
+  background-color: #dbeafe; /* bg-blue-100 */
+  color: #2563eb;            /* text-blue-600 */
+}
+
+/* deleted → red */
+.event-danger {
+  background-color: #fee2e2; /* bg-red-100 */
+  color: #dc2626;            /* text-red-600 */
+}

@@ -5,6 +5,7 @@ import { ProjectService } from '../../core/services/project.service';
 import { ProjectModel } from '../../core/models/project.model';
 import { Router } from '@angular/router';
 import { ProjectForm } from "../projects/project-form/project-form";
+import { ProfileService } from '../../core/services/profileService';
 
 @Component({
   selector: 'app-dashboard',
@@ -16,7 +17,8 @@ export class Dashboard {
   projects = signal<ProjectModel[]>([]) ;
   addingProject : boolean = false;
   router = inject(Router);
-  constructor(private projectService : ProjectService){
+  constructor(private projectService : ProjectService, private profileService: ProfileService){
+    this.profileService.getProfileByUserId();
     this.projectService.getProjectsForCurrentUser(0,20,'asc',null).subscribe(
       next => { this.projects.set(next.content) }
     )

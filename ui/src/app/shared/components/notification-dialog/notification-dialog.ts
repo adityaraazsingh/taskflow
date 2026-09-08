@@ -1,13 +1,14 @@
 import { Component, EventEmitter, Inject, inject, OnInit, output, Output } from '@angular/core';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { NotificationModel } from '../../../core/models/NotificationModel';
 import { NotificationService } from '../../../core/services/notification.service';
 import { AsyncPipe } from '@angular/common';
 import { Router } from '@angular/router';
+import { NotficationMessage } from "../notfication-message/notfication-message";
 
 @Component({
   selector: 'app-notification-dialog',
-  imports: [AsyncPipe],
+  imports: [AsyncPipe, NotficationMessage],
   templateUrl: './notification-dialog.html',
   styleUrl: './notification-dialog.css',
 })
@@ -21,7 +22,9 @@ export class NotificationDialog {
 
 
   ngOnInit() {
-    this.notifications$ = this.notificationService.notificationsObs$;
+    this.notifications$ = this.notificationService.notificationsObs$.pipe(
+      map(notifications => notifications.slice().reverse())
+    );
     this.notificationService.loadNotifications();
     this.notificationService.connect();
   }

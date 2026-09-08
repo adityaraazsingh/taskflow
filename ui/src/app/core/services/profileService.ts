@@ -12,7 +12,14 @@ import { UserModel } from "../models/user.model";
 
 export class ProfileService{
     url = environment.apiUrl+'/profile';
-    public profileSignal = signal<ProfileModel | null>(null)
+    public profileSignal = signal<ProfileModel>({
+        id: 0,
+        userId: 0,
+        firstName: '',  
+        lastName: '',
+        bio: '',
+        avatarUrl: ''
+    });
     currUser = signal<UserModel| null>(null);
     constructor(private httpClient : HttpClient, 
         private authService : AuthService
