@@ -10,16 +10,15 @@ import { ProfileService } from '../../../core/services/profileService';
 
 @Component({
   selector: 'app-comment-list',
-  imports: [FormsModule, MomentModule, NgClass, AsyncPipe],
+  imports: [FormsModule, MomentModule, AsyncPipe],
   templateUrl: './comment-list.html',
   styleUrl: './comment-list.css',
 })
 export class CommentList {
-  // allComments = signal<CommentModel[]>([]);
   allComments$ = new Observable<CommentModel[]>();
   commentText : string = '';
   taskId = input.required<number>();
-  isReplying = signal<number>(-1);
+  replyComment = signal<CommentModel | null>(null);
 
   constructor(private taskService : TaskService , private commentService : CommentService, private profileService : ProfileService){}
 
@@ -40,7 +39,9 @@ export class CommentList {
     const comments : CommentModel[] = [];
     const payload : CommentModel = {
       name : this.profileService.profileSignal()?.firstName || 'Unknown',
-      content : this.commentText
+      content : this.commentText,
+      replyCommentContent : this.replyComment()?.content,
+      replyCommentId : this.replyComment()?.id
     }
     comments.push(payload);
     
@@ -51,17 +52,21 @@ export class CommentList {
       }
     );
   }
-
-  replyingToAComment(commentId : number){
-    this.isReplying.set(commentId);
+  
+  replying_action(comment : CommentModel){
+    this.replyComment.set(comment);
+  }
+  
+  deleteComment(comment : CommentModel){
+    this.commentService.deleteComments(comment.id!).subscribe(
+      (data) =>{
+        this.commentService.loadCommentsForAllTasks([this.taskId()]);
+      }
+    );
   }
 
-  // get replyingComment() {
-    // return this.allComments().find(c => c.id === this.isReplying()) || null;
-  // }
-
   onCanclingReply(){
-    this.isReplying.set(-1)
+    this.replyComment.set(null)
   }
 
 }

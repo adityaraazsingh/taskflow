@@ -6,4 +6,6 @@ export interface CommentModel{
     userId?: number;
     createdAt?: Date;
     isReplying? : boolean;
+    replyCommentId? : number;
+    replyCommentContent?: string;
 }
