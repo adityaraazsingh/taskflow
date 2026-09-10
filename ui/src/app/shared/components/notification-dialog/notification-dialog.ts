@@ -30,7 +30,6 @@ export class NotificationDialog {
   }
 
   navigateToTheEvent(notification: NotificationModel) {
-    console.log("Notification Event")
     this.router.navigate([`/projects/${notification.data?.['projectId']}`]);
     this.closeDialog()
   }
