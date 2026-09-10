@@ -25,6 +25,5 @@ export class TaskBoard {
       { state: { 
         task
       } });
-    // this.taskClick.emit(task);
   }
 }

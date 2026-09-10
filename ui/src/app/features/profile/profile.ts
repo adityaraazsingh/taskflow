@@ -31,7 +31,6 @@ export class Profile implements OnInit{
   })
 
   constructor(private authService : AuthService, private userService : UserService, private profileService : ProfileService){
-    this.profileService.getProfileByUserId();
     this.profile = this.profileService.profileSignal;
     this.user.set(this.authService.userSignal())
     effect(() => {
@@ -76,8 +75,7 @@ export class Profile implements OnInit{
         window.alert("Password Changed Succefully")
       },
       (err)=>{
-        window.alert("Something went wrong"),
-        console.log(err)
+        window.alert("Something went wrong")
       }
     );
   }
@@ -92,7 +90,6 @@ export class Profile implements OnInit{
     }
     this.profileService.saveProfileByUserId(payload).subscribe(
       (next) =>{
-        console.log(next)
       }
     )
   }

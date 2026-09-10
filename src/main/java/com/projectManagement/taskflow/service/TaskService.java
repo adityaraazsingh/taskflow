@@ -127,7 +127,7 @@ public class TaskService {
         TaskEntity task = taskRepo.findById(id)
                 .orElseThrow(()->new RuntimeException("Task Not Found"));
         task.setStatus(status);
-
+        task.setUpdatedAt(new Date());
         Map<String, Object> map = new HashMap<>();
         String message = "Task's updated to " + task.getStatus();
         map.put("taskId",id);
@@ -146,7 +146,7 @@ public class TaskService {
         TaskEntity task = taskRepo.findById(id)
                 .orElseThrow(()->new RuntimeException("Task Not Found"));
         task.setPriority(priority);
-
+        task.setUpdatedAt(new Date());
         Map<String, Object> map = new HashMap<>();
         String message = "Task's priority updated to " + task.getPriority();
         map.put("taskId",id);
@@ -165,6 +165,7 @@ public class TaskService {
         TaskEntity task = taskRepo.findById(id)
                 .orElseThrow(()->new RuntimeException("Task Not Found"));
         UserEntity user = userRepo.findByUsername(dto.getUsername()).orElseThrow(()-> new UserNotFoundException("User with 'Username' Not found"));
+        task.setUpdatedAt(new Date());
         user.getTasks().add(task);
 
         userRepo.save(user);

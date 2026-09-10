@@ -1,11 +1,12 @@
 import { HttpClient, HttpRequest, HttpResponse } from "@angular/common/http";
 import { environment } from "../../environment";
 import { LoginRequest } from "../models/loginRequest.model";
-import { Injectable ,OnInit,signal} from "@angular/core";
+import { afterEveryRender, Injectable ,OnInit,signal} from "@angular/core";
 import { AuthModel } from "../models/auth.model";
 import { UserModel } from "../models/user.model";
 import { ChangePasswordDto } from "../models/ChangePasswordDto";
 import { Router } from "@angular/router";
+import { ProfileService } from "./profileService";
 
 @Injectable({
   providedIn: 'root'
@@ -15,7 +16,7 @@ export class AuthService implements OnInit{
     public userSignal = signal<UserModel | null>(null);
     public isUserLoggedIn = signal<boolean | null>(null)
 
-    constructor(private httpClient:HttpClient, private router : Router){}
+    constructor(private httpClient:HttpClient, private router : Router, private profileService : ProfileService){}
 
     ngOnInit(): void {
         this.checkIfUserLoggedIn();
@@ -44,7 +45,7 @@ export class AuthService implements OnInit{
           this.me();
         },
         error : (error) => {
-          console.error(error);
+          throw new Error(`Login failed: ${error.message}`);
         }
       });
     }
@@ -53,7 +54,9 @@ export class AuthService implements OnInit{
     public me(){
         this.httpClient.get<UserModel>(`${this.url}/auth/me`).subscribe(
             (data) => {
-                this.userSignal.set(data)            }
+                this.userSignal.set(data),  
+                this.profileService.getProfileByUserId(data.id!)       
+            }
         );
     }
 

@@ -30,7 +30,6 @@ export class TaskForm implements OnInit{
   constructor(private taskService: TaskService, private projectService: ProjectService) { }
 
   ngOnInit(){
-    console.log("patching Values",this.projectId(), this.task())
     this.taskForm.patchValue({
       title : this.task()?.title,
       description : this.task()?.description,
@@ -38,7 +37,6 @@ export class TaskForm implements OnInit{
       priority : this.task()?.priority,
       duedate: this.task()?.dueDate
     });
-    console.log("Task Form Values after patching", this.taskForm.value)
   }
 
   closingAddingTaskDialog($event: any) {

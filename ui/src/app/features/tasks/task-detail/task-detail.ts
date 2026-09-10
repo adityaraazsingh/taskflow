@@ -59,7 +59,7 @@ export class TaskDetail implements OnInit {
       this.priority.set(this.task.priority)
     }
 
-    this.profile.set(this.profileService.profileSignal())
+    this.profile = (this.profileService.profileSignal)
 
   }
 
@@ -67,8 +67,6 @@ export class TaskDetail implements OnInit {
     this.getCommentsForTask();
     this.getTagsOnATask();
     this.getAllTags();
-    console.log("Patching Values");
-
     this.form.controls.status.patchValue(this.status());
     this.form.controls.priority.patchValue(this.priority());
     this.onChangingStatus()
@@ -82,7 +80,6 @@ export class TaskDetail implements OnInit {
       }
       this.taskService.changeStatusOfTask(this.task.id!, payload).subscribe(
         (next) => {
-          console.log(next)
         }
       )
     })
@@ -95,7 +92,6 @@ export class TaskDetail implements OnInit {
       }
       this.taskService.changePriorityOfTask(this.task.id!, payload).subscribe(
         (next) => {
-          console.log(next)
         }
       )
     })
@@ -105,7 +101,6 @@ export class TaskDetail implements OnInit {
     this.taskService.getCommentsForTask(this.task.id!, 0, 20).subscribe(
       (data) => {
         this.comments.set(data.content)
-        console.log(data)
       }
     )
   }
@@ -114,7 +109,6 @@ export class TaskDetail implements OnInit {
     this.taskService.getTagsOnATask(this.task.id!).subscribe(
       (data) => {
         this.tags.set(data);
-        console.log("GetTask ON a Task is called")
       }
     )
   }
@@ -123,7 +117,6 @@ export class TaskDetail implements OnInit {
     this.tagService.getTags().subscribe(
       (data) => {
         this.allTags.set(data);
-        console.log(data);
       }
     )
   }
@@ -159,11 +152,17 @@ export class TaskDetail implements OnInit {
   deletingTaskWithId() {
     this.taskService.deleteTask(this.task.id!).subscribe(
       (next) => {
-        console.log(next)
       }
     )
     this.onClickDelete()
     this.router.navigate([`projects/${this.task.projectId}`]);
+  }
+
+  onChangeassignee(user: UserModel) {
+    this.taskService.changeAssignee(this.task.id!, user).subscribe(
+      (next) => {
+      }
+    )
   }
 
 }

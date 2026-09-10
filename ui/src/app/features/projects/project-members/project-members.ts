@@ -44,7 +44,6 @@ export class ProjectMembers {
   deleteMemberFromProject(memberId : number){
     this.projectService.deleteProjectForMember(this.projectId()! , memberId).subscribe(
       (next)=>{
-        console.log(next),
         this.getMembersForCurrProject()
       }
     )

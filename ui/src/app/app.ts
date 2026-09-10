@@ -43,7 +43,6 @@ export class App {
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
     this.router.navigate(['/login']);
-    console.log('Logout clicked');
   }
 
   openNotificationDialog(){

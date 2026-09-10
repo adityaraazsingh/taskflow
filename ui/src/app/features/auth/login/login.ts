@@ -41,7 +41,6 @@ export class Login {
         username: this.loginForm.value.username!,
         password: this.loginForm.value.password!
       };
-      console.log(payload);
       this.authService.login(payload);
     }else{
       const payload : UserModel = {
@@ -50,7 +49,6 @@ export class Login {
         role : this.signUpForm.value.role!,
         email:this.signUpForm.value.email!
       };
-      console.log(payload);
       this.authService.signUp(payload).subscribe({
         next : (response) => {
           window.alert(`User signed up successfully ${response}`);
