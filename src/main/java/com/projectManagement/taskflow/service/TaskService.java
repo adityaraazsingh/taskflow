@@ -158,9 +158,13 @@ public class TaskService {
 
 //   TODO : userId is not being used assignTask(Long id, Long userId ,UserEntity user)
     @CacheEvict(
-            value = "project-task",
-            key = "T(com.projectManagement.taskflow.tenant.TenantContext).getTenant() + ':project-task:' + #id"
+            value = "projects",
+            key = "T(com.projectManagement.taskflow.tenant.TenantContext).getTenant() + ':project:' + #id"
     )
+//    @CacheEvict(
+//            value = "project-task",
+//            key = "T(com.projectManagement.taskflow.tenant.TenantContext).getTenant() + ':project-task:' + #id"
+//    )
     public String assignTask(Long id, UserRequestDTO dto){
         TaskEntity task = taskRepo.findById(id)
                 .orElseThrow(()->new RuntimeException("Task Not Found"));
@@ -173,7 +177,7 @@ public class TaskService {
         taskRepo.save(task);
 
         Map<String, Object> map = new HashMap<>();
-        String message = "Task assigned to " + task.getAssignee();
+        String message = "Task assigned to " + task.getAssignee().getUsername();
         map.put("taskId",id);
         notificationPublisher.publishNotification(message, id, map, NotificationEventEnum.TASK_UPDATED);
 

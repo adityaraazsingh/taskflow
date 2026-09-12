@@ -18,6 +18,9 @@ import { UserModel } from '../../../core/models/user.model';
 import { UserService } from '../../../core/services/user.service';
 import { ProfileService } from '../../../core/services/profileService';
 import { ProfileModel } from '../../../core/models/profile.model';
+import { ProjectService } from '../../../core/services/project.service';
+import { projectMemberResponseDto } from '../../../core/models/projectMemberResponseDto';
+import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
   selector: 'app-task-detail',
@@ -28,10 +31,16 @@ import { ProfileModel } from '../../../core/models/profile.model';
 export class TaskDetail implements OnInit {
 
   task!: TaskModel;
+  projectId!: number;
+
+  projectMembersDto : projectMemberResponseDto[] = [];
+  assignee = signal<ProfileModel | null>(null);
   profile = signal<ProfileModel | null>(null);
   Status = Status;
   editingTask = signal<boolean>(false);
   deletingTask = signal<boolean>(false);
+  assigningUser = signal<boolean>(false);
+  
   status = signal<Status>(Status.TODO);
   priority = signal<Priority>(Priority.LOW);
   tags = signal<TagModel[]>([]);
@@ -45,25 +54,39 @@ export class TaskDetail implements OnInit {
   });
 
   constructor(private router: Router,
-    private route: ActivatedRoute,
     private taskService: TaskService,
     private tagService: TagService,
-    private userService: UserService,
-    private profileService : ProfileService
+    // private authService : UserService,
+    private profileService : ProfileService,
+    private projectService: ProjectService
   ) {
     const navigation = this.router.getCurrentNavigation();
-    const state = navigation?.extras.state as { task: TaskModel };
+    const state = navigation?.extras.state as { task: TaskModel, projectId: number };
     if (state?.task) {
       this.task = state.task;
+      this.projectId = state.projectId;
+
+      const assigneeId = this.task.assigneeId!;
+      this.profileService.getProfileByUserDetails(assigneeId).subscribe(
+        (data) => this.assignee.set(data)
+      );
+      
+      console.log("Project Member Ids:", this.projectId);
       this.status.set(this.task.status)
       this.priority.set(this.task.priority)
     }
 
+    this.projectService.getAllUsersForAProject(this.projectId).subscribe(
+      (data) => {
+        this.projectMembersDto = data;
+      }
+    );
     this.profile = (this.profileService.profileSignal)
 
   }
 
   ngOnInit(): void {
+
     this.getCommentsForTask();
     this.getTagsOnATask();
     this.getAllTags();
@@ -78,10 +101,7 @@ export class TaskDetail implements OnInit {
       const payload: statusChangeRequestDto = {
         status: data
       }
-      this.taskService.changeStatusOfTask(this.task.id!, payload).subscribe(
-        (next) => {
-        }
-      )
+      this.taskService.changeStatusOfTask(this.task.id!, payload).subscribe()
     })
   }
 
@@ -90,10 +110,7 @@ export class TaskDetail implements OnInit {
       const payload: priorityChangeRequestDto = {
         priority: data
       }
-      this.taskService.changePriorityOfTask(this.task.id!, payload).subscribe(
-        (next) => {
-        }
-      )
+      this.taskService.changePriorityOfTask(this.task.id!, payload).subscribe()
     })
   }
 
@@ -126,18 +143,12 @@ export class TaskDetail implements OnInit {
   }
 
   addingTagToATask(tagId: number) {
-    this.taskService.addTasksPerTags(this.task.id!, tagId).subscribe(
-      (data) => {
-      }
-    );
+    this.taskService.addTasksPerTags(this.task.id!, tagId).subscribe();
     this.getTagsOnATask()
   }
 
   deleteTagOfATask(tagId: number) {
-    this.taskService.deleteTagForTask(this.task.id!, tagId).subscribe(
-      (data) => {
-      }
-    );
+    this.taskService.deleteTagForTask(this.task.id!, tagId).subscribe();
     this.getTagsOnATask()
   }
 
@@ -150,19 +161,17 @@ export class TaskDetail implements OnInit {
   }
 
   deletingTaskWithId() {
-    this.taskService.deleteTask(this.task.id!).subscribe(
-      (next) => {
-      }
-    )
+    this.taskService.deleteTask(this.task.id!).subscribe()
     this.onClickDelete()
     this.router.navigate([`projects/${this.task.projectId}`]);
   }
 
+  changingAssignee(){
+    this.assigningUser.set(!this.assigningUser())
+  }
+
   onChangeassignee(user: UserModel) {
-    this.taskService.changeAssignee(this.task.id!, user).subscribe(
-      (next) => {
-      }
-    )
+    this.taskService.changeAssignee(this.task.id!, user).subscribe()
   }
 
 }

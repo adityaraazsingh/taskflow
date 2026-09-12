@@ -85,7 +85,7 @@
       </div>
       <div class="w-full h-2.5 bg-gray-100 rounded-full overflow-hidden">
         <div
-          class="h-full bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full transition-all duration-700 ease-out"
+          class="h-full bg-linear-to-r from-indigo-500 to-purple-500 rounded-full transition-all duration-700 ease-out"
           [style.width.%]="progressPercent()">
         </div>
       </div>
@@ -134,7 +134,7 @@
 
   <!-- Task Board -->
   @if (tasks().length > 0) {
-  <app-task-board [tasks]="tasks()" (taskClick)="toggleTheDialog($event)"></app-task-board>
+  <app-task-board [projectId]="projectId" [tasks]="tasks()" (taskClick)="toggleTheDialog($event)"></app-task-board>
   } @else {
   <div class="bg-white rounded-2xl ring-1 ring-gray-200 p-12 text-center">
     <div class="inline-flex items-center justify-center size-16 rounded-2xl bg-indigo-50 mb-4">

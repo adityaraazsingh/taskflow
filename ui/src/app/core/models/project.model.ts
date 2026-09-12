@@ -5,7 +5,6 @@ export interface ProjectModel{
     name: string;
     description: string;
     status: Status;
-    // userId: number;
     taskIds?: number[];
     projectMemberIds?: number[];
     createdAt?: Date;

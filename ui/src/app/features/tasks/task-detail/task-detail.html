@@ -89,10 +89,10 @@
             <label class="text-xs font-medium text-gray-400 uppercase tracking-wider">Assignee</label>
             <div class="flex items-center justify-between">
               <div class="mt-1.5 flex items-center gap-2">
-                <div class="size-7 rounded-full bg-purple-500 flex items-center justify-center text-xs font-semibold text-white">{{profile()?.firstName?.substring(0,2)?.toUpperCase()}}</div>
-                <span class="text-sm font-medium text-gray-900">{{profile()?.firstName}}</span>
+                <div class="size-7 rounded-full bg-purple-500 flex items-center justify-center text-xs font-semibold text-white">{{assignee()?.firstName.substring(0,2).toUpperCase()}}</div>
+                <span class="text-sm font-medium text-gray-900">{{assignee()?.firstName}}</span>
               </div>
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4 pointer-events-cursor text-gray-400 hover:text-gray-600 transition-colors">
+              <svg (click)="changingAssignee()" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4 pointer-events-cursor text-gray-400 hover:text-gray-600 transition-colors">
                 <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125" />
               </svg>
             </div>
@@ -207,4 +207,17 @@
   <app-confirm-dialog [title]="'Delete Task'" [message]="'Are you sure you want to delete this task? This action cant be undone'"
     (confirm)="deletingTaskWithId()" (cancel)="onClickDelete()"
   ></app-confirm-dialog>
+}
+
+@if(this.assigningUser()){
+  <div (click)="changingAssignee()" class="backdrop-blur-sm inset-0  fixed width-full bg-black/10 height-full z-100">
+  </div>
+  <div class="bg-white rounded-2xl fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-100 flex" style="width: 600px; height: 400px">
+    {{projectId}}
+    @for(member of projectMembersDto; track $index){
+      <div (click)="onChangeassignee(member.user)" class="flex items-center gap-3 p-4 hover:bg-gray-100 cursor-pointer">
+      <span class="text-sm font-medium text-gray-900">{{member.user.username}}</span>
+      </div>
+    }
+  </div>
 }

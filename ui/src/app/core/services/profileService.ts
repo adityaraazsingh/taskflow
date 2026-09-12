@@ -34,6 +34,10 @@ export class ProfileService {
         )
     }
 
+    getProfileByUserDetails(userId: number) {
+        return this.httpClient.get<ProfileModel>(`${this.url}/${userId}`);
+    }
+
     public saveProfileByUserId(profile: ProfileModel) {
         return this.httpClient.put(`${this.url}`, profile)
     }

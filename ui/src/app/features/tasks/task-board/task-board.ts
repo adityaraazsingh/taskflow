@@ -12,6 +12,7 @@ import { Router } from '@angular/router';
 })
 export class TaskBoard {
   tasks = input.required<TaskModel[]>();
+  projectId = input.required<number>();
   taskClick = output<TaskModel>();
   Status = Status;
   router = inject(Router);
@@ -22,8 +23,13 @@ export class TaskBoard {
 
   onTaskClick(task: TaskModel) {
     this.router.navigate([`tasks/${task.id}`],
-      { state: { 
-        task
-      } });
+      {
+        state:
+        {
+          task,
+          projectId: this.projectId()
+        }
+      }
+    );
   }
 }
