@@ -89,7 +89,7 @@
             <label class="text-xs font-medium text-gray-400 uppercase tracking-wider">Assignee</label>
             <div class="flex items-center justify-between">
               <div class="mt-1.5 flex items-center gap-2">
-                <div class="size-7 rounded-full bg-purple-500 flex items-center justify-center text-xs font-semibold text-white">{{assignee()?.firstName.substring(0,2).toUpperCase()}}</div>
+                <div class="size-7 rounded-full bg-purple-500 flex items-center justify-center text-xs font-semibold text-white">{{assignee()?.firstName?.substring(0,2)?.toUpperCase()}}</div>
                 <span class="text-sm font-medium text-gray-900">{{assignee()?.firstName}}</span>
               </div>
               <svg (click)="changingAssignee()" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4 pointer-events-cursor text-gray-400 hover:text-gray-600 transition-colors">

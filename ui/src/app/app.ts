@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { RouterOutlet, RouterLink, RouterLinkActive, Router } from '@angular/router';
 import { UserModel } from './core/models/user.model';
 import { AuthService } from './core/services/auth.service';
@@ -6,6 +6,9 @@ import { NotificationDialog } from "./shared/components/notification-dialog/noti
 import { ProjectService } from './core/services/project.service';
 import { ProfileService } from './core/services/profileService';
 import { ProfileModel } from './core/models/profile.model';
+import { NotificationService } from './core/services/notification.service';
+import { NotificationModel } from './core/models/NotificationModel';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-root',
@@ -13,26 +16,46 @@ import { ProfileModel } from './core/models/profile.model';
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
-export class App {
+export class App implements OnInit {
   protected readonly title = signal('ui');
   protected sidebarOpen = false;
   protected notificationDialogOpen = false;
   firstNameProfile = signal<ProfileModel>({
     id: 0,
     userId: 0,
-    firstName: '',  
+    firstName: '',
     lastName: '',
     bio: '',
     avatarUrl: ''
   });
   router = inject(Router);
-
+  snackBar = inject(MatSnackBar);
 
   user = signal<UserModel | null>(null);
   loading = signal(true);
-  constructor(private authService: AuthService, private profileService : ProfileService) {
+  constructor(private authService: AuthService, private profileService: ProfileService, private notificationService: NotificationService) {
     this.firstNameProfile = this.profileService.profileSignal;
-    authService.me()
+    this.authService.me()
+  }
+
+  ngOnInit() {
+    this.notificationService.newNotificationObs$.subscribe(notification => {
+      console.log('New notification received:', notification);
+      this.triggerPopup(notification);
+    });
+    this.notificationService.connect();
+    this.notificationService.loadNotifications();
+
+  }
+
+  triggerPopup(notification: NotificationModel) {
+    this.snackBar.open(
+      notification.message || 'New notification',
+      'View',
+      {
+        duration: 4000
+      }
+    ).onAction().subscribe();
   }
 
   protected toggleSidebar(): void {
@@ -45,11 +68,11 @@ export class App {
     this.router.navigate(['/login']);
   }
 
-  openNotificationDialog(){
+  openNotificationDialog() {
     this.notificationDialogOpen = !this.notificationDialogOpen;
   }
 
-  onProfileClick(){
+  onProfileClick() {
     this.router.navigate(["/profile"]);
   }
 }

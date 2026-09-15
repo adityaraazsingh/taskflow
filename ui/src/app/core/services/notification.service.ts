@@ -3,7 +3,7 @@ import { environment } from "../../environment";
 import { Client, StompSubscription } from "@stomp/stompjs";
 import { HttpClient } from "@angular/common/http";
 import { NotificationModel } from "../models/NotificationModel";
-import { BehaviorSubject } from "rxjs";
+import { BehaviorSubject, Subject } from "rxjs";
 
 @Injectable({
   providedIn: 'root'
@@ -17,6 +17,9 @@ export class NotificationService implements OnInit {
   
   private notifications$ = new BehaviorSubject<NotificationModel[]>([]);
   public notificationsObs$ = this.notifications$.asObservable();
+
+  private newNotification$ = new BehaviorSubject<NotificationModel>({} as NotificationModel);
+  public newNotificationObs$ = this.newNotification$.asObservable();
 
   constructor(private httpClient: HttpClient) { }
 
@@ -35,6 +38,7 @@ export class NotificationService implements OnInit {
       ? localStorage.getItem('accessToken')
       : null;
     this.stompClient = new Client({
+      brokerURL: 'ws://localhost:8080/ws', 
       connectHeaders: {
         Authorization: 'Bearer ' + token,
       },
@@ -46,9 +50,9 @@ export class NotificationService implements OnInit {
 
       this.subscription = this.stompClient!.subscribe('/topic/activity', (message) => {
         const notification: NotificationModel = JSON.parse(message.body);
-
         const current = this.notifications$.value;
         this.notifications$.next([notification, ...current]);
+        this.newNotification$.next(notification);
       });
     };
 

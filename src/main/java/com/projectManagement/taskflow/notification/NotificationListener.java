@@ -31,10 +31,10 @@ public class NotificationListener {
             log.info("Received event: {}", event);
 
             messagingTemplate.convertAndSend(
-                    "/topic/" + event.eventType().getRoutingKey(),
+                    "/topic/activity",
+//                            + event.eventType().getRoutingKey(),
                     event
             );
-
         } finally {
             TenantContext.clear();
         }

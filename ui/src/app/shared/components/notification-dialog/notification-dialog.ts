@@ -5,6 +5,7 @@ import { NotificationService } from '../../../core/services/notification.service
 import { AsyncPipe } from '@angular/common';
 import { Router } from '@angular/router';
 import { NotficationMessage } from "../notfication-message/notfication-message";
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-notification-dialog',
@@ -15,10 +16,12 @@ import { NotficationMessage } from "../notfication-message/notfication-message";
 export class NotificationDialog {
   @Output() closed = new EventEmitter<void>();
   newNotificationCount = output<number>();
-
+  previousCount = 0;
+  
   notifications$ = new Observable<NotificationModel[]>();
   router = inject(Router);
   notificationService = inject(NotificationService);
+  snackBar = inject(MatSnackBar);
 
 
   ngOnInit() {
@@ -26,7 +29,6 @@ export class NotificationDialog {
       map(notifications => notifications.slice().reverse())
     );
     this.notificationService.loadNotifications();
-    this.notificationService.connect();
   }
 
   navigateToTheEvent(notification: NotificationModel) {

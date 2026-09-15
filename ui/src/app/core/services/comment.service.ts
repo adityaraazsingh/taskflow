@@ -39,7 +39,7 @@ export class CommentService {
   }
 
   connect() {
-    if (this.stompClient) return; // prevent multiple connections
+    if (this.stompClient) return; 
 
     this.stompClient = new Client({
       connectHeaders: {

@@ -40,7 +40,6 @@ export class RecentActivityCard {
 
   ngOnInit() {
     this.notificationService.loadNotifications();
-    this.notificationService.connect();
   }
 
   navigateToTheEvent(notification: NotificationModel) {
