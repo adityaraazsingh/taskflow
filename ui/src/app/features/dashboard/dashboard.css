@@ -1,0 +1,69 @@
+/* Dashboard layout */
+.dashboard-stats-grid {
+  animation: fade-in-up 0.35s ease-out;
+}
+
+.stat-card {
+  position: relative;
+  cursor: default;
+}
+
+.stat-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 0.75rem;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.08), rgba(139, 92, 246, 0.06));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+          mask-composite: exclude;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.stat-card:hover::before {
+  opacity: 1;
+}
+
+.stat-icon {
+  flex-shrink: 0;
+}
+
+.stat-value {
+  font-variant-numeric: tabular-nums;
+}
+
+.recent-projects-section {
+  scroll-margin-top: 64px;
+}
+
+.section-title {
+  letter-spacing: -0.01em;
+}
+
+.view-all-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.view-all-arrow {
+  display: inline-block;
+  transition: transform 0.2s ease;
+}
+
+.view-all-link:hover .view-all-arrow {
+  transform: translateX(2px);
+}
+
+.activity-section {
+  scroll-margin-top: 64px;
+}
+
+.activity-feed {
+  padding: 0.25rem 0;
+}

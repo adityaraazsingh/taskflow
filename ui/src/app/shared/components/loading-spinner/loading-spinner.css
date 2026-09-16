@@ -1,0 +1,25 @@
+:host {
+  display: block;
+}
+
+.loading-root {
+  width: 100%;
+}
+
+.loading-spinner {
+  width: 3rem;
+  height: 3rem;
+}
+
+.loading-track {
+  border-color: #e0e7ff;
+}
+
+.loading-indicator {
+  border-top-color: #6366f1;
+}
+
+.loading-message {
+  margin: 0;
+  letter-spacing: 0.01em;
+}

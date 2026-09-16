@@ -1,0 +1,32 @@
+:host {
+  display: inline-block;
+}
+
+.priority-tag {
+  align-items: center;
+  padding: 0.125rem 0.5rem;
+  cursor: default;
+}
+
+.priority-icon {
+  transition: transform 0.2s ease;
+}
+
+.priority-tag:hover .priority-icon {
+  transform: scale(1.1);
+}
+
+.priority-high {
+  background-color: #fff1f2;
+  color: #e11d48;
+}
+
+.priority-medium {
+  background-color: #fffbeb;
+  color: #b45309;
+}
+
+.priority-low {
+  background-color: #f0f9ff;
+  color: #0369a1;
+}

@@ -1,0 +1,47 @@
+:host {
+  display: inline-block;
+}
+
+.status-badge {
+  align-items: center;
+  padding: 0.25rem 0.5rem;
+  cursor: default;
+}
+
+.status-dot {
+  flex-shrink: 0;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.4);
+}
+
+.status-active {
+  background-color: #ecfdf5;
+  color: #047857;
+}
+
+.status-in-progress {
+  background-color: #fffbeb;
+  color: #b45309;
+}
+
+.status-archived {
+  background-color: #f8fafc;
+  color: #475569;
+}
+
+.status-completed {
+  background-color: #eff6ff;
+  color: #1d4ed8;
+}
+
+@keyframes pulse-dot {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(13, 148, 136, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 3px rgba(13, 148, 136, 0);
+  }
+}
+
+.status-active .status-dot {
+  animation: pulse-dot 2s ease-in-out infinite;
+}

@@ -1,0 +1,35 @@
+:host {
+  display: block;
+}
+
+.activity-item {
+  width: 100%;
+  border: none;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  padding: 0.5rem 0;
+  border-radius: 0.625rem;
+  transition: background-color 0.15s ease;
+}
+
+.activity-item:hover {
+  background-color: #f1f5f9;
+}
+
+.activity-empty {
+  padding: 0.5rem;
+}
+
+.activity-empty-icon {
+  width: 2.75rem;
+  height: 2.75rem;
+  background: #f1f5f9;
+  border-radius: 0.875rem;
+}
+
+.activity-empty p {
+  margin: 0;
+  color: #64748b;
+  font-size: 0.9375rem;
+}

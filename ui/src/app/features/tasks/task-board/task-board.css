@@ -2,9 +2,57 @@
   display: block;
 }
 
-/* Smooth scroll for kanban columns if they overflow */
+.kanban-root {
+  width: 100%;
+}
+
+.kanban-grid {
+  align-items: stretch;
+}
+
+.kanban-column {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.kanban-header {
+  flex-shrink: 0;
+}
+
+.kanban-title {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.kanban-count {
+  font-variant-numeric: tabular-nums;
+}
+
+.kanban-add {
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.kanban-body {
+  flex: 1;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+}
+
+.kanban-empty {
+  padding: 0.25rem;
+}
+
+.kanban-empty-icon {
+  width: 2.5rem;
+  height: 2.5rem;
+}
+
 @media (max-width: 768px) {
-  .grid {
+  .kanban-grid {
     grid-template-columns: 1fr;
   }
 }

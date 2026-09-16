@@ -1,0 +1,56 @@
+:host {
+  display: block;
+}
+
+.project-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.project-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 0.75rem;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0) 60%, rgba(249, 250, 251, 0.6) 100%);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+}
+
+.project-card:hover::after {
+  opacity: 1;
+}
+
+.project-accent {
+  position: relative;
+  z-index: 1;
+}
+
+.project-title {
+  position: relative;
+  z-index: 1;
+}
+
+.project-description {
+  position: relative;
+  z-index: 1;
+}
+
+.member-avatars,
+.task-progress {
+  position: relative;
+  z-index: 1;
+}
+
+.member-dot {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.project-card:hover .member-dot {
+  transform: translateY(-1px);
+}
+
+.project-card:hover .member-avatars .member-dot:first-child {
+  z-index: 3;
+}

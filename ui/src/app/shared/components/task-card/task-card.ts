@@ -23,11 +23,11 @@ export class TaskCard {
     return 'border-l-sky-400';
   }
 
-  get priorityLabel(): 'LOW' | 'MED' | 'HIGH' {
+  get priorityLabel(): Priority {
     const p: any = this.task().priority;
-    if (p === 'HIGH' || p === Priority.HIGH) return 'HIGH';
-    if (p === 'MED' || p === Priority.MEDIUM) return 'MED';
-    return 'LOW';
+    if (p === 'HIGH' || p === Priority.HIGH) return Priority.HIGH;
+    if (p === 'MED' || p === Priority.MEDIUM) return Priority.MEDIUM;
+    return Priority.LOW;
   }
 
   getDueDateLabel(dueDate?: Date): string {

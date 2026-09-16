@@ -1,30 +1,22 @@
-<div
-    class="bg-white rounded-xl ring-1 ring-gray-200 overflow-hidden hover:shadow-lg transition-all duration-200 group cursor-pointer">
-    <div class="h-2 bg-gradient-to-r from-indigo-500 to-purple-500"></div>
+<article class="project-card bg-white rounded-xl soft-ring overflow-hidden shadow-sm hover:shadow-lg hover:shadow-indigo-100/50 transition-all duration-200 group cursor-pointer">
+    <div class="project-accent h-1.5 bg-gradient-to-r from-indigo-500 to-purple-500"></div>
     <div class="p-5">
-        <div class="flex items-start justify-between mb-3">
-            <h3 class="font-semibold text-gray-900 group-hover:text-indigo-600 transition-colors"><ng-content select=[title]/></h3>
-            <span
-                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200">
+        <div class="flex items-start justify-between gap-3 mb-3">
+            <h3 class="project-title font-semibold text-gray-900 group-hover:text-indigo-600 transition-colors"><ng-content select=[title]/></h3>
+            <span class="project-status inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 soft-ring">
                 <ng-content select=[status]/>
             </span>
         </div>
-        <p class="text-sm text-gray-500 line-clamp-2 mb-4"><ng-content select=[description]/></p>
+        <p class="project-description text-sm text-gray-500 leading-relaxed line-clamp-2 mb-4"><ng-content select=[description]/></p>
         <div class="flex items-center justify-between">
             <div class="flex items-center gap-2">
-                <div class="flex -space-x-2">
-                    <div
-                        class="size-7 rounded-full bg-indigo-500 ring-2 ring-white flex items-center justify-center text-[10px] font-semibold text-white">
-                        AK</div>
-                    <div
-                        class="size-7 rounded-full bg-emerald-500 ring-2 ring-white flex items-center justify-center text-[10px] font-semibold text-white">
-                        JR</div>
-                    <div
-                        class="size-7 rounded-full bg-amber-500 ring-2 ring-white flex items-center justify-center text-[10px] font-semibold text-white">
-                        SP</div>
+                <div class="member-avatars flex -space-x-1.5">
+                    <div class="member-dot size-6 rounded-full bg-indigo-500 soft-ring flex items-center justify-center text-[9px] font-semibold text-white shadow-sm">AK</div>
+                    <div class="member-dot size-6 rounded-full bg-emerald-500 soft-ring flex items-center justify-center text-[9px] font-semibold text-white shadow-sm">JR</div>
+                    <div class="member-dot size-6 rounded-full bg-amber-500 soft-ring flex items-center justify-center text-[9px] font-semibold text-white shadow-sm">SP</div>
                 </div>
             </div>
-            <div class="flex items-center gap-1.5 text-xs text-gray-400">
+            <div class="task-progress text-xs text-gray-400 flex items-center gap-1.5">
                 <svg class="size-3.5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round"
                         d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -33,4 +25,4 @@
             </div>
         </div>
     </div>
-</div>
+</article>

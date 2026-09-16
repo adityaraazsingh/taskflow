@@ -21,10 +21,12 @@ import { ProfileModel } from '../../../core/models/profile.model';
 import { ProjectService } from '../../../core/services/project.service';
 import { projectMemberResponseDto } from '../../../core/models/projectMemberResponseDto';
 import { AuthService } from '../../../core/services/auth.service';
+import { StatusBadge } from '../../../shared/components/status-badge/status-badge';
+import { PriorityTag } from '../../../shared/components/priority-tag/priority-tag';
 
 @Component({
   selector: 'app-task-detail',
-  imports: [CommentList, DatePipe, FormsModule, ReactiveFormsModule, TaskForm, ConfirmDialog],
+  imports: [CommentList, DatePipe, FormsModule, ReactiveFormsModule, TaskForm, ConfirmDialog, StatusBadge, PriorityTag],
   templateUrl: './task-detail.html',
   styleUrl: './task-detail.css',
 })
