@@ -1,7 +1,11 @@
 <article
-  class="task-card-group relative cursor-pointer"
+  class="task-card-group relative cursor-pointer rounded-xl"
   [ngClass]="priorityBorderClass"
   (click)="onTaskClick()"
+  (keydown.enter)="onTaskClick()"
+  tabindex="0"
+  role="button"
+  [attr.aria-label]="'Open task ' + task().title"
 >
   <!-- Priority indicator bar -->
   <div class="absolute left-0 top-0 bottom-0 w-1 rounded-l-xl" [ngClass]="priorityIndicatorClass"></div>
@@ -27,7 +31,7 @@
     <div class="task-footer flex items-center justify-between pt-2 border-t border-gray-50">
       <!-- Assignee avatar -->
       <div class="assignee-meta flex items-center gap-2">
-        <div class="assignee-avatar size-6 rounded-full bg-gradient-to-br from-indigo-400 to-purple-500 ring-2 ring-white flex items-center justify-center text-[9px] font-bold text-white shadow-sm">
+        <div class="assignee-avatar size-6 rounded-full bg-gradient-to-br from-indigo-400 to-purple-500 ring-2 ring-white flex items-center justify-center text-[9px] font-bold text-white shadow-sm" aria-hidden="true">
           {{ assigneeInitial }}
         </div>
         <span class="assignee-label text-[11px] text-gray-400 font-medium">Assignee</span>

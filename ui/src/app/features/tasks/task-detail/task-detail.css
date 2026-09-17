@@ -195,3 +195,28 @@
 .timeline-row {
   padding-bottom: 0.25rem;
 }
+
+/* Assignee picker dialog */
+.assignee-dialog {
+  animation: modal-in 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.assignee-option {
+  border: none;
+  background: transparent;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.assignee-option:hover {
+  background-color: #eef2ff;
+}
+
+.assignee-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.assignee-list::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 999px;
+}

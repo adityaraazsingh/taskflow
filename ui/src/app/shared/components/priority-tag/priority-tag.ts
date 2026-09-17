@@ -9,6 +9,12 @@ import { Priority } from '../../../core/enums/Priority';
   styleUrl: './priority-tag.css',
 })
 export class PriorityTag {
-  @Input() priority:Priority = Priority.MEDIUM;
-  Priority = Priority;
+  @Input() priority: Priority = Priority.MEDIUM;
+
+  get priorityClass(): string {
+    const value = String(this.priority).toUpperCase();
+    if (value === 'HIGH') return 'priority-high';
+    if (value === 'MEDIUM' || value === 'MED') return 'priority-medium';
+    return 'priority-low';
+  }
 }

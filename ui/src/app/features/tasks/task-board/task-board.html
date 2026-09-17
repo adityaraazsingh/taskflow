@@ -12,7 +12,7 @@
             {{ todoTasks().length }}
           </span>
         </div>
-        <button class="kanban-add p-1.5 rounded-lg text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 transition-all duration-200" title="Add task">
+        <button class="kanban-add p-1.5 rounded-lg text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 transition-all duration-200" title="Add task" (click)="onAddTask(Status.TODO)">
           <svg class="size-4.5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
           </svg>
@@ -46,7 +46,7 @@
             {{ inProgressTasks().length }}
           </span>
         </div>
-        <button class="kanban-add p-1.5 rounded-lg text-gray-400 hover:text-amber-600 hover:bg-amber-50 transition-all duration-200" title="Add task">
+        <button class="kanban-add p-1.5 rounded-lg text-gray-400 hover:text-amber-600 hover:bg-amber-50 transition-all duration-200" title="Add task" (click)="onAddTask(Status.IN_PROGRESS)">
           <svg class="size-4.5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
           </svg>
@@ -80,7 +80,7 @@
             {{ doneTasks().length }}
           </span>
         </div>
-        <button class="kanban-add p-1.5 rounded-lg text-gray-400 hover:text-emerald-600 hover:bg-emerald-50 transition-all duration-200" title="Add task">
+        <button class="kanban-add p-1.5 rounded-lg text-gray-400 hover:text-emerald-600 hover:bg-emerald-50 transition-all duration-200" title="Add task" (click)="onAddTask(Status.DONE)">
           <svg class="size-4.5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
           </svg>

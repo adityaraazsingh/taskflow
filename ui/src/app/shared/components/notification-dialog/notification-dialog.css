@@ -70,6 +70,17 @@
   color: #64748b;
 }
 
+.notification-bell-icon {
+  animation: bell-swing 5s ease-in-out infinite;
+  transform-origin: top center;
+}
+
+@keyframes bell-swing {
+  0%, 12%, 100% { transform: rotate(0deg); }
+  4% { transform: rotate(8deg); }
+  8% { transform: rotate(-8deg); }
+}
+
 .notification-close {
   position: static;
   color: #94a3b8;
@@ -109,6 +120,15 @@
   background-color: #f8fafc;
   box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06);
   transform: translateX(4px);
+}
+
+.notification-item:focus-visible {
+  outline: 2px solid #6366f1;
+  outline-offset: 2px;
+}
+
+.notification-item:active {
+  transform: translateX(2px) scale(0.99);
 }
 
 .notification-empty {

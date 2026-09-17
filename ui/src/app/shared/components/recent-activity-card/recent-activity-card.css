@@ -18,8 +18,25 @@
   transform: translateX(4px);
 }
 
-.activity-empty {
+/* .activity-item:focus-visible {
+  outline: 2px solid #6366f1;
+  outline-offset: 2px;
+} */
+
+.activity-error {
   padding: 1rem;
+}
+
+.activity-error-icon {
+  width: 3.5rem;
+  height: 3.5rem;
+  box-shadow: 0 4px 12px rgba(225, 29, 72, 0.1);
+}
+
+.retry-btn {
+  border: none;
+  font-family: inherit;
+  cursor: pointer;
 }
 
 .activity-empty-icon {

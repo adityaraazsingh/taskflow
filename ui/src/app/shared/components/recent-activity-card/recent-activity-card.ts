@@ -1,9 +1,8 @@
-import { Component,signal, inject, Inject, input } from '@angular/core';
+import { Component, signal, inject, Inject, input } from '@angular/core';
 import { NotificationService } from '../../../core/services/notification.service';
 import { ActivityService } from '../../../core/services/activity.service';
 import { NotificationModel } from '../../../core/models/NotificationModel';
 import { Router } from '@angular/router';
-import { environment } from "../../../environment";
 import { Observable } from 'rxjs/internal/Observable';
 import { AsyncPipe } from '@angular/common';
 import { map } from 'rxjs';
@@ -18,27 +17,38 @@ import { NotficationMessage } from "../notfication-message/notfication-message";
 })
 export class RecentActivityCard {
   notifications$ = new Observable<NotificationModel[]>();
-  
-  url = environment.frontEndUrl;
-  
+  loadError$: Observable<boolean>;
+
   constructor(
     private notificationService: NotificationService, 
     private router : Router
   ) {
+    this.loadError$ = this.notificationService.loadErrorObs$;
     this.notifications$ = this.notificationService.notificationsObs$.pipe(
-      map( notifications => notifications.filter(n => {
-          const createdAt = new Date(n.createdAt!).getTime();
-          const now = Date.now();
-          const diffHours = (now - createdAt) / (1000 * 60 * 60);
+      map(notifications => {
+        const list = Array.isArray(notifications) ? notifications : [];
+        const recent = list.filter(n => {
+          if (!n?.createdAt) return true; // keep undated entries instead of dropping them
+          const createdAt = new Date(n.createdAt).getTime();
+          if (Number.isNaN(createdAt)) return true;
+          const diffHours = (Date.now() - createdAt) / (1000 * 60 * 60);
           return diffHours <= 24;
-        })
-        .slice()
-        .reverse()
-      )
+        });
+        // Newest first
+        return recent.slice().sort((a, b) => {
+          const ta = a?.createdAt ? new Date(a.createdAt).getTime() : 0;
+          const tb = b?.createdAt ? new Date(b.createdAt).getTime() : 0;
+          return tb - ta;
+        });
+      })
     );
   }
 
   ngOnInit() {
+    this.notificationService.loadNotifications();
+  }
+
+  retryLoad() {
     this.notificationService.loadNotifications();
   }
 

@@ -30,6 +30,7 @@ export class ProjectDetail {
 
   addingTask = false;
   taskToBeEdited!: TaskModel;
+  presetStatus: Status = Status.TODO;
 
   completedTasks = computed(() => this.tasks().filter(t => t.status === Status.DONE).length);
   totalTasks = computed(() => this.tasks().length);
@@ -89,6 +90,17 @@ export class ProjectDetail {
       this.taskToBeEdited = null as any;
     }
     this.addingTask = !this.addingTask;
+  }
+
+  openAddTaskDialog(status?: Status) {
+    if (this.addingTask) {
+      // Dialog is already open; treat as close request
+      this.addingTask = false;
+      return;
+    }
+    this.taskToBeEdited = null as any;
+    this.presetStatus = status ?? Status.TODO;
+    this.addingTask = true;
   }
 
   onEditingProject(){

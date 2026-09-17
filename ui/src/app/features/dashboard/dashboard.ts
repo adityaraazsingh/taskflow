@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, computed } from '@angular/core';
 import { ProjectCard } from '../../shared/components/project-card/project-card';
 import { RecentActivityCard } from '../../shared/components/recent-activity-card/recent-activity-card';
 import { ProjectService } from '../../core/services/project.service';
@@ -17,6 +17,10 @@ export class Dashboard {
   projects = signal<ProjectModel[]>([]) ;
   addingProject : boolean = false;
   router = inject(Router);
+
+  completedProjects = computed(() =>
+    this.projects().filter(p => (p as any).status === 'DONE').length
+  );
   constructor(private projectService : ProjectService, private profileService: ProfileService){
     this.projectService.getProjectsForCurrentUser(0,20,'asc',null).subscribe(
       next => { this.projects.set(next.content) }

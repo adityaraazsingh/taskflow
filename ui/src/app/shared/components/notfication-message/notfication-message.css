@@ -51,6 +51,10 @@
   font-size: 0.875rem;
 }
 
+.notification-item-wrapper {
+  transition: transform 0.2s ease;
+}
+
 .notification-time {
   color: #94a3b8;
 }

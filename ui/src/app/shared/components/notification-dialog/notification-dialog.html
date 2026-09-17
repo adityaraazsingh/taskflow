@@ -1,5 +1,5 @@
 <div class="notification-backdrop" (click)="closeDialog()"></div>
-<div class="notification-dialog" (click)="$event.stopPropagation()">
+<div class="notification-dialog" (click)="$event.stopPropagation()" role="dialog" aria-modal="true" aria-label="Notifications">
   <div class="notification-dialog-header">
     <div class="notification-dialog-title-row flex items-center justify-between">
       <div class="flex items-center gap-3">

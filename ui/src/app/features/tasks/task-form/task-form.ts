@@ -17,6 +17,7 @@ export class TaskForm implements OnInit{
   closeDialog = output();
   task = input<TaskModel>();
   projectId = input<number>();
+  presetStatus = input<Status>();
   submitting = signal(false);
 
   taskForm = new FormGroup({
@@ -34,7 +35,7 @@ export class TaskForm implements OnInit{
     this.taskForm.patchValue({
       title : this.task()?.title,
       description : this.task()?.description,
-      status : this.task()?.status,
+      status : this.task()?.status ?? this.presetStatus() ?? Status.TODO,
       priority : this.task()?.priority,
       duedate: this.task()?.dueDate
     });

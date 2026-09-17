@@ -30,6 +30,32 @@
   border-color: #fde68a;
 }
 
+.status-todo {
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  color: #475569;
+  border-color: #cbd5e1;
+}
+
+.dot-slate {
+  background-color: #94a3b8;
+}
+
+.dot-emerald {
+  background-color: #10b981;
+}
+
+.dot-amber {
+  background-color: #f59e0b;
+}
+
+.dot-gray {
+  background-color: #94a3b8;
+}
+
+.dot-blue {
+  background-color: #3b82f6;
+}
+
 .status-archived {
   background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
   color: #64748b;

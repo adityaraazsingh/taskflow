@@ -1,11 +1,11 @@
 <div class="max-w-7xl mx-auto">
   <!-- Header -->
-  <div class="flex items-center justify-between mb-8">
+  <div class="flex items-center justify-between mb-8 flex-wrap gap-3">
     <div>
       <h1 class="text-2xl font-bold text-gray-900 tracking-tight">Dashboard</h1>
       <p class="mt-1 text-sm text-gray-500">Overview of your projects and tasks</p>
     </div>
-    <button (click)="onAddingProject()" class="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 transition-all duration-200">
+    <button (click)="onAddingProject()" class="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm shadow-indigo-500/25 hover:bg-indigo-500 hover:shadow-md hover:shadow-indigo-500/30 active:scale-95 transition-all duration-200">
       <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
       </svg>
@@ -14,8 +14,8 @@
   </div>
 
   <!-- Stats Cards -->
-  <div class="dashboard-stats-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-    <div class="stat-card bg-white rounded-xl p-5 soft-ring hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
+  <div class="dashboard-stats-grid grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+    <div class="stat-card stat-card-indigo bg-white rounded-xl p-5 soft-ring hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
       <div class="flex items-center gap-3">
         <div class="stat-icon flex items-center justify-center size-10 rounded-lg bg-indigo-50 text-indigo-600">
           <svg class="size-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
@@ -29,7 +29,7 @@
       </div>
     </div>
 
-    <div class="stat-card bg-white rounded-xl p-5 soft-ring hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
+    <div class="stat-card stat-card-emerald bg-white rounded-xl p-5 soft-ring hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
       <div class="flex items-center gap-3">
         <div class="stat-icon flex items-center justify-center size-10 rounded-lg bg-emerald-50 text-emerald-600">
           <svg class="size-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
@@ -37,13 +37,13 @@
           </svg>
         </div>
         <div>
-          <p class="stat-value text-2xl font-bold text-gray-900">48</p>
-          <p class="stat-label text-xs text-gray-500">Completed Tasks</p>
+          <p class="stat-value text-2xl font-bold text-gray-900">{{projects().length}}</p>
+          <p class="stat-label text-xs text-gray-500">Active Projects</p>
         </div>
       </div>
     </div>
 
-    <div class="stat-card bg-white rounded-xl p-5 soft-ring hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
+    <div class="stat-card stat-card-amber bg-white rounded-xl p-5 soft-ring hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
       <div class="flex items-center gap-3">
         <div class="stat-icon flex items-center justify-center size-10 rounded-lg bg-amber-50 text-amber-600">
           <svg class="size-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
@@ -51,13 +51,13 @@
           </svg>
         </div>
         <div>
-          <p class="stat-value text-2xl font-bold text-gray-900">23</p>
-          <p class="stat-label text-xs text-gray-500">In Progress</p>
+          <p class="stat-value text-2xl font-bold text-gray-900">{{projects().length}}</p>
+          <p class="stat-label text-xs text-gray-500">In Planning</p>
         </div>
       </div>
     </div>
 
-    <div class="stat-card bg-white rounded-xl p-5 soft-ring hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
+    <div class="stat-card stat-card-rose bg-white rounded-xl p-5 soft-ring hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
       <div class="flex items-center gap-3">
         <div class="stat-icon flex items-center justify-center size-10 rounded-lg bg-rose-50 text-rose-600">
           <svg class="size-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
@@ -65,8 +65,8 @@
           </svg>
         </div>
         <div>
-          <p class="stat-value text-2xl font-bold text-gray-900">7</p>
-          <p class="stat-label text-xs text-gray-500">Overdue</p>
+          <p class="stat-value text-2xl font-bold text-gray-900">{{completedProjects()}}</p>
+          <p class="stat-label text-xs text-gray-500">Completed</p>
         </div>
       </div>
     </div>
@@ -85,8 +85,8 @@
         <app-project-card (click)="navigateToProject(project.id!)">
           <span status>{{project.status}}</span>
           <span title>{{project.name}}</span>
-          <span description>{{project.description}}</span>
-          <span numberOfTaskCompleted>8/14 tasks</span>
+          <span description>{{project.description || 'No description yet.'}}</span>
+          <span numberOfTaskCompleted>{{project.projectMemberIds?.length || 0}} members</span>
         </app-project-card>
       }
     </div>

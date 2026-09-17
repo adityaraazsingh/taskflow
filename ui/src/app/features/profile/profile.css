@@ -1,0 +1,24 @@
+:host {
+  display: block;
+}
+
+/* Password match feedback pills */
+.pw-feedback {
+  margin: 0;
+  animation: fade-in-up 0.25s ease-out;
+}
+
+.pw-feedback-error {
+  color: #e11d48;
+}
+
+.pw-feedback-ok {
+  color: #059669;
+}
+
+/* Disabled email input affordance */
+input:disabled {
+  background-color: #f8fafc;
+  color: #6b7280;
+  cursor: not-allowed;
+}

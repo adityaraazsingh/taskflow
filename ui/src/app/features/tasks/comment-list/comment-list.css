@@ -328,4 +328,22 @@
   transform: scale(0.97);
 }
 
+.comment-submit-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.comment-reply-btn:hover {
+  color: #4f46e5;
+  background-color: #eef2ff;
+}
+
+.comment-reply-btn:hover svg {
+  transform: translateX(-1px);
+}
+
+.comment-reply-btn svg {
+  transition: transform 0.15s ease;
+}
 

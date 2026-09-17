@@ -1,14 +1,16 @@
 <span class="status-badge inline-flex items-center gap-1.5 rounded-full text-xs font-semibold soft-ring transition-all duration-300 hover:shadow-sm" [ngClass]="{
     'status-active': status === 'ACTIVE' || status === 'DONE',
-    'status-in-progress': status === 'IN_PROGRESS' || status === 'TODO',
+    'status-in-progress': status === 'IN_PROGRESS',
+    'status-todo': status === 'TODO',
     'status-archived': status === 'ARCHIVED',
     'status-completed': status === 'COMPLETED'
   }">
   <span class="status-dot w-2 h-2 rounded-full" [ngClass]="{
     'dot-emerald': status === 'ACTIVE' || status === 'DONE',
-    'dot-amber': status === 'IN_PROGRESS' || status === 'TODO',
+    'dot-amber': status === 'IN_PROGRESS',
+    'dot-slate': status === 'TODO',
     'dot-gray': status === 'ARCHIVED',
     'dot-blue': status === 'COMPLETED'
   }"></span>
-  <span class="status-label capitalize">{{ status | titlecase }}</span>
+  <span class="status-label capitalize">{{ status === 'IN_PROGRESS' ? 'In Progress' : (status === 'TODO' ? 'To Do' : (status | titlecase)) }}</span>
 </span>

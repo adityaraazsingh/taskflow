@@ -20,6 +20,11 @@ export class CommentList {
   taskId = input.required<number>();
   replyComment = signal<CommentModel | null>(null);
 
+  get currentUserInitial(): string {
+    const name = this.profileService.profileSignal()?.firstName || 'U';
+    return name.substring(0, 2).toUpperCase();
+  }
+
   constructor(private taskService : TaskService , private commentService : CommentService, private profileService : ProfileService){}
 
   ngOnInit(): void {

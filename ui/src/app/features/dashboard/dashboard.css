@@ -8,6 +8,31 @@
   cursor: default;
 }
 
+/* Stat card accent on hover */
+.stat-card::after {
+  content: '';
+  position: absolute;
+  left: 0.75rem;
+  right: 0.75rem;
+  bottom: 0;
+  height: 2px;
+  border-radius: 999px;
+  background: var(--stat-accent, linear-gradient(90deg, #6366f1, #8b5cf6));
+  opacity: 0;
+  transform: scaleX(0.6);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.stat-card:hover::after {
+  opacity: 0.8;
+  transform: scaleX(1);
+}
+
+.stat-card-indigo { --stat-accent: linear-gradient(90deg, #6366f1, #818cf8); }
+.stat-card-emerald { --stat-accent: linear-gradient(90deg, #10b981, #34d399); }
+.stat-card-amber { --stat-accent: linear-gradient(90deg, #f59e0b, #fbbf24); }
+.stat-card-rose { --stat-accent: linear-gradient(90deg, #f43f5e, #fb7185); }
+
 .stat-card::before {
   content: '';
   position: absolute;

@@ -18,7 +18,7 @@ import { Status } from '../../../core/enums/Status';
   styleUrl: './project-members.css',
 })
 export class ProjectMembers {
-  role! : RoleInProject;
+  selectedRoles = new Map<number, RoleInProject>();
   projectId =  signal<number | null>(null);
   members = signal<projectMemberResponseDto[]>([]);
   allUsers = signal<UserModel[] | null>(null)
@@ -49,9 +49,14 @@ export class ProjectMembers {
     )
   }
 
+  setRoleForUser(userId: number, event: Event) {
+    const value = (event.target as HTMLSelectElement).value as RoleInProject;
+    this.selectedRoles.set(userId, value);
+  }
+
   addMemberOnAProject(userId : number ){
     const payload : assigningUserRequestDto = {
-      roleInProject : this.role,
+      roleInProject : this.selectedRoles.get(userId) ?? RoleInProject.EDITOR,
       userId : userId
     }
 

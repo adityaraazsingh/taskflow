@@ -65,6 +65,10 @@
   cursor: pointer;
 }
 
+.confirm-cancel-btn:active {
+  transform: scale(0.97);
+}
+
 .confirm-cancel-btn:hover {
   color: #111827;
 }

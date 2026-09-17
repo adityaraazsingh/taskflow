@@ -11,8 +11,17 @@
   height: 3.5rem;
 }
 
+.loading-glow {
+  background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, transparent 70%);
+  animation: glow-breathe 2.4s ease-in-out infinite;
+}
+
 .loading-ring {
   border-radius: 50%;
+}
+
+.loading-dot {
+  animation: glow-breathe 2.4s ease-in-out infinite;
 }
 
 .loading-indicator {
@@ -23,6 +32,18 @@
 .loading-message {
   margin: 0;
   letter-spacing: 0.01em;
+  color: #6b7280;
+}
+
+@keyframes glow-breathe {
+  0%, 100% {
+    opacity: 0.5;
+    transform: scale(0.92);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
 }
 
 @keyframes spin {
