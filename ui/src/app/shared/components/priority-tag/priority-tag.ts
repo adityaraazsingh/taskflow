@@ -10,4 +10,5 @@ import { Priority } from '../../../core/enums/Priority';
 })
 export class PriorityTag {
   @Input() priority:Priority = Priority.MEDIUM;
+  Priority = Priority;
 }

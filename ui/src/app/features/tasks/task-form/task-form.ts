@@ -17,6 +17,7 @@ export class TaskForm implements OnInit{
   closeDialog = output();
   task = input<TaskModel>();
   projectId = input<number>();
+  submitting = signal(false);
 
   taskForm = new FormGroup({
     title: new FormControl('', Validators.required),
@@ -44,6 +45,10 @@ export class TaskForm implements OnInit{
   }
 
   submitTaskForm() {
+    if(this.taskForm.invalid) return;
+
+    this.submitting.set(true);
+
     if(this.task()){
       const payload: TaskModel = {
         title: this.taskForm.get('title')!.value ?? '',
@@ -58,14 +63,17 @@ export class TaskForm implements OnInit{
       this.task()!.priority = payload.priority;
       this.task()!.dueDate = payload.dueDate;
 
-      this.taskService.updateTaskById(this.task()!.id! , this.task()!).subscribe(
-        (next)=>{
+      this.taskService.updateTaskById(this.task()!.id! , this.task()!).subscribe({
+        next: () => {
+          this.submitting.set(false);
           this.closeDialog.emit();
+        },
+        error: (err) => {
+          console.error(err);
+          this.submitting.set(false);
         }
-      );
-
-
-    }else{
+      });
+    } else {
       const payload: TaskModel = {
         title: this.taskForm.get('title')!.value ?? '',
         description: this.taskForm.get('description')!.value ?? '',
@@ -74,14 +82,16 @@ export class TaskForm implements OnInit{
         dueDate: this.taskForm.get('duedate')!.value ?? new Date(),
       }
       // Create new task
-      this.taskService.createTask(this.projectId()!, payload).subscribe(
-        (next) => {
+      this.taskService.createTask(this.projectId()!, payload).subscribe({
+        next: () => {
+          this.submitting.set(false);
           this.closeDialog.emit();
         },
-        (error) => {
-          console.log(error);
+        error: (err) => {
+          console.error(err);
+          this.submitting.set(false);
         }
-      );
+      });
     }
   }
 }

@@ -2,28 +2,38 @@
 <div class="notification-dialog" (click)="$event.stopPropagation()">
   <div class="notification-dialog-header">
     <div class="notification-dialog-title-row flex items-center justify-between">
-      <h2 class="notification-title text-lg font-semibold text-gray-900 tracking-tight">Notifications</h2>
+      <div class="flex items-center gap-3">
+        <div class="notification-bell-icon size-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-200">
+          <svg class="size-5 text-white" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
+          </svg>
+        </div>
+        <div>
+          <h2 class="notification-title text-lg font-bold text-gray-900 tracking-tight">Notifications</h2>
+          <p class="notification-subtitle text-xs text-gray-500">Stay updated with the latest activity</p>
+        </div>
+      </div>
       <button (click)="closeDialog()" class="notification-close p-1.5 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-all duration-200" aria-label="Close notifications">
         <svg class="size-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
         </svg>
       </button>
     </div>
-    <p class="notification-subtitle text-sm text-gray-500">Stay updated with the latest activity</p>
   </div>
   <div class="notification-list">
     @for(notification of (notifications$ | async); track $index) {
-      <button type="button" class="notification-item flex items-start gap-3 p-4 text-left rounded-xl soft-ring hover:bg-gray-50 transition-colors" (click)="navigateToTheEvent(notification)">
+      <button type="button" class="notification-item flex items-start gap-3 p-4 text-left rounded-xl soft-ring transition-all duration-200 hover:bg-gray-50 hover:shadow-sm" (click)="navigateToTheEvent(notification)">
         <app-notfication-message [notification]="notification"></app-notfication-message>
       </button>
     } @empty {
-      <div class="notification-empty flex flex-col items-center justify-center py-12 text-center">
-        <div class="notification-empty-icon size-12 rounded-2xl bg-indigo-50 flex items-center justify-center mb-3">
+      <div class="notification-empty flex flex-col items-center justify-center py-16 text-center">
+        <div class="notification-empty-icon size-14 rounded-2xl bg-gradient-to-br from-indigo-50 to-purple-50 flex items-center justify-center mb-4 shadow-sm">
           <svg class="size-6 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
           </svg>
         </div>
-        <p class="notification-empty-text text-sm text-gray-500">No notifications available.</p>
+        <h3 class="text-sm font-semibold text-gray-900 mb-1">No notifications</h3>
+        <p class="text-sm text-gray-500">You're all caught up! New notifications will appear here.</p>
       </div>
     }
   </div>

@@ -4,29 +4,54 @@
 
 .priority-tag {
   align-items: center;
-  padding: 0.125rem 0.5rem;
   cursor: default;
+  border: 1px solid transparent;
 }
 
 .priority-icon {
-  transition: transform 0.2s ease;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.priority-tag:hover .priority-icon {
-  transform: scale(1.1);
+.priority-label {
+  letter-spacing: 0.05em;
 }
 
 .priority-high {
-  background-color: #fff1f2;
-  color: #e11d48;
+  background: linear-gradient(135deg, #fff1f2 0%, #ffe4e6 100%);
+  color: #be123c;
+  border-color: #fecdd3;
+  box-shadow: 0 2px 4px rgba(225, 29, 72, 0.1);
+}
+
+.priority-high:hover {
+  background: linear-gradient(135deg, #ffe4e6 0%, #fecdd3 100%);
+  box-shadow: 0 4px 8px rgba(225, 29, 72, 0.15);
 }
 
 .priority-medium {
-  background-color: #fffbeb;
+  background: linear-gradient(135deg, #fffbeb 0%, #fde68a 100%);
   color: #b45309;
+  border-color: #fde68a;
+  box-shadow: 0 2px 4px rgba(180, 83, 9, 0.1);
+}
+
+.priority-medium:hover {
+  background: linear-gradient(135deg, #fde68a 0%, #fcd34d 100%);
+  box-shadow: 0 4px 8px rgba(180, 83, 9, 0.15);
 }
 
 .priority-low {
-  background-color: #f0f9ff;
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
   color: #0369a1;
+  border-color: #bae6fd;
+  box-shadow: 0 2px 4px rgba(3, 105, 161, 0.1);
+}
+
+.priority-low:hover {
+  background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+  box-shadow: 0 4px 8px rgba(3, 105, 161, 0.15);
+}
+
+.priority-tag:hover .priority-icon {
+  transform: scale(1.15) translateY(-1px);
 }

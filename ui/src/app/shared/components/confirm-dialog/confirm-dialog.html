@@ -1,11 +1,11 @@
 <div class="confirm-root fixed inset-0 z-50 flex items-center justify-center p-4">
   <!-- Backdrop -->
-  <div class="confirm-backdrop absolute inset-0 bg-black/40 backdrop-blur-sm" (click)="onCancel()"></div>
+  <div class="confirm-backdrop absolute inset-0 bg-black/40 backdrop-blur-md" (click)="onCancel()"></div>
 
   <!-- Dialog -->
-  <div class="confirm-dialog relative w-full max-w-md bg-white rounded-2xl shadow-2xl p-6 sm:p-8 animate-fade-in-up">
+  <div class="confirm-dialog relative w-full max-w-md bg-white rounded-2xl shadow-2xl shadow-rose-500/10 p-6 sm:p-8 animate-fade-in-up border border-gray-100">
     <!-- Icon -->
-    <div class="confirm-icon mx-auto flex size-14 items-center justify-center rounded-full bg-rose-50 mb-4 shadow-sm">
+    <div class="confirm-icon mx-auto flex size-14 items-center justify-center rounded-2xl bg-gradient-to-br from-rose-50 to-red-50 mb-5 shadow-sm ring-1 ring-rose-200/50">
       <svg class="size-7 text-rose-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
       </svg>
@@ -13,17 +13,17 @@
 
     <!-- Content -->
     <div class="confirm-content text-center">
-      <h3 class="confirm-title text-lg font-semibold text-gray-900 mb-2">{{ title || 'Confirm Action' }}</h3>
+      <h3 class="confirm-title text-xl font-bold text-gray-900 mb-2 tracking-tight">{{ title || 'Confirm Action' }}</h3>
       <p class="confirm-message text-sm text-gray-500 leading-relaxed">{{ message || 'Are you sure you want to proceed?' }}</p>
     </div>
 
     <!-- Actions -->
-    <div class="confirm-actions mt-6 flex items-center justify-center gap-3 flex-wrap">
-      <button type="button" (click)="onCancel()" class="confirm-cancel-btn inline-flex items-center justify-center rounded-xl px-5 py-2.5 text-sm font-medium text-gray-700 bg-white soft-ring hover:bg-gray-50 hover:text-gray-900 transition-all duration-200">
+    <div class="confirm-actions mt-6 flex items-center justify-center gap-3">
+      <button type="button" (click)="onCancel()" class="confirm-cancel-btn inline-flex items-center justify-center rounded-xl px-6 py-2.5 text-sm font-medium text-gray-700 bg-white ring-1 ring-gray-200 hover:bg-gray-50 hover:ring-gray-300 hover:text-gray-900 transition-all duration-200">
         Cancel
       </button>
-      <button type="button" (click)="onConfirm()" class="confirm-action-btn inline-flex items-center justify-center rounded-xl px-5 py-2.5 text-sm font-semibold text-white bg-rose-600 hover:bg-rose-700 shadow-sm transition-all duration-200">
-        <svg class="confirm-icon-svg w-4 h-4 mr-1.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+      <button type="button" (click)="onConfirm()" class="confirm-action-btn inline-flex items-center justify-center gap-2 rounded-xl px-6 py-2.5 text-sm font-semibold text-white bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-700 hover:to-red-700 shadow-lg shadow-rose-500/20 hover:shadow-xl hover:shadow-rose-500/30 transition-all duration-200 active:scale-95">
+        <svg class="confirm-icon-svg w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
         </svg>
         {{ confirmText || 'Delete' }}

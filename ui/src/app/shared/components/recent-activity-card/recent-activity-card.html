@@ -1,15 +1,23 @@
 @for(notification of (notifications$ | async); track $index) {
-    <button type="button" class="activity-item w-full text-left rounded-xl soft-ring hover:bg-gray-50 transition-colors p-3" (click)="navigateToTheEvent(notification)">
-        <app-notfication-message [notification]="notification"></app-notfication-message>
+    <button type="button" class="activity-item w-full text-left rounded-xl soft-ring transition-all duration-300 p-3 hover:bg-gray-50 hover:shadow-sm" (click)="navigateToTheEvent(notification)">
+        <div class="flex items-start gap-3">
+            <div class="flex-1 min-w-0">
+                <app-notfication-message [notification]="notification"></app-notfication-message>
+            </div>
+            <div class="text-[11px] text-gray-400 font-medium flex-shrink-0 mt-0.5">
+                {{ getTimeAgo(notification.createdAt) }}
+            </div>
+        </div>
     </button>
 } @empty {
-    <div class="activity-empty flex flex-col items-center justify-center py-6 text-center">
-      <div class="activity-empty-icon size-10 rounded-xl bg-indigo-50 flex items-center justify-center mb-2">
-        <svg class="size-5 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+    <div class="activity-empty flex flex-col items-center justify-center py-10 text-center">
+      <div class="activity-empty-icon size-14 rounded-2xl bg-gradient-to-br from-indigo-50 to-purple-50 flex items-center justify-center mb-4 shadow-sm">
+        <svg class="size-6 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
         </svg>
       </div>
-      <p class="text-sm text-gray-500">No notifications available.</p>
+      <h3 class="text-sm font-semibold text-gray-900 mb-1">No recent activity</h3>
+      <p class="text-sm text-gray-500">You're all caught up! New notifications will appear here.</p>
     </div>
 }
 

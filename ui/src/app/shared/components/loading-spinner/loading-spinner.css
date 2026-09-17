@@ -7,19 +7,43 @@
 }
 
 .loading-spinner {
-  width: 3rem;
-  height: 3rem;
+  width: 3.5rem;
+  height: 3.5rem;
 }
 
-.loading-track {
-  border-color: #e0e7ff;
+.loading-ring {
+  border-radius: 50%;
 }
 
 .loading-indicator {
   border-top-color: #6366f1;
+  border-right-color: #818cf8;
 }
 
 .loading-message {
   margin: 0;
   letter-spacing: 0.01em;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin {
+  animation: spin 1.5s linear infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }

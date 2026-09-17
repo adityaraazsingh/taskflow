@@ -2,18 +2,21 @@
   display: block;
 }
 
-.pagination-bar {
-  background-color: #ffffff;
+.pagination-wrapper {
+  width: 100%;
 }
 
 .mobile-page-btn {
   border: none;
   font-family: inherit;
   cursor: pointer;
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.75rem;
 }
 
 .mobile-page-btn:disabled {
   cursor: not-allowed;
+  opacity: 0.5;
 }
 
 .pagination-info {
@@ -21,13 +24,8 @@
 }
 
 .page-number,
-.total-pages,
 .total-items {
   font-variant-numeric: tabular-nums;
-}
-
-.separator {
-  user-select: none;
 }
 
 .pagination-controls {
@@ -39,28 +37,30 @@
   font-family: inherit;
   cursor: pointer;
   border-radius: 0.5rem;
-  transition: background-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+  transition: all 0.2s ease;
 }
 
 .page-btn-default {
-  color: #111827;
+  color: #374151;
   background-color: transparent;
 }
 
 .page-btn-default:hover {
-  background-color: #f8fafc;
-  color: #334155;
+  background-color: #f3f4f6;
+  color: #111827;
 }
 
 .page-btn-active {
-  background-color: #6366f1;
+  background: linear-gradient(135deg, #6366f1 0%, #818cf8 100%);
   color: #ffffff;
-  box-shadow: 0 2px 6px rgba(99, 102, 241, 0.3);
+  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
+  transform: scale(1.05);
 }
 
 .page-btn-active:hover {
-  background-color: #4f46e5;
+  background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
   color: #ffffff;
+  transform: scale(1.05);
 }
 
 .prev-page-btn,
@@ -69,16 +69,17 @@
   font-family: inherit;
   cursor: pointer;
   border-radius: 0.5rem;
-  transition: background-color 0.15s ease, color 0.15s ease;
+  transition: all 0.2s ease;
 }
 
 .prev-page-btn:disabled,
 .next-page-btn:disabled {
   cursor: not-allowed;
+  opacity: 0.5;
 }
 
 .prev-page-btn:hover,
 .next-page-btn:hover {
-  background-color: #f8fafc;
-  color: #334155;
+  background-color: #f3f4f6;
+  color: #111827;
 }
