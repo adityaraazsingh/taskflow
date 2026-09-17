@@ -14,7 +14,7 @@ import { ProfileService } from "./profileService";
 export class AuthService implements OnInit{
     url : string = environment.apiUrl;
     public userSignal = signal<UserModel | null>(null);
-    public isUserLoggedIn = signal<boolean | null>(null)
+    public isUserLoggedIn = signal<boolean >(false)
 
     constructor(private httpClient:HttpClient, private router : Router, private profileService : ProfileService){}
 
@@ -50,7 +50,13 @@ export class AuthService implements OnInit{
       });
     }
 
-    
+    public logout(){
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
+        this.checkIfUserLoggedIn();
+        this.router.navigate(['/login']);
+    }
+
     public me(){
         this.httpClient.get<UserModel>(`${this.url}/auth/me`).subscribe(
             (data) => {

@@ -1,4 +1,4 @@
-import { Component, inject, signal, computed } from '@angular/core';
+import { Component, inject, signal, computed, OnInit } from '@angular/core';
 import { ProjectCard } from '../../shared/components/project-card/project-card';
 import { RecentActivityCard } from '../../shared/components/recent-activity-card/recent-activity-card';
 import { ProjectService } from '../../core/services/project.service';
@@ -6,6 +6,7 @@ import { ProjectModel } from '../../core/models/project.model';
 import { Router } from '@angular/router';
 import { ProjectForm } from "../projects/project-form/project-form";
 import { ProfileService } from '../../core/services/profileService';
+import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -13,7 +14,7 @@ import { ProfileService } from '../../core/services/profileService';
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
 })
-export class Dashboard {
+export class Dashboard implements OnInit {
   projects = signal<ProjectModel[]>([]) ;
   addingProject : boolean = false;
   router = inject(Router);
@@ -21,10 +22,14 @@ export class Dashboard {
   completedProjects = computed(() =>
     this.projects().filter(p => (p as any).status === 'DONE').length
   );
-  constructor(private projectService : ProjectService, private profileService: ProfileService){
+  constructor(private projectService : ProjectService, private authService: AuthService){
     this.projectService.getProjectsForCurrentUser(0,20,'asc',null).subscribe(
       next => { this.projects.set(next.content) }
     )
+  }
+
+  ngOnInit(): void {
+    this.authService.checkIfUserLoggedIn();
   }
 
   navigateToProject(projectId : number){

@@ -30,17 +30,18 @@ export class App implements OnInit {
   });
   router = inject(Router);
   snackBar = inject(MatSnackBar);
+  loggedIn = signal<boolean>(false);
 
   user = signal<UserModel | null>(null);
   loading = signal(true);
   constructor(private authService: AuthService, private profileService: ProfileService, private notificationService: NotificationService) {
     this.firstNameProfile = this.profileService.profileSignal;
     this.authService.me()
+    this.loggedIn = this.authService.isUserLoggedIn;
   }
 
   ngOnInit() {
     this.notificationService.newNotificationObs$.subscribe(notification => {
-      console.log('New notification received:', notification);
       this.triggerPopup(notification);
     });
     this.notificationService.connect();
@@ -63,9 +64,8 @@ export class App implements OnInit {
   }
 
   protected onLogout(): void {
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
-    this.router.navigate(['/login']);
+    this.authService.logout();
+    console.log('User logged out');
   }
 
   openNotificationDialog() {
