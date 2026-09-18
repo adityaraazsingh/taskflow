@@ -12,7 +12,7 @@ public class WebConfig implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry){
         registry.addMapping("/api/**")
                 .allowedOrigins("http://localhost:4200",
-                            "https://taskflow-adityaraazsinghs-projects.vercel.app"
+                            "https://*.vercel.app"
                         )
                 .allowedMethods("GET","POST","PUT","DELETE","OPTIONS","PATCH")
                 .allowedHeaders("*");

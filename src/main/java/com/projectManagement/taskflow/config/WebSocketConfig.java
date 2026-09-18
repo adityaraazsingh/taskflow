@@ -20,7 +20,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         registry.addEndpoint("/ws")
                 .setAllowedOriginPatterns(
                         "http://localhost:4200",
-                        "https://taskflow-adityaraazsinghs-projects.vercel.app"
+                        "https://*.vercel.app"
                 )
 //                .withSockJS()
         ;

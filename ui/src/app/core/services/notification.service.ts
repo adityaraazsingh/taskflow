@@ -51,7 +51,7 @@ export class NotificationService implements OnInit {
       ? localStorage.getItem('accessToken')
       : null;
     this.stompClient = new Client({
-      brokerURL: 'ws://localhost:8080/ws', 
+      brokerURL: environment.brokerUrl, 
       connectHeaders: {
         Authorization: 'Bearer ' + token,
       },
