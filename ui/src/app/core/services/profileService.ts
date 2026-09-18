@@ -1,9 +1,7 @@
-import { afterEveryRender, Injectable, OnInit, signal } from "@angular/core";
+import { Injectable, signal } from "@angular/core";
 import { environment } from "../../environment";
 import { HttpClient } from "@angular/common/http";
 import { ProfileModel } from "../models/profile.model";
-import { BehaviorSubject } from "rxjs";
-import { AuthService } from "./auth.service";
 import { UserModel } from "../models/user.model";
 
 @Injectable({
@@ -30,6 +28,9 @@ export class ProfileService {
         this.httpClient.get<ProfileModel>(`${this.url}/${userId}`).subscribe(
             (next) => {
                 this.profileSignal.set(next)
+            },
+            (error)=>{
+
             }
         )
     }

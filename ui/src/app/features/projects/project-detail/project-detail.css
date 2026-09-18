@@ -33,7 +33,7 @@
   right: 0;
   bottom: 0;
   height: 2px;
-  background: linear-gradient(90deg, #6366f1 0%, #8b5cf6 60%, #c084fc 100%);
+  background: linear-gradient(90deg, #0ea5e9 0%, #06b6d4 60%, #22d3ee 100%);
   opacity: 0.15;
   pointer-events: none;
 }
@@ -174,7 +174,7 @@
   right: 0;
   top: 0;
   height: 2px;
-  background: linear-gradient(90deg, #6366f1 0%, #8b5cf6 100%);
+  background: linear-gradient(90deg, #0ea5e9 0%, #06b6d4 100%);
   opacity: 0.3;
   pointer-events: none;
 }

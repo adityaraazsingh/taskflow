@@ -18,15 +18,15 @@ export class TaskCard {
 
   get priorityBorderClass(): string {
     const p: any = this.task().priority;
-    if (p === 'HIGH' || p === Priority.HIGH) return 'border-l-4 border-l-rose-400';
-    if (p === 'MED' || p === Priority.MEDIUM || p === 'MEDIUM') return 'border-l-4 border-l-amber-400';
+    if (p === 'HIGH' || p === Priority.HIGH) return 'border-l-4 border-l-violet-400';
+    if (p === 'MED' || p === Priority.MEDIUM || p === 'MEDIUM') return 'border-l-4 border-l-orange-400';
     return 'border-l-4 border-l-sky-400';
   }
 
   get priorityIndicatorClass(): string {
     const p: any = this.task().priority;
-    if (p === 'HIGH' || p === Priority.HIGH) return 'bg-gradient-to-b from-rose-400 to-rose-600';
-    if (p === 'MED' || p === Priority.MEDIUM || p === 'MEDIUM') return 'bg-gradient-to-b from-amber-400 to-amber-600';
+    if (p === 'HIGH' || p === Priority.HIGH) return 'bg-gradient-to-b from-violet-400 to-violet-600';
+    if (p === 'MED' || p === Priority.MEDIUM || p === 'MEDIUM') return 'bg-gradient-to-b from-orange-400 to-orange-600';
     return 'bg-gradient-to-b from-sky-400 to-sky-600';
   }
 

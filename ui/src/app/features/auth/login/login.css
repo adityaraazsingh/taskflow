@@ -1,1 +1,169 @@
-/* Animation is defined globally in styles.css */
+/* Ocean-wave themed animated background for the login page */
+
+/* Soft sky-to-sea backdrop */
+.ocean-page {
+  background: linear-gradient(180deg, #eff6ff 0%, #e0f2fe 38%, #cffafe 72%, #ecfeff 100%);
+}
+
+/* Slow-drifting underwater light blobs */
+.ocean-glow {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(64px);
+  will-change: transform;
+}
+
+.ocean-glow.one {
+  top: -6rem;
+  right: -5rem;
+  width: 24rem;
+  height: 24rem;
+  background: rgba(186, 230, 253, 0.8);
+  animation: ocean-glow-drift 22s ease-in-out infinite alternate;
+}
+
+.ocean-glow.two {
+  bottom: 4rem;
+  left: -8rem;
+  width: 28rem;
+  height: 28rem;
+  background: rgba(165, 243, 252, 0.65);
+  animation: ocean-glow-drift 28s ease-in-out infinite alternate-reverse;
+}
+
+.ocean-glow.three {
+  top: 30%;
+  left: 42%;
+  width: 18rem;
+  height: 18rem;
+  background: rgba(199, 210, 254, 0.5);
+  animation: ocean-glow-drift 18s ease-in-out infinite alternate;
+  animation-delay: -9s;
+}
+
+@keyframes ocean-glow-drift {
+  from {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  to {
+    transform: translate3d(-48px, 36px, 0) scale(1.12);
+  }
+}
+
+/* Layered rolling waves pinned to the bottom */
+.ocean-wave {
+  position: absolute;
+  left: 0;
+  width: 200%; /* svg holds two identical copies so the drift loops seamlessly */
+  pointer-events: none;
+  will-change: transform;
+}
+
+.ocean-wave svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  animation: ocean-wave-drift linear infinite;
+  will-change: transform;
+}
+
+.ocean-wave.back {
+  bottom: 34px;
+  height: 130px;
+  opacity: 0.5;
+  animation: ocean-wave-bob 7s ease-in-out infinite alternate;
+}
+
+.ocean-wave.back svg {
+  animation-duration: 26s;
+}
+
+.ocean-wave.mid {
+  bottom: 16px;
+  height: 150px;
+  opacity: 0.7;
+  animation: ocean-wave-bob 6s ease-in-out infinite alternate-reverse;
+}
+
+.ocean-wave.mid svg {
+  animation-duration: 19s;
+}
+
+.ocean-wave.front {
+  bottom: 0;
+  height: 170px;
+  animation: ocean-wave-bob 5s ease-in-out infinite alternate;
+  animation-delay: -2s;
+}
+
+.ocean-wave.front svg {
+  animation-duration: 13s;
+}
+
+@keyframes ocean-wave-drift {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+@keyframes ocean-wave-bob {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(8px);
+  }
+}
+
+/* ===================== Sky elements: drifting clouds ===================== */
+
+/* Fluffy drifting clouds (markup holds an inline SVG cloud) */
+.ocean-cloud {
+  position: absolute;
+  opacity: 0.9;
+  filter: drop-shadow(0 6px 12px rgba(125, 211, 252, 0.35));
+  animation: cloud-drift linear infinite;
+}
+
+.ocean-cloud svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* Two cloud sizes; start offset via negative delays so the sky is populated immediately */
+.ocean-cloud.small {
+  top: 22%;
+  width: 110px;
+  opacity: 0.7;
+  animation-duration: 95s;
+}
+
+.ocean-cloud.large {
+  top: 10%;
+  width: 170px;
+  animation-duration: 70s;
+  animation-delay: -30s;
+}
+
+@keyframes cloud-drift {
+  from {
+    transform: translate3d(-25vw, 0, 0);
+  }
+  to {
+    transform: translate3d(110vw, 0, 0);
+  }
+}
+
+/* Respect users who prefer reduced motion (belt and braces; styles.css also covers it) */
+@media (prefers-reduced-motion: reduce) {
+  .ocean-glow,
+  .ocean-wave,
+  .ocean-wave svg,
+  .ocean-cloud {
+    animation: none;
+  }
+}

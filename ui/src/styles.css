@@ -1,6 +1,37 @@
 /* You can add global styles to this file, and also import other style files */
 @import 'tailwindcss';
 
+/* ==========================================================================
+   Ocean theme — remaps the app's indigo/purple palette to sea blues/cyans.
+   Every bg-indigo-*, from-purple-*, text-indigo-* etc. across the app now
+   resolves to these ocean shades. Keeps the login wave scene as the anchor.
+   ========================================================================== */
+@theme {
+  --color-indigo-50: #f0f9ff;
+  --color-indigo-100: #e0f2fe;
+  --color-indigo-200: #bae6fd;
+  --color-indigo-300: #7dd3fc;
+  --color-indigo-400: #38bdf8;
+  --color-indigo-500: #0ea5e9;
+  --color-indigo-600: #0284c7;
+  --color-indigo-700: #0369a1;
+  --color-indigo-800: #075985;
+  --color-indigo-900: #0c4a6e;
+  --color-indigo-950: #082f49;
+
+  --color-purple-50: #ecfeff;
+  --color-purple-100: #cffafe;
+  --color-purple-200: #a5f3fc;
+  --color-purple-300: #67e8f9;
+  --color-purple-400: #22d3ee;
+  --color-purple-500: #06b6d4;
+  --color-purple-600: #0891b2;
+  --color-purple-700: #0e7490;
+  --color-purple-800: #155e75;
+  --color-purple-900: #164e63;
+  --color-purple-950: #083344;
+}
+
 /* Base styles */
 html {
   -webkit-font-smoothing: antialiased;
@@ -36,15 +67,15 @@ body {
 
 /* Focus ring */
 *:focus-visible {
-  outline: 2px solid #6366f1;
+  outline: 2px solid #0ea5e9;
   outline-offset: 2px;
   border-radius: 6px;
 }
 
 /* Selection styling */
 ::selection {
-  background-color: #c7d2fe;
-  color: #1e1b4b;
+  background-color: #bae6fd;
+  color: #0c4a6e;
 }
 
 /* Inline code styling for any future code snippets */

@@ -17,7 +17,7 @@
   bottom: 0;
   height: 2px;
   border-radius: 999px;
-  background: var(--stat-accent, linear-gradient(90deg, #6366f1, #8b5cf6));
+  background: var(--stat-accent, linear-gradient(90deg, #0ea5e9, #06b6d4));
   opacity: 0;
   transform: scaleX(0.6);
   transition: opacity 0.25s ease, transform 0.25s ease;
@@ -28,7 +28,7 @@
   transform: scaleX(1);
 }
 
-.stat-card-indigo { --stat-accent: linear-gradient(90deg, #6366f1, #818cf8); }
+.stat-card-indigo { --stat-accent: linear-gradient(90deg, #0ea5e9, #38bdf8); }
 .stat-card-emerald { --stat-accent: linear-gradient(90deg, #10b981, #34d399); }
 .stat-card-amber { --stat-accent: linear-gradient(90deg, #f59e0b, #fbbf24); }
 .stat-card-rose { --stat-accent: linear-gradient(90deg, #f43f5e, #fb7185); }

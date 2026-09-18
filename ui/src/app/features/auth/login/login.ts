@@ -5,11 +5,13 @@ import { LoginRequest } from '../../../core/models/loginRequest.model';
 import { UserModel } from '../../../core/models/user.model';
 import { Router } from '@angular/router';
 import { UserService } from '../../../core/services/user.service';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { MatButtonModule } from '@angular/material/button';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { SignUpUserDto } from '../../../core/models/SignUpUserDto';
 
 @Component({
   selector: 'app-login',
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, MatButtonModule, MatSlideToggleModule],
   templateUrl: './login.html',
   styleUrl: './login.css',
 })
@@ -25,6 +27,7 @@ export class Login {
   });
 
   signUpForm = new FormGroup({
+    tenantName : new FormControl(''),
     username : new FormControl(''),
     password : new FormControl(''),
     role : new FormControl(''),
@@ -43,7 +46,8 @@ export class Login {
       };
       this.authService.login(payload);
     }else{
-      const payload : UserModel = {
+      const payload : SignUpUserDto = {
+        tenantName: this.signUpForm.value.tenantName!,
         username: this.signUpForm.value.username!,
         password: this.signUpForm.value.password!,
         role : this.signUpForm.value.role!,
@@ -66,4 +70,7 @@ export class Login {
     this.signUpForm.reset();
   }
 
+  toggleRole(event : any){
+    console.log("Role toggle event:", event);
+  }
 }
