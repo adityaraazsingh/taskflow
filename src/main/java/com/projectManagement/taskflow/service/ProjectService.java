@@ -13,15 +13,12 @@ import com.projectManagement.taskflow.filter.ProjectSpecification;
 import com.projectManagement.taskflow.mapper.PageMapper;
 import com.projectManagement.taskflow.mapper.ProjectMapper;
 import com.projectManagement.taskflow.mapper.ProjectMemberMapper;
-import com.projectManagement.taskflow.notification.MemberChangeData;
-import com.projectManagement.taskflow.notification.NotificationEvent;
 import com.projectManagement.taskflow.notification.NotificationEventEnum;
 import com.projectManagement.taskflow.notification.NotificationPublisher;
 import com.projectManagement.taskflow.repository.ProjectMemberRepo;
 import com.projectManagement.taskflow.repository.ProjectRepo;
 import com.projectManagement.taskflow.repository.TaskRepo;
 import com.projectManagement.taskflow.repository.UserRepo;
-import com.projectManagement.taskflow.tenant.TenantContext;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -41,15 +38,15 @@ import java.util.stream.Collectors;
 @Transactional
 public class ProjectService {
 
-    private final ProjectRepo projectRepo;
     private final UserRepo userrepo;
-    private final ProjectMemberRepo projectMemberRepo;
-    private final AuthService authService;
-    private final ProjectMapper projectMapper;
-    private final ProjectMemberMapper projectMemberMapper;
-    private final UserService userService;
     private final TaskRepo taskRepo;
     private final PageMapper pageMapper;
+    private final UserService userService;
+    private final AuthService authService;
+    private final ProjectRepo projectRepo;
+    private final ProjectMapper projectMapper;
+    private final ProjectMemberRepo projectMemberRepo;
+    private final ProjectMemberMapper projectMemberMapper;
 //    private final RabbitTemplate rabbitTemplate;
     private final NotificationPublisher notificationPublisher;
 
@@ -75,7 +72,14 @@ public class ProjectService {
         entity.setDescription(dto.getDescription());
         entity.setStatus(dto.getStatus());
         entity.setUser(creator);
-        return projectMapper.toDto(projectRepo.save(entity));
+
+        Map<String, Object> map = new HashMap<>();
+        String message = "Project created '" + dto.getName() +"' to project";
+        ProjectResponseDto projectResponseDto = projectMapper.toDto(projectRepo.save(entity));
+        map.put("projectId",projectResponseDto.getId());
+        notificationPublisher.publishNotification(message, projectResponseDto.getId(), map, NotificationEventEnum.PROJECT_CREATED);
+
+        return projectResponseDto;
     }
 
     public List<ProjectResponseDto> getAllProjects(){
@@ -135,6 +139,12 @@ public class ProjectService {
         entity.setStatus(dto.getStatus());
         entity.setUser(user);
         entity.setTasks(taskRepo.findByProject_id(id));
+
+        Map<String, Object> map = new HashMap<>();
+        String message = "Project updated '" + dto.getName() +"' to project";
+        map.put("projectId",id);
+        notificationPublisher.publishNotification(message, id, map, NotificationEventEnum.PROJECT_UPDATED);
+
         //we don't need to set ProjectMember here because we created add/remove member below
         return projectMapper.toDto(projectRepo.save(entity));
     }
@@ -145,6 +155,11 @@ public class ProjectService {
     )
     public boolean deleteProject(Long id){
          authService.getCurrentUser();
+         Map<String, Object> map = new HashMap<>();
+         String message = "Project deleted with id : '" + id +"'";
+         map.put("projectId",id);
+         notificationPublisher.publishNotification(message, id, map, NotificationEventEnum.PROJECT_DELETED);
+
          projectRepo.deleteById(id);
          return true;
     }
@@ -183,17 +198,10 @@ public class ProjectService {
     )
     public boolean removeMember(Long projectId, Long memberId){
         UserEntity requester = authService.getCurrentUser();
-
-
-//        MemberChangeData data = new MemberChangeData(
-//                userOpt.get().getId(),
-//                userOpt.get().getUsername(),
-//                projectOpt.get().getId(),
-//                projectOpt.get().getName()
-//        );
-//
-//        notificationPublisher.publishMemberChange(data);
-
+        Map<String, Object> map = new HashMap<>();
+        String message = "Member deleted " +memberId +" to project ";
+        map.put("memberId",memberId);
+        notificationPublisher.publishNotification(message, projectId, map, NotificationEventEnum.MEMBER_DELETED);
         projectMemberRepo.deleteById(memberId);
         return true;
     }

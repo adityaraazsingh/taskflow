@@ -25,6 +25,10 @@ public class CommentEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private UserEntity commentator;
 
+    private Long replyCommentId;
+    private String replyCommentContent;
+
+
     private Date createdAt;
 
     @PrePersist
@@ -40,6 +44,9 @@ public class CommentEntity {
                 ", content='" + content + '\'' +
                 ", task=" + task.getId() +
                 ", commentator=" + commentator.getId() +
+                ", replyCommentId=" + replyCommentId +
+                ", replyCommentContent='" + replyCommentContent + '\'' +
+                ", createdAt=" + createdAt +
                 '}';
     }
 }

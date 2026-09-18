@@ -76,7 +76,6 @@ export class ProjectService{
             .set('page', page.toString())
             .set('size', size.toString())
             .set('sort', 'id,'+order.toString())
-        console.log(status)
         if(status){
             params = params.set('status',status!.toString()); 
             return this.httpClient.get<PageResponse<ProjectModel>>(`${this.url}/user`, {params});

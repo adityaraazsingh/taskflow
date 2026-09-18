@@ -30,8 +30,8 @@ export class ProjectDetail {
 
   addingTask = false;
   taskToBeEdited!: TaskModel;
+  presetStatus: Status = Status.TODO;
 
-  // Computed values
   completedTasks = computed(() => this.tasks().filter(t => t.status === Status.DONE).length);
   totalTasks = computed(() => this.tasks().length);
   progressPercent = computed(() => {
@@ -52,16 +52,13 @@ export class ProjectDetail {
         this.loadInitValue();
       }
     )
-    // this.projectId = +this.route.snapshot.paramMap.get('id')!;
-    
-    // Fetch project details
-    // this.loadInitValue()
   }
 
   loadInitValue(){
     this.projectService.getOneProject(this.projectId).subscribe({
       next: (project) => {
         this.project.set(project);
+
         this.commentService.loadCommentsForAllTasks(this.project()?.taskIds!);
       },
       error: (err) => {
@@ -90,10 +87,20 @@ export class ProjectDetail {
     if (task) {
       this.taskToBeEdited = task;
     } else {
-      // When creating a new task, clear the edit target
       this.taskToBeEdited = null as any;
     }
     this.addingTask = !this.addingTask;
+  }
+
+  openAddTaskDialog(status?: Status) {
+    if (this.addingTask) {
+      // Dialog is already open; treat as close request
+      this.addingTask = false;
+      return;
+    }
+    this.taskToBeEdited = null as any;
+    this.presetStatus = status ?? Status.TODO;
+    this.addingTask = true;
   }
 
   onEditingProject(){

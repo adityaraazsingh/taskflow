@@ -1,15 +1,41 @@
-@for(notification of (notifications$ | async); track $index) {
-    <div (click)="navigateToTheEvent(notification)" class="flex items-start gap-3 p-4 hover:bg-gray-50 transition-colors">
-        <div class="size-8 rounded-full bg-indigo-100 flex items-center justify-center flex-shrink-0">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+@if (loadError$ | async) {
+    <div class="activity-error flex flex-col items-center justify-center py-10 text-center">
+        <div class="activity-error-icon size-14 rounded-2xl bg-gradient-to-br from-rose-50 to-red-50 flex items-center justify-center mb-4 shadow-sm">
+            <svg class="size-6 text-rose-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
             </svg>
         </div>
-        <div class="flex-1 min-w-0">
-            <p class="text-sm text-gray-900"><span class="font-medium">{{notification.eventType}}</span> {{notification.message}}</p>
-        </div>
+        <h3 class="text-sm font-semibold text-gray-900 mb-1">Couldn't load activity</h3>
+        <p class="text-sm text-gray-500 mb-4">Check that the server is running, then try again.</p>
+        <button type="button" (click)="retryLoad()" class="retry-btn inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 active:scale-95 transition-all duration-200">
+            <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+            </svg>
+            Retry
+        </button>
     </div>
-}@empty {
-    <div>No notifications available.</div>
+} @else {
+    @for(notification of (notifications$ | async); track $index) {
+        <button type="button" class="activity-item w-full text-left rounded-xl soft-ring transition-all duration-300 p-3 hover:bg-gray-50 hover:shadow-sm" (click)="navigateToTheEvent(notification)">
+            <div class="flex items-start gap-3">
+                <div class="flex-1 min-w-0">
+                    <app-notfication-message [notification]="notification"></app-notfication-message>
+                </div>
+                <div class="text-[11px] text-gray-400 font-medium flex-shrink-0 mt-0.5">
+                    {{ getTimeAgo(notification.createdAt) }}
+                </div>
+            </div>
+        </button>
+    } @empty {
+    <div class="activity-empty flex flex-col items-center justify-center py-10 text-center">
+      <div class="activity-empty-icon size-14 rounded-2xl bg-gradient-to-br from-indigo-50 to-purple-50 flex items-center justify-center mb-4 shadow-sm">
+        <svg class="size-6 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
+        </svg>
+      </div>
+      <h3 class="text-sm font-semibold text-gray-900 mb-1">No recent activity</h3>
+      <p class="text-sm text-gray-500">You're all caught up! New notifications will appear here.</p>
+    </div>
+    }
 }
 

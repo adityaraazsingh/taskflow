@@ -1,13 +1,11 @@
 import { HttpClient, HttpRequest, HttpResponse } from "@angular/common/http";
 import { environment } from "../../environment";
 import { LoginRequest } from "../models/loginRequest.model";
-import { Injectable ,OnInit,signal} from "@angular/core";
+import { afterEveryRender, Injectable ,OnInit,signal} from "@angular/core";
 import { AuthModel } from "../models/auth.model";
 import { UserModel } from "../models/user.model";
 import { ChangePasswordDto } from "../models/ChangePasswordDto";
 import { Router } from "@angular/router";
-import { BehaviorSubject } from "rxjs";
-import { UserService } from "./user.service";
 import { ProfileService } from "./profileService";
 
 @Injectable({
@@ -16,9 +14,9 @@ import { ProfileService } from "./profileService";
 export class AuthService implements OnInit{
     url : string = environment.apiUrl;
     public userSignal = signal<UserModel | null>(null);
-    public isUserLoggedIn = signal<boolean | null>(null)
+    public isUserLoggedIn = signal<boolean >(false)
 
-    constructor(private httpClient:HttpClient, private router : Router){}
+    constructor(private httpClient:HttpClient, private router : Router, private profileService : ProfileService){}
 
     ngOnInit(): void {
         this.checkIfUserLoggedIn();
@@ -45,27 +43,27 @@ export class AuthService implements OnInit{
           this.checkIfUserLoggedIn()
           this.router.navigate(['/dashboard']);
           this.me();
-        //   this.userService.getUserWithUsername(response.username).subscribe((data)=>{
-        //         this.userSignal.set(data)
-        //         this.profileService.getProfileByUserId(data.id!)
-        //   })
         },
         error : (error) => {
-          console.error(error);
+          throw new Error(`Login failed: ${error.message}`);
         }
       });
     }
 
-    
+    public logout(){
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
+        this.checkIfUserLoggedIn();
+        this.router.navigate(['/login']);
+    }
+
     public me(){
         this.httpClient.get<UserModel>(`${this.url}/auth/me`).subscribe(
             (data) => {
-                this.userSignal.set(data),
-                console.log(data)
+                this.userSignal.set(data),  
+                this.profileService.getProfileByUserId(data.id!)       
             }
         );
-        console.log("me is running");
-        // return this.userSignal()
     }
 
     public refresh(){
@@ -86,5 +84,4 @@ export class AuthService implements OnInit{
             payload
         );
     }
-
 }

@@ -1,4 +1,4 @@
-import { Component, effect, OnInit, signal } from '@angular/core';
+import { Component, effect, OnInit, output, signal } from '@angular/core';
 import { AuthService } from '../../core/services/auth.service';
 import { UserModel } from '../../core/models/user.model';
 import { AbstractControl, FormControl, FormControlName, FormGroup, ReactiveFormsModule, ValidationErrors } from '@angular/forms';
@@ -21,6 +21,7 @@ export class Profile implements OnInit{
   profile = signal<ProfileModel | null>(null);
   loading = signal(true);
   isPasswordSame = signal(false);
+  firstName = output<String>();
 
   profileForm = new FormGroup({
     avatarUrl : new FormControl(''),
@@ -29,10 +30,7 @@ export class Profile implements OnInit{
     bio : new FormControl(),
   })
 
-  
-
   constructor(private authService : AuthService, private userService : UserService, private profileService : ProfileService){
-    this.profileService.getProfileByUserId();
     this.profile = this.profileService.profileSignal;
     this.user.set(this.authService.userSignal())
     effect(() => {
@@ -44,6 +42,7 @@ export class Profile implements OnInit{
   }
   
   ngOnInit(): void {
+    this.firstName.emit(this.profile()?.firstName!);
     this.patchingValue()
     this.loading.set(false)
   }
@@ -76,8 +75,7 @@ export class Profile implements OnInit{
         window.alert("Password Changed Succefully")
       },
       (err)=>{
-        window.alert("Something went wrong"),
-        console.log(err)
+        window.alert("Something went wrong")
       }
     );
   }
@@ -92,7 +90,6 @@ export class Profile implements OnInit{
     }
     this.profileService.saveProfileByUserId(payload).subscribe(
       (next) =>{
-        console.log(next)
       }
     )
   }

@@ -12,7 +12,9 @@ import { Router } from '@angular/router';
 })
 export class TaskBoard {
   tasks = input.required<TaskModel[]>();
+  projectId = input.required<number>();
   taskClick = output<TaskModel>();
+  addTaskClick = output<Status>();
   Status = Status;
   router = inject(Router);
 
@@ -20,11 +22,19 @@ export class TaskBoard {
   inProgressTasks = computed(() => this.tasks().filter(t => t.status === Status.IN_PROGRESS));
   doneTasks = computed(() => this.tasks().filter(t => t.status === Status.DONE));
 
+  onAddTask(status: Status) {
+    this.addTaskClick.emit(status);
+  }
+
   onTaskClick(task: TaskModel) {
     this.router.navigate([`tasks/${task.id}`],
-      { state: { 
-        task
-      } });
-    // this.taskClick.emit(task);
+      {
+        state:
+        {
+          task,
+          projectId: this.projectId()
+        }
+      }
+    );
   }
 }

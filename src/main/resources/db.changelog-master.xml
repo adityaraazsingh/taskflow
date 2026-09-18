@@ -11,5 +11,5 @@
     <!-- Later changes -->
     <include file="classpath:datachangelog.h2.sql"/>
     <include file="classpath:dbchangelog.h2.sql"/>
-
+    <include file="classpath:commentEntityChangelog.h2.sql"/>
 </databaseChangeLog>

@@ -1,0 +1,60 @@
+:host {
+  display: inline-block;
+}
+
+.priority-tag {
+  align-items: center;
+  cursor: default;
+  border: 1px solid transparent;
+}
+
+.priority-icon {
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.priority-label {
+  letter-spacing: 0.05em;
+}
+
+/* HIGH — dark violet: the most important gets the darkest ocean-family shade */
+.priority-high {
+  background: linear-gradient(135deg, #ede9fe 0%, #ddd6fe 100%);
+  color: #4c1d95;
+  border-color: #c4b5fd;
+  box-shadow: 0 2px 4px rgba(91, 33, 182, 0.14);
+}
+
+.priority-high:hover {
+  background: linear-gradient(135deg, #ddd6fe 0%, #c4b5fd 100%);
+  box-shadow: 0 4px 8px rgba(91, 33, 182, 0.2);
+}
+
+/* MEDIUM — light orange: warm mid-tone */
+.priority-medium {
+  background: linear-gradient(135deg, #ffedd5 0%, #fed7aa 100%);
+  color: #9a3412;
+  border-color: #fdba74;
+  box-shadow: 0 2px 4px rgba(194, 65, 12, 0.12);
+}
+
+.priority-medium:hover {
+  background: linear-gradient(135deg, #fed7aa 0%, #fdba74 100%);
+  box-shadow: 0 4px 8px rgba(194, 65, 12, 0.18);
+}
+
+/* LOW — light sky: airy, calm */
+.priority-low {
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  color: #0369a1;
+  border-color: #bae6fd;
+  box-shadow: 0 2px 4px rgba(3, 105, 161, 0.1);
+}
+
+.priority-low:hover {
+  background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+  box-shadow: 0 4px 8px rgba(3, 105, 161, 0.15);
+}
+
+.priority-tag:hover .priority-icon {
+  transform: scale(1.15) translateY(-1px);
+}

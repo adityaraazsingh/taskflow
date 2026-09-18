@@ -18,20 +18,31 @@ import { UserModel } from '../../../core/models/user.model';
 import { UserService } from '../../../core/services/user.service';
 import { ProfileService } from '../../../core/services/profileService';
 import { ProfileModel } from '../../../core/models/profile.model';
+import { ProjectService } from '../../../core/services/project.service';
+import { projectMemberResponseDto } from '../../../core/models/projectMemberResponseDto';
+import { AuthService } from '../../../core/services/auth.service';
+import { StatusBadge } from '../../../shared/components/status-badge/status-badge';
+import { PriorityTag } from '../../../shared/components/priority-tag/priority-tag';
 
 @Component({
   selector: 'app-task-detail',
-  imports: [CommentList, DatePipe, FormsModule, ReactiveFormsModule, TaskForm, ConfirmDialog],
+  imports: [CommentList, DatePipe, FormsModule, ReactiveFormsModule, TaskForm, ConfirmDialog, StatusBadge, PriorityTag],
   templateUrl: './task-detail.html',
   styleUrl: './task-detail.css',
 })
 export class TaskDetail implements OnInit {
 
   task!: TaskModel;
+  projectId!: number;
+
+  projectMembersDto : projectMemberResponseDto[] = [];
+  assignee = signal<ProfileModel | null>(null);
   profile = signal<ProfileModel | null>(null);
   Status = Status;
   editingTask = signal<boolean>(false);
   deletingTask = signal<boolean>(false);
+  assigningUser = signal<boolean>(false);
+  
   status = signal<Status>(Status.TODO);
   priority = signal<Priority>(Priority.LOW);
   tags = signal<TagModel[]>([]);
@@ -45,30 +56,42 @@ export class TaskDetail implements OnInit {
   });
 
   constructor(private router: Router,
-    private route: ActivatedRoute,
     private taskService: TaskService,
     private tagService: TagService,
-    private userService: UserService,
-    private profileService : ProfileService
+    // private authService : UserService,
+    private profileService : ProfileService,
+    private projectService: ProjectService
   ) {
     const navigation = this.router.getCurrentNavigation();
-    const state = navigation?.extras.state as { task: TaskModel };
+    const state = navigation?.extras.state as { task: TaskModel, projectId: number };
     if (state?.task) {
       this.task = state.task;
+      this.projectId = state.projectId;
+
+      const assigneeId = this.task.assigneeId!;
+      this.profileService.getProfileByUserDetails(assigneeId).subscribe(
+        (data) => this.assignee.set(data)
+      );
+      
+      console.log("Project Member Ids:", this.projectId);
       this.status.set(this.task.status)
       this.priority.set(this.task.priority)
     }
 
-    this.profile.set(this.profileService.profileSignal())
+    this.projectService.getAllUsersForAProject(this.projectId).subscribe(
+      (data) => {
+        this.projectMembersDto = data;
+      }
+    );
+    this.profile = (this.profileService.profileSignal)
 
   }
 
   ngOnInit(): void {
+
     this.getCommentsForTask();
     this.getTagsOnATask();
     this.getAllTags();
-    console.log("Patching Values");
-
     this.form.controls.status.patchValue(this.status());
     this.form.controls.priority.patchValue(this.priority());
     this.onChangingStatus()
@@ -80,11 +103,7 @@ export class TaskDetail implements OnInit {
       const payload: statusChangeRequestDto = {
         status: data
       }
-      this.taskService.changeStatusOfTask(this.task.id!, payload).subscribe(
-        (next) => {
-          console.log(next)
-        }
-      )
+      this.taskService.changeStatusOfTask(this.task.id!, payload).subscribe()
     })
   }
 
@@ -93,11 +112,7 @@ export class TaskDetail implements OnInit {
       const payload: priorityChangeRequestDto = {
         priority: data
       }
-      this.taskService.changePriorityOfTask(this.task.id!, payload).subscribe(
-        (next) => {
-          console.log(next)
-        }
-      )
+      this.taskService.changePriorityOfTask(this.task.id!, payload).subscribe()
     })
   }
 
@@ -105,7 +120,6 @@ export class TaskDetail implements OnInit {
     this.taskService.getCommentsForTask(this.task.id!, 0, 20).subscribe(
       (data) => {
         this.comments.set(data.content)
-        console.log(data)
       }
     )
   }
@@ -114,7 +128,6 @@ export class TaskDetail implements OnInit {
     this.taskService.getTagsOnATask(this.task.id!).subscribe(
       (data) => {
         this.tags.set(data);
-        console.log("GetTask ON a Task is called")
       }
     )
   }
@@ -123,7 +136,6 @@ export class TaskDetail implements OnInit {
     this.tagService.getTags().subscribe(
       (data) => {
         this.allTags.set(data);
-        console.log(data);
       }
     )
   }
@@ -133,18 +145,12 @@ export class TaskDetail implements OnInit {
   }
 
   addingTagToATask(tagId: number) {
-    this.taskService.addTasksPerTags(this.task.id!, tagId).subscribe(
-      (data) => {
-      }
-    );
+    this.taskService.addTasksPerTags(this.task.id!, tagId).subscribe();
     this.getTagsOnATask()
   }
 
   deleteTagOfATask(tagId: number) {
-    this.taskService.deleteTagForTask(this.task.id!, tagId).subscribe(
-      (data) => {
-      }
-    );
+    this.taskService.deleteTagForTask(this.task.id!, tagId).subscribe();
     this.getTagsOnATask()
   }
 
@@ -157,13 +163,17 @@ export class TaskDetail implements OnInit {
   }
 
   deletingTaskWithId() {
-    this.taskService.deleteTask(this.task.id!).subscribe(
-      (next) => {
-        console.log(next)
-      }
-    )
+    this.taskService.deleteTask(this.task.id!).subscribe()
     this.onClickDelete()
     this.router.navigate([`projects/${this.task.projectId}`]);
+  }
+
+  changingAssignee(){
+    this.assigningUser.set(!this.assigningUser())
+  }
+
+  onChangeassignee(user: UserModel) {
+    this.taskService.changeAssignee(this.task.id!, user).subscribe()
   }
 
 }

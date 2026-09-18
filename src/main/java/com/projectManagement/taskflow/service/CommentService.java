@@ -10,12 +10,17 @@ import com.projectManagement.taskflow.entity.UserEntity;
 import com.projectManagement.taskflow.exception.TaskNotFoundException;
 import com.projectManagement.taskflow.mapper.CommentMapper;
 import com.projectManagement.taskflow.mapper.PageMapper;
+import com.projectManagement.taskflow.notification.NotificationEventEnum;
+import com.projectManagement.taskflow.notification.NotificationPublisher;
 import com.projectManagement.taskflow.repository.CommentRepo;
 import com.projectManagement.taskflow.repository.TaskRepo;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 @Transactional
@@ -27,14 +32,16 @@ public class CommentService {
     private final TaskRepo taskRepo;
     private final PageMapper pageMapper;
     private final ProfileService profileService;
+    private final NotificationPublisher notificationPublisher;
 
-    public CommentService(CommentRepo commentRepo, AuthService authService, CommentMapper commentMapper, TaskRepo taskRepo, PageMapper pageMapper, ProfileService profileService) {
+    public CommentService(CommentRepo commentRepo, AuthService authService, CommentMapper commentMapper, TaskRepo taskRepo, PageMapper pageMapper, ProfileService profileService, NotificationPublisher notificationPublisher) {
         this.commentRepo = commentRepo;
         this.authService = authService;
         this.commentMapper = commentMapper;
         this.taskRepo = taskRepo;
         this.pageMapper = pageMapper;
         this.profileService = profileService;
+        this.notificationPublisher = notificationPublisher;
     }
 
     public CommentResponseDto addComment(Long taskId, CommentRequestDTO commentDTO){
@@ -45,6 +52,11 @@ public class CommentService {
         );
         CommentEntity comment =  commentMapper.toEntity(commentDTO, author, task);
         comment.setName(profile.getFirstName()+" "+profile.getLastName());
+
+        Map<String, Object> map = new HashMap<>();
+        String message = "Comment added to the task'"+  task.getTitle() + "'." ;
+        map.put("taskId",taskId);
+        notificationPublisher.publishNotification(message, taskId, map, NotificationEventEnum.COMMENT_ADDED);
 
         return commentMapper.toDto(commentRepo.save(comment));
     }
@@ -60,6 +72,12 @@ public class CommentService {
 //  TODO: Write logic for failure too
     public String deleteComment(Long id){
         UserEntity requester = authService.getCurrentUser();
+
+        Map<String, Object> map = new HashMap<>();
+        String message = "Comment deleted from the task'" + "'." ;
+        map.put("taskId",id);
+        notificationPublisher.publishNotification(message, id, map, NotificationEventEnum.COMMENT_DELETED);
+
         commentRepo.deleteById(id);
         return "Comment Deleted Successfully";
     }

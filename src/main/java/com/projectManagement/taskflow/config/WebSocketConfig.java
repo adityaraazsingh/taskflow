@@ -22,6 +22,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                         "http://localhost:4200",
                         "https://taskflow-adityaraazsinghs-projects.vercel.app"
                 )
-                .withSockJS();
+//                .withSockJS()
+        ;
     }
 }

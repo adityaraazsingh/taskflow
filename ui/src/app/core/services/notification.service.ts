@@ -3,7 +3,7 @@ import { environment } from "../../environment";
 import { Client, StompSubscription } from "@stomp/stompjs";
 import { HttpClient } from "@angular/common/http";
 import { NotificationModel } from "../models/NotificationModel";
-import { BehaviorSubject } from "rxjs";
+import { BehaviorSubject, Subject } from "rxjs";
 
 @Injectable({
   providedIn: 'root'
@@ -18,6 +18,12 @@ export class NotificationService implements OnInit {
   private notifications$ = new BehaviorSubject<NotificationModel[]>([]);
   public notificationsObs$ = this.notifications$.asObservable();
 
+  private newNotification$ = new BehaviorSubject<NotificationModel>({} as NotificationModel);
+  public newNotificationObs$ = this.newNotification$.asObservable();
+
+  private loadError = new BehaviorSubject<boolean>(false);
+  public loadErrorObs$ = this.loadError.asObservable();
+
   constructor(private httpClient: HttpClient) { }
 
   ngOnInit() {
@@ -26,7 +32,17 @@ export class NotificationService implements OnInit {
 
   loadNotifications() {
     this.httpClient.get<NotificationModel[]>(`${this.url}/activity`)
-      .subscribe(data => this.notifications$.next(data));
+      .subscribe({
+        next: data => {
+          this.loadError.next(false);
+          // Guard against non-array payloads (e.g. a paged { content: [...] } response)
+          const list = Array.isArray(data)
+            ? data
+            : Array.isArray((data as any)?.content) ? (data as any).content : [];
+          this.notifications$.next(list);
+        },
+        error: () => this.loadError.next(true)
+      });
   }
 
   connect() {
@@ -35,6 +51,7 @@ export class NotificationService implements OnInit {
       ? localStorage.getItem('accessToken')
       : null;
     this.stompClient = new Client({
+      brokerURL: 'ws://localhost:8080/ws', 
       connectHeaders: {
         Authorization: 'Bearer ' + token,
       },
@@ -46,9 +63,9 @@ export class NotificationService implements OnInit {
 
       this.subscription = this.stompClient!.subscribe('/topic/activity', (message) => {
         const notification: NotificationModel = JSON.parse(message.body);
-
         const current = this.notifications$.value;
         this.notifications$.next([notification, ...current]);
+        this.newNotification$.next(notification);
       });
     };
 

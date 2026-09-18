@@ -1,0 +1,222 @@
+:host {
+  display: block;
+}
+
+.task-detail-root {
+  scroll-behavior: smooth;
+}
+
+.task-detail-grid {
+  align-items: stretch;
+}
+
+.task-main {
+  min-width: 0;
+}
+
+.task-header-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.task-header-card::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #0ea5e9 0%, #06b6d4 60%, #22d3ee 100%);
+  opacity: 0.15;
+  pointer-events: none;
+}
+
+.task-title {
+  word-break: break-word;
+}
+
+.task-description-block {
+  padding-bottom: 0.5rem;
+}
+
+.task-description-text {
+  word-break: break-word;
+}
+
+.task-activity-block {
+  padding-top: 0.25rem;
+}
+
+.activity-item {
+  flex-wrap: wrap;
+}
+
+.activity-avatar {
+  flex-shrink: 0;
+  box-shadow: 0 2px 6px rgba(99, 102, 241, 0.2);
+}
+
+.activity-bubble {
+  word-break: break-word;
+}
+
+.activity-time {
+  margin-left: 2.5rem;
+}
+
+.activity-list {
+  scroll-margin-top: 0.5rem;
+}
+
+.task-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.task-sidebar-card {
+  position: relative;
+}
+
+/* Tags card */
+.tags-card {
+  position: relative;
+}
+
+.tags-header {
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.section-label {
+  margin: 0;
+}
+
+.add-tag-btn {
+  border: none;
+  font-family: inherit;
+  cursor: pointer;
+  border-radius: 0.5rem;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.tags-list {
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.tag-chip {
+  border: none;
+  font-family: inherit;
+  cursor: pointer;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.75rem;
+  transition: background-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+  white-space: nowrap;
+}
+
+.tag-chip.tag-chip-removable {
+  padding-right: 1.25rem;
+}
+
+.tag-chip.tag-chip-pinned {
+  padding-right: 1.25rem;
+}
+
+.tag-chip.tag-chip-add {
+  padding-right: 1.25rem;
+}
+
+.tag-name {
+  max-width: 12rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+}
+
+.tag-remove-icon {
+  transition: transform 0.15s ease, color 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tag-chip:hover .tag-remove-icon {
+  transform: scale(1.15);
+  color: #1d4ed8;
+}
+
+.tag-pin-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.tag-plus-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: transform 0.15s ease, color 0.15s ease;
+}
+
+.tag-chip.tag-chip-add:hover .tag-plus-icon {
+  transform: rotate(90deg);
+  color: #374151;
+}
+
+.tags-add-list {
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px dashed #d1d5db;
+}
+
+.status-select,
+.priority-select {
+  font-family: inherit;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%236b7280'%3E%3Cpath fill-rule='evenodd' d='M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z' clip-rule='evenodd'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.5rem center;
+  background-size: 1rem;
+  padding-right: 2rem;
+}
+
+.meta-label,
+.section-label {
+  letter-spacing: 0.03em;
+}
+
+.timeline-row {
+  padding-bottom: 0.25rem;
+}
+
+/* Assignee picker dialog */
+.assignee-dialog {
+  animation: modal-in 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.assignee-option {
+  border: none;
+  background: transparent;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.assignee-option:hover {
+  background-color: #e0f2fe;
+}
+
+.assignee-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.assignee-list::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 999px;
+}

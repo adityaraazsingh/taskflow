@@ -9,3 +9,13 @@
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
+
+/* Keyboard focus for the whole card */
+.task-card-group:focus-visible {
+  outline: 2px solid #0ea5e9;
+  outline-offset: 2px;
+}
+
+.task-card-group:focus-visible .task-card-inner {
+  box-shadow: 0 8px 20px rgba(99, 102, 241, 0.18);
+}

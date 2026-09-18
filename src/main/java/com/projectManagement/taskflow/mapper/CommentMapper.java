@@ -20,6 +20,8 @@ public class CommentMapper {
         dto.setTaskId(entity.getTask().getId());
         dto.setUserId(entity.getCommentator().getId());
         dto.setCreatedAt(entity.getCreatedAt());
+        dto.setReplyCommentId(entity.getReplyCommentId());
+        dto.setReplyCommentContent(entity.getReplyCommentContent());
         return dto;
     }
 
@@ -29,6 +31,8 @@ public class CommentMapper {
         entity.setContent(dto.getContent());
         entity.setCommentator(author);
         entity.setTask(task);
+        entity.setReplyCommentId(dto.getReplyCommentId());
+        entity.setReplyCommentContent(dto.getReplyCommentContent());
         return entity;
     }
 }

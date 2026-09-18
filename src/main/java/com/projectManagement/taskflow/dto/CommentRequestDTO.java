@@ -10,4 +10,7 @@ public class CommentRequestDTO {
 
     @NotNull(message = "content can't be null")
     private String content;
+
+    private Long replyCommentId;
+    private String replyCommentContent;
 }

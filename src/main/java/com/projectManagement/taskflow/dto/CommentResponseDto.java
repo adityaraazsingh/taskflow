@@ -12,4 +12,6 @@ public class CommentResponseDto {
     private Long taskId;
     private Long userId;
     private Date createdAt;
+    private Long replyCommentId;
+    private String replyCommentContent;
 }

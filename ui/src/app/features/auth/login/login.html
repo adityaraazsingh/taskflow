@@ -1,8 +1,50 @@
-<div class="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50 to-slate-100 flex items-center justify-center p-4 sm:p-6 lg:p-8">
-  <!-- Decorative background blobs -->
-  <div class="absolute inset-0 overflow-hidden pointer-events-none">
-    <div class="absolute -top-40 -right-40 size-80 rounded-full bg-indigo-200/30 blur-3xl"></div>
-    <div class="absolute -bottom-40 -left-40 size-80 rounded-full bg-purple-200/25 blur-3xl"></div>
+<div class="ocean-page min-h-screen flex items-center justify-center p-4 sm:p-6 lg:p-8 overflow-hidden">
+  <!-- Decorative animated ocean background -->
+  <div class="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
+    <!-- Drifting underwater light -->
+    <div class="ocean-glow one"></div>
+    <div class="ocean-glow two"></div>
+    <div class="ocean-glow three"></div>
+
+    <!-- Drifting clouds -->
+    <div class="ocean-cloud small">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 60" fill="none">
+        <g fill="#f8fafc">
+          <ellipse cx="60" cy="40" rx="52" ry="18" />
+          <ellipse cx="110" cy="28" rx="46" ry="22" />
+          <ellipse cx="150" cy="40" rx="42" ry="16" />
+        </g>
+      </svg>
+    </div>
+    <div class="ocean-cloud large">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 60" fill="none">
+        <g fill="#ffffff">
+          <ellipse cx="60" cy="40" rx="52" ry="18" />
+          <ellipse cx="110" cy="26" rx="46" ry="22" />
+          <ellipse cx="150" cy="40" rx="42" ry="16" />
+        </g>
+      </svg>
+    </div>
+
+    <!-- Layered rolling waves -->
+    <div class="ocean-wave back">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 120" preserveAspectRatio="none" fill="none">
+        <path fill="#a5f3fc" d="M0,64 C240,110 480,20 720,58 C960,96 1200,30 1440,64 L1440,120 L0,120 Z"/>
+        <path fill="#a5f3fc" transform="translate(1440)" d="M0,64 C240,110 480,20 720,58 C960,96 1200,30 1440,64 L1440,120 L0,120 Z"/>
+      </svg>
+    </div>
+    <div class="ocean-wave mid">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 120" preserveAspectRatio="none" fill="none">
+        <path fill="#67e8f9" d="M0,48 C260,100 500,12 740,52 C980,92 1220,24 1440,48 L1440,120 L0,120 Z"/>
+        <path fill="#67e8f9" transform="translate(1440)" d="M0,48 C260,100 500,12 740,52 C980,92 1220,24 1440,48 L1440,120 L0,120 Z"/>
+      </svg>
+    </div>
+    <div class="ocean-wave front">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none" fill="none">
+        <path fill="#0ea5e9" d="M0,56 C200,104 420,16 640,50 C860,84 1000,20 1200,56 L1200,120 L0,120 Z"/>
+        <path fill="#0ea5e9" transform="translate(1200)" d="M0,56 C200,104 420,16 640,50 C860,84 1000,20 1200,56 L1200,120 L0,120 Z"/>
+      </svg>
+    </div>
   </div>
 
   <div class="relative w-full max-w-md">
@@ -22,7 +64,6 @@
       @if (isLoggingIn) {
         <!-- Login Form -->
         <form [formGroup]="loginForm" (ngSubmit)="onLoginClick()" class="space-y-5">
-          <p>Username : admin , password : Admin@123</p>
           <div>
             <label for="login-username" class="block text-sm font-medium text-gray-700 mb-1.5">Username</label>
             <div class="relative">
@@ -52,7 +93,7 @@
           </div>
 
           <button type="submit"
-            class="w-full flex items-center justify-center rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 transition-all duration-200">
+            class="login-submit-btn w-full flex items-center justify-center rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm shadow-indigo-500/25 hover:bg-indigo-500 hover:shadow-md hover:shadow-indigo-500/30 active:scale-[0.98] transition-all duration-200">
             <svg class="size-4 mr-2" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" />
             </svg>
@@ -62,6 +103,23 @@
       } @else {
         <!-- Sign Up Form -->
         <form [formGroup]="signUpForm" (ngSubmit)="onLoginClick()" class="space-y-5">
+          <!-- <mat-slide-toggle (change)="toggleRole($event.checked)">
+            Enable Role Field
+          </mat-slide-toggle> -->
+          <div>
+            <label for="signup-tenant" class="block text-sm font-medium text-gray-700 mb-1.5">Tenant</label>
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                <svg class="size-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                </svg>
+              </div>
+              <input id="signup-tenant" formControlName="tenantName" type="text" required
+                class="block w-full rounded-xl border-0 py-2.5 pl-10 pr-3.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm transition-all duration-200"
+                placeholder="Choose a tenant" />
+            </div>
+          </div>
+
           <div>
             <label for="signup-username" class="block text-sm font-medium text-gray-700 mb-1.5">Username</label>
             <div class="relative">

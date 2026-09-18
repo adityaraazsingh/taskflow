@@ -18,16 +18,23 @@ export class TaskCard {
 
   get priorityBorderClass(): string {
     const p: any = this.task().priority;
-    if (p === 'HIGH' || p === Priority.HIGH || p === 'MEDIUM') return 'border-l-rose-400';
-    if (p === 'MED' || p === Priority.MEDIUM) return 'border-l-amber-400';
-    return 'border-l-sky-400';
+    if (p === 'HIGH' || p === Priority.HIGH) return 'border-l-4 border-l-violet-400';
+    if (p === 'MED' || p === Priority.MEDIUM || p === 'MEDIUM') return 'border-l-4 border-l-orange-400';
+    return 'border-l-4 border-l-sky-400';
   }
 
-  get priorityLabel(): 'LOW' | 'MED' | 'HIGH' {
+  get priorityIndicatorClass(): string {
     const p: any = this.task().priority;
-    if (p === 'HIGH' || p === Priority.HIGH) return 'HIGH';
-    if (p === 'MED' || p === Priority.MEDIUM) return 'MED';
-    return 'LOW';
+    if (p === 'HIGH' || p === Priority.HIGH) return 'bg-gradient-to-b from-violet-400 to-violet-600';
+    if (p === 'MED' || p === Priority.MEDIUM || p === 'MEDIUM') return 'bg-gradient-to-b from-orange-400 to-orange-600';
+    return 'bg-gradient-to-b from-sky-400 to-sky-600';
+  }
+
+  get priorityLabel(): Priority {
+    const p: any = this.task().priority;
+    if (p === 'HIGH' || p === Priority.HIGH) return Priority.HIGH;
+    if (p === 'MED' || p === Priority.MEDIUM) return Priority.MEDIUM;
+    return Priority.LOW;
   }
 
   getDueDateLabel(dueDate?: Date): string {

@@ -16,7 +16,7 @@ public class CommentsController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN') or comment_security.isOwner(#id)")
+    @PreAuthorize("hasRole('ADMIN') or @comment_security.isOwner(#id)")
     public ResponseEntity<String> deleteComments(@PathVariable Long id){
         commentService.deleteComment(id);
         return ResponseEntity.noContent().build();

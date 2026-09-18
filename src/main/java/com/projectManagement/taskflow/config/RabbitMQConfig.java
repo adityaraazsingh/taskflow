@@ -18,38 +18,93 @@ public class RabbitMQConfig {
         return new JacksonJsonMessageConverter();
     }
 
-    @Bean
-    public Queue memberNotificationQueue() {
-        return new Queue("member.notification.queue");
-    }
-
-    @Bean
-    public TopicExchange memberExchange() {
-        return new TopicExchange("member.exchange");
-    }
+//    @Bean
+//    public Declarables rabbitDeclarables() {
+//
+//        // -------- MEMBER --------
+//        Queue memberQueue = new Queue("member.notification.queue");
+//        TopicExchange memberExchange = new TopicExchange("member.exchange");
+//
+//        // -------- TASK --------
+//        Queue taskQueue = new Queue("task.notification.queue");
+//        TopicExchange taskExchange = new TopicExchange("task.exchange");
+//
+//        // -------- PROJECT --------
+//        Queue projectQueue = new Queue("project.notification.queue");
+//        TopicExchange projectExchange = new TopicExchange("project.exchange");
+//
+//        // -------- COMMENT --------
+//        Queue commentQueue = new Queue("comment.notification.queue");
+//        TopicExchange commentExchange = new TopicExchange("comment.exchange");
+//
+//        return new Declarables(
+//
+//                // Queues
+//                memberQueue,
+//                taskQueue,
+//                projectQueue,
+//                commentQueue,
+//
+//                // Exchanges
+//                memberExchange,
+//                taskExchange,
+//                projectExchange,
+//                commentExchange,
+//
+//                // -------- Bindings --------
+//
+//                BindingBuilder.bind(memberQueue)
+//                        .to(memberExchange)
+//                        .with("member.*"),
+//
+//                BindingBuilder.bind(taskQueue)
+//                        .to(taskExchange)
+//                        .with("task.*"),
+//
+//                BindingBuilder.bind(projectQueue)
+//                        .to(projectExchange)
+//                        .with("project.*"),
+//
+//                BindingBuilder.bind(commentQueue)
+//                        .to(commentExchange)
+//                        .with("comment.*")
+//        );
+//    }
 
     @Bean
     public Declarables rabbitDeclarables() {
-        Queue memberQueue = new Queue("member.notification.queue");
+
+        Queue notificationQueue = new Queue("notification.queue", true);
+
         TopicExchange memberExchange = new TopicExchange("member.exchange");
+        TopicExchange taskExchange = new TopicExchange("task.exchange");
+        TopicExchange projectExchange = new TopicExchange("project.exchange");
+        TopicExchange commentExchange = new TopicExchange("comment.exchange");
 
         return new Declarables(
-                memberQueue,
+
+                // queue
+                notificationQueue,
+
+                // exchanges
                 memberExchange,
-                BindingBuilder.bind(memberQueue).to(memberExchange).with("member.*")
+                taskExchange,
+                projectExchange,
+                commentExchange,
+
+                // bindings (IMPORTANT)
+                BindingBuilder.bind(notificationQueue)
+                        .to(memberExchange).with("member.*"),
+
+                BindingBuilder.bind(notificationQueue)
+                        .to(taskExchange).with("task.*"),
+
+                BindingBuilder.bind(notificationQueue)
+                        .to(projectExchange).with("project.*"),
+
+                BindingBuilder.bind(notificationQueue)
+                        .to(commentExchange).with("comment.*")
         );
-    }
-
-
-    @Bean
-    public Binding memberBinding(
-            Queue memberNotificationQueue,
-            TopicExchange memberExchange) {
-
-        return BindingBuilder
-                .bind(memberNotificationQueue)
-                .to(memberExchange)
-                .with("member.assigned");
     }
 
     @Bean

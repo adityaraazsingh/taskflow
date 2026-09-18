@@ -1,9 +1,14 @@
-<div class="flex flex-col items-center justify-center gap-3 py-12">
-  <div class="relative size-10">
-    <div class="absolute inset-0 rounded-full border-4 border-indigo-100"></div>
-    <div class="absolute inset-0 rounded-full border-4 border-transparent border-t-indigo-600 animate-spin"></div>
+<div class="loading-root flex flex-col items-center justify-center gap-4 py-12">
+  <div class="loading-spinner relative size-14">
+    <div class="loading-glow absolute -inset-2 rounded-full"></div>
+    <div class="loading-ring absolute inset-0 rounded-full bg-indigo-100/40"></div>
+    <div class="loading-ring absolute inset-2 rounded-full bg-indigo-200/40"></div>
+    <div class="loading-indicator absolute inset-0 rounded-full border-4 border-transparent border-t-indigo-600 border-r-indigo-400 animate-spin"></div>
+    <div class="loading-dot absolute inset-0 m-auto size-2 rounded-full bg-indigo-500"></div>
   </div>
   @if (message) {
-    <p class="text-sm font-medium text-gray-500 animate-pulse">{{ message }}</p>
+    <div class="loading-message-wrapper">
+      <p class="loading-message text-sm font-medium text-gray-500">{{ message }}</p>
+    </div>
   }
 </div>

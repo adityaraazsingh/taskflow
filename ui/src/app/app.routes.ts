@@ -1,10 +1,10 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth.guard';
+import { loginBlockGuard } from './core/guards/loginBlockGuard';
 
 export const routes: Routes = [
-    { path: 'login', loadComponent: () => import('./features/auth/login/login').then(m => m.Login) },
+    { path: 'login', canActivate: [loginBlockGuard], loadComponent: () => import('./features/auth/login/login').then(m => m.Login) },
     { path: 'register', loadComponent: () => import('./features/auth/register/register').then(m => m.Register) },
-
   {
     path: '',
     canActivate: [authGuard],

@@ -25,6 +25,8 @@ export class ProjectList implements OnInit {
   sortBy = signal<string>('name');
   sortOrder = signal<'asc' | 'desc'>('asc');
 
+  // projectMemberMaps = signal<{ [projectId: number]: number[] }>({});
+
   currentPage = signal<number>(0);
   pageSize = signal<number>(9);
   totalPages = signal<number>(1);
@@ -72,14 +74,19 @@ export class ProjectList implements OnInit {
     private router: Router,
     private projectService: ProjectService
   ) {
-    // Check if projects were passed via navigation state
     const navigation = this.router.getCurrentNavigation();
     const state = navigation?.extras.state as { ProjectModel: ProjectModel[] } | null;
     if (state?.ProjectModel) {
       this.allProjects.set(state.ProjectModel);
+      // this.allProjects().forEach(project => {
+      //   this.projectMemberMaps.update(prev => ({
+      //     ...prev,
+      //     [project.id!]: project.projectMemberIds || []
+      //   }));
+      // });
     }
   }
-
+  
   ngOnInit(): void {
     // Fetch projects if not already loaded from navigation state
     if (this.allProjects().length === 0) {
