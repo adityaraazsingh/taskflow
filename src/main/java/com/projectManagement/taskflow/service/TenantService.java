@@ -13,9 +13,16 @@ import java.sql.Connection;
 import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 @Service
 public class TenantService {
+
+    /**
+     * Tenant names become SQL schema names and are interpolated into DDL, so only allow plain
+     * identifiers: a letter followed by letters, digits or underscores (max 63 chars).
+     */
+    private static final Pattern VALID_TENANT_NAME = Pattern.compile("^[A-Za-z][A-Za-z0-9_]{0,62}$");
 
     private final DataSource sharedDataSource;
 
@@ -24,8 +31,16 @@ public class TenantService {
         this.sharedDataSource = sharedDataSource;
     }
 
+    public static boolean isValidTenantName(String tenantName) {
+        return tenantName != null && VALID_TENANT_NAME.matcher(tenantName).matches();
+    }
+
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public String createTenant(@RequestParam String tenantName) {
+        if (!isValidTenantName(tenantName)) {
+            throw new IllegalArgumentException(
+                    "Invalid tenant name '" + tenantName + "': use a letter followed by letters, digits or underscores");
+        }
         try (Connection conn = sharedDataSource.getConnection();
              Statement stmt = conn.createStatement()) {
 

@@ -4,12 +4,9 @@ import com.projectManagement.taskflow.dto.AuthResponse;
 import com.projectManagement.taskflow.dto.ChangePasswordRequestDto;
 import com.projectManagement.taskflow.dto.LoginCredentials;
 import com.projectManagement.taskflow.entity.UserEntity;
-import com.projectManagement.taskflow.enums.RoleEnum;
-import com.projectManagement.taskflow.security.JwtUtil;
 import com.projectManagement.taskflow.service.AuthService;
 import com.projectManagement.taskflow.service.UserService;
 import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,12 +18,10 @@ public class AuthController {
 
     private final AuthService authService;
     private final UserService userService;
-    private final JwtUtil jwtUtil;
 
-    public AuthController(AuthService authService, UserService userService, JwtUtil jwtUtil) {
+    public AuthController(AuthService authService, UserService userService) {
         this.authService = authService;
         this.userService = userService;
-        this.jwtUtil = jwtUtil;
     }
 
     @PostMapping("/login")
@@ -44,21 +39,10 @@ public class AuthController {
         return ResponseEntity.ok(userService.changePassword(changePasswordRequest));
     }
 
+    /** Returns a fresh access + refresh token pair; 401 (via InvalidCredentialsException) when the refresh token is unusable. */
     @PostMapping("/refresh")
-    public ResponseEntity<?> refreshToken(@RequestBody Map<String, String> request) {
-        String refreshToken = request.get("refreshToken");
-        try {
-            String username = jwtUtil.extractUsername(refreshToken);
-            if (!jwtUtil.isTokenExpired(refreshToken)) {
-                // generate new access token
-                String newAccessToken = jwtUtil.generateTokens(username, RoleEnum.USER).get("accessToken");
-                return ResponseEntity.ok(Map.of("accessToken", newAccessToken));
-            } else {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Refresh token expired");
-            }
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid refresh token");
-        }
+    public ResponseEntity<AuthResponse> refreshToken(@RequestBody Map<String, String> request) {
+        return ResponseEntity.ok(authService.refresh(request.get("refreshToken")));
     }
 
 }

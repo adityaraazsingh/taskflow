@@ -10,6 +10,8 @@ import com.projectManagement.taskflow.repository.UserRepo;
 import com.projectManagement.taskflow.security.JwtUtil;
 import com.projectManagement.taskflow.tenant.TenantContext;
 import com.projectManagement.taskflow.tenant.TenantIdentifierResolver;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import org.springframework.aop.framework.AopContext;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.annotation.Propagation;
@@ -17,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -68,17 +71,25 @@ public class AuthService {
     public AuthResponse login(LoginCredentials loginCredentials){
         AuthResponse authResponse = new AuthResponse();
         try{
-            String tenantId = loginCredentials.getUsername().split("/")[0];
-            String username = loginCredentials.getUsername().split("/")[1];
-            if (tenantId != null) {
-                TenantContext.setTenant(tenantId);
+            String fullUsername = loginCredentials.getUsername();
+            if (fullUsername == null || fullUsername.indexOf('/') <= 0 || fullUsername.endsWith("/")) {
+                throw new InvalidCredentialsException("Username must be in the form <tenant>/<username>");
             }
-            Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(
-                            loginCredentials.getUsername(),
-                            loginCredentials.getPassword()
-                    )
-            );
+            String tenantId = fullUsername.substring(0, fullUsername.indexOf('/'));
+            String username = fullUsername.substring(fullUsername.indexOf('/') + 1);
+            TenantContext.setTenant(tenantId);
+            Authentication authentication;
+            try {
+                authentication = authenticationManager.authenticate(
+                        new UsernamePasswordAuthenticationToken(
+                                loginCredentials.getUsername(),
+                                loginCredentials.getPassword()
+                        )
+                );
+            } catch (AuthenticationException e) {
+                // Wrong password, unknown user or missing tenant schema all look the same to the client.
+                throw new InvalidCredentialsException("Invalid credentials");
+            }
             if (authentication.isAuthenticated()) {
                 RoleEnum role = userRepo.findByUsername(loginCredentials.getUsername())
                         .orElseThrow(() -> new UserNotFoundException("User not found"))
@@ -97,9 +108,49 @@ public class AuthService {
         }
     }
 
+    /**
+     * Exchanges a valid refresh token for a new token pair. The user's role is read from the
+     * database so a refresh never silently changes (or downgrades) their permissions.
+     */
+    public AuthResponse refresh(String refreshToken){
+        if (refreshToken == null || refreshToken.isBlank()) {
+            throw new InvalidCredentialsException("Refresh token is required");
+        }
+        try {
+            Claims claims = jwtUtil.parseClaims(refreshToken);
+            if (!jwtUtil.isRefreshToken(claims)) {
+                throw new InvalidCredentialsException("Invalid refresh token");
+            }
+            String fullUsername = claims.getSubject();
+            if (fullUsername == null || fullUsername.indexOf('/') <= 0) {
+                throw new InvalidCredentialsException("Invalid refresh token");
+            }
+            TenantContext.setTenant(fullUsername.substring(0, fullUsername.indexOf('/')));
+
+            UserEntity user = userRepo.findByUsername(fullUsername)
+                    .orElseThrow(() -> new InvalidCredentialsException("Account no longer exists, please sign in again"));
+
+            Map<String, String> tokens = jwtUtil.generateTokens(fullUsername, user.getRole());
+            AuthResponse authResponse = new AuthResponse();
+            authResponse.setAccessToken(tokens.get("accessToken"));
+            authResponse.setRefreshToken(tokens.get("refreshToken"));
+            authResponse.setRole(user.getRole());
+            authResponse.setUsername(fullUsername.substring(fullUsername.indexOf('/') + 1));
+            return authResponse;
+        } catch (JwtException | IllegalArgumentException e) {
+            throw new InvalidCredentialsException("Invalid or expired refresh token");
+        } finally {
+            TenantContext.clear();
+        }
+    }
+
     @Transactional
     public UserEntity getCurrentUser(){
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || authentication.getPrincipal() == null) {
+            throw new InvalidCredentialsException("Not authenticated");
+        }
+        Object principal = authentication.getPrincipal();
         String username;
         if(principal instanceof UserDetails){
             username = ((UserDetails) principal).getUsername();

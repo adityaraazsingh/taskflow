@@ -1,0 +1,17 @@
+# Local H2 database files must never be baked into the image - production data lives on a volume.
+data/
+
+# Not needed to build the backend jar.
+ui/
+target/
+node_modules/
+.git/
+.gitignore
+.gitattributes
+.idea/
+.vscode/
+*.md
+*.txt
+*.csv
+nul
+JSONRequestFile
