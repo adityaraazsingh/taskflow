@@ -7,6 +7,7 @@ import { UserModel } from "../models/user.model";
 import { ChangePasswordDto } from "../models/ChangePasswordDto";
 import { Router } from "@angular/router";
 import { ProfileService } from "./profileService";
+import { tap } from "rxjs";
 
 @Injectable({
   providedIn: 'root'
@@ -36,18 +37,17 @@ export class AuthService implements OnInit{
         return this.httpClient.post<AuthModel>(
             `${this.url}/auth/login`,
             payload
-        ).subscribe({
-        next : (response) => {
-          localStorage.setItem("accessToken" , response.accessToken);
-          localStorage.setItem("refreshToken" , response.refreshToken);
-          this.checkIfUserLoggedIn()
-          this.router.navigate(['/dashboard']);
-          this.me();
-        },
-        error : (error) => {
-          throw new Error(`Login failed: ${error.message}`);
-        }
-      });
+        ).pipe(
+            tap({
+                next : (response) => {
+                    localStorage.setItem("accessToken" , response.accessToken);
+                    localStorage.setItem("refreshToken" , response.refreshToken);
+                },
+                error : (error) => {
+                    console.error(`Login failed: ${error.message}`);
+                }
+            })
+        );
     }
 
     public logout(){
