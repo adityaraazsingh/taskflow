@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormControl, FormControlName, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { AuthService } from '../../../core/services/auth.service';
 import { LoginRequest } from '../../../core/models/loginRequest.model';
@@ -18,7 +18,6 @@ import { SignUpUserDto } from '../../../core/models/SignUpUserDto';
 export class Login {
 
   isLoggingIn : boolean = true;
-  isLoading = signal(false);
   // user$ = new BehaviorSubject<UserModel | null>(null);
   // userObservable$ = this.user$.asObservable();
   
@@ -40,22 +39,12 @@ export class Login {
   router = inject(Router);
 
   onLoginClick(){
-    if(this.isLoading()) return;
     if(this.isLoggingIn){
       const payload:LoginRequest = {
         username: this.loginForm.value.username!,
         password: this.loginForm.value.password!
       };
-      this.isLoading.set(true);
-      this.authService.login(payload).subscribe({
-        next: () => {
-          this.isLoading.set(false);
-          this.authService.checkIfUserLoggedIn();
-          this.authService.me();
-          this.router.navigate(['/dashboard']);
-        },
-        error: () => this.isLoading.set(false)
-      });
+      this.authService.login(payload);
     }else{
       const payload : SignUpUserDto = {
         tenantName: this.signUpForm.value.tenantName!,
@@ -64,15 +53,12 @@ export class Login {
         role : this.signUpForm.value.role!,
         email:this.signUpForm.value.email!
       };
-      this.isLoading.set(true);
       this.authService.signUp(payload).subscribe({
         next : (response) => {
           window.alert(`User signed up successfully ${response}`);
-          this.isLoading.set(false);
         },
         error : (error) => {
           console.error(error);
-          this.isLoading.set(false);
         }
       });
     }
