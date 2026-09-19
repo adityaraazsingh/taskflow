@@ -6,26 +6,6 @@
     <div class="ocean-glow two"></div>
     <div class="ocean-glow three"></div>
 
-    <!-- Drifting clouds -->
-    <div class="ocean-cloud small">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 60" fill="none">
-        <g fill="#f8fafc">
-          <ellipse cx="60" cy="40" rx="52" ry="18" />
-          <ellipse cx="110" cy="28" rx="46" ry="22" />
-          <ellipse cx="150" cy="40" rx="42" ry="16" />
-        </g>
-      </svg>
-    </div>
-    <div class="ocean-cloud large">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 60" fill="none">
-        <g fill="#ffffff">
-          <ellipse cx="60" cy="40" rx="52" ry="18" />
-          <ellipse cx="110" cy="26" rx="46" ry="22" />
-          <ellipse cx="150" cy="40" rx="42" ry="16" />
-        </g>
-      </svg>
-    </div>
-
     <!-- Layered rolling waves -->
     <div class="ocean-wave back">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 120" preserveAspectRatio="none" fill="none">
@@ -92,12 +72,20 @@
             </div>
           </div>
 
-          <button type="submit"
-            class="login-submit-btn w-full flex items-center justify-center rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm shadow-indigo-500/25 hover:bg-indigo-500 hover:shadow-md hover:shadow-indigo-500/30 active:scale-[0.98] transition-all duration-200">
-            <svg class="size-4 mr-2" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" />
-            </svg>
-            Sign in
+          <button type="submit" [disabled]="isLoading()"
+            class="login-submit-btn w-full flex items-center justify-center rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm shadow-indigo-500/25 hover:bg-indigo-500 hover:shadow-md hover:shadow-indigo-500/30 active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:bg-indigo-600 transition-all duration-200">
+            @if (isLoading()) {
+              <svg class="size-4 mr-2 animate-spin" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+              </svg>
+              Signing in...
+            } @else {
+              <svg class="size-4 mr-2" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" />
+              </svg>
+              Sign in
+            }
           </button>
         </form>
       } @else {
@@ -176,12 +164,20 @@
             </div>
           </div>
 
-          <button type="submit"
-            class="w-full flex items-center justify-center rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 transition-all duration-200">
-            <svg class="size-4 mr-2" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M18 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zM3 19.235v-.11a6.375 6.375 0 0112.75 0v.109A12.318 12.318 0 019.374 21c-2.331 0-4.512-.645-6.374-1.766z" />
-            </svg>
-            Create account
+          <button type="submit" [disabled]="isLoading()"
+            class="w-full flex items-center justify-center rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:bg-indigo-600 transition-all duration-200">
+            @if (isLoading()) {
+              <svg class="size-4 mr-2 animate-spin" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+              </svg>
+              Creating account...
+            } @else {
+              <svg class="size-4 mr-2" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M18 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zM3 19.235v-.11a6.375 6.375 0 0112.75 0v.109A12.318 12.318 0 019.374 21c-2.331 0-4.512-.645-6.374-1.766z" />
+              </svg>
+              Create account
+            }
           </button>
         </form>
       }
