@@ -1,3 +1,6 @@
 2026-09-19 05:25:36.057727+05:30 jdbc[5]: exception
 org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "DATABASECHANGELOGLOCK" not found; SQL statement:
 SELECT COUNT(*) FROM DefaultTENANT.DATABASECHANGELOGLOCK [42102-240]
+2026-09-19 05:48:30.148316+05:30 jdbc[6]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "USER_ENTITY" not found; SQL statement:
+select ue1_0.id,ue1_0.created_at,ue1_0.email,ue1_0.password_hash,ue1_0.role,ue1_0.username from user_entity ue1_0 where ue1_0.username=? [42102-240]

@@ -1,47 +1,25 @@
 package com.projectManagement.taskflow.controller;
 
-import liquibase.integration.spring.SpringLiquibase;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.Statement;
-import java.util.HashMap;
-import java.util.Map;
+import com.projectManagement.taskflow.service.TenantService;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @RequestMapping("/api/tenant")
 @RestController
 public class TenantController {
 
-    private final DataSource sharedDataSource;
+    private final TenantService tenantService;
 
-    @Autowired
-    public TenantController(DataSource sharedDataSource) {
-        this.sharedDataSource = sharedDataSource;
+    public TenantController(TenantService tenantService) {
+        this.tenantService = tenantService;
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public String createTenant(@RequestParam String tenantName) {
-        try (Connection conn = sharedDataSource.getConnection();
-             Statement stmt = conn.createStatement()) {
-
-            // 1. Create schema dynamically
-            stmt.executeUpdate("CREATE SCHEMA IF NOT EXISTS " + tenantName);
-
-            // 2. Run Liquibase for this schema
-            SpringLiquibase liquibase = new SpringLiquibase();
-            liquibase.setDataSource(sharedDataSource);
-            liquibase.setChangeLog("classpath:db.changelog-master.xml");
-            Map<String, String> params = new HashMap<>();
-            params.put("schemaName", tenantName);
-            liquibase.setChangeLogParameters(params);
-            liquibase.setLiquibaseSchema(tenantName); // 🔥 Create sepearte Dbchanelog sum , to avoid CheckSums Issue
-            liquibase.afterPropertiesSet();
-
-            return "Tenant schema created: " + tenantName;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "Error creating tenant schema: " + e.getMessage();
-        }
+        return tenantService.createTenant(tenantName);
     }
 }

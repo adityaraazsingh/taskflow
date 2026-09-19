@@ -32,3 +32,7 @@ build/
 ### VS Code ###
 .vscode/
 node_modules/
+
+### Local H2 database (never commit or ship data files) ###
+data/
+nul

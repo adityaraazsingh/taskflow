@@ -4,5 +4,5 @@ export const environment = {
   wsUrl : 'http://localhost:8080/ws',
   brokerUrl :'ws://localhost:8080/ws',
   frontEndUrl : 'http://localhost:4200',
-
+  
 };

@@ -55,28 +55,28 @@ public class ProjectsController {
         return ResponseEntity.ok(projectService.getProjectById(id));
     }
 
-    @PreAuthorize("hasRole('ADMIN') or project_security.isProjectCreator(#projectId)")
+    @PreAuthorize("hasRole('ADMIN') or @project_security.isProjectCreator(#id)")
     @PutMapping("/{id}")
     public ResponseEntity<String> updateProject(@PathVariable Long id,@Valid @RequestBody ProjectRequestDto project){
         projectService.updateProject(id, project);
         return ResponseEntity.status(HttpStatus.CREATED).body("Project Created");
     }
 
-    @PreAuthorize("hasRole('ADMIN') or project_security.isProjectCreator(#projectId)")
+    @PreAuthorize("hasRole('ADMIN') or @project_security.isProjectCreator(#id)")
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteProject(@PathVariable Long id){
         projectService.deleteProject(id);
         return ResponseEntity.ok("Project Deleted");
     }
 
-//    @PreAuthorize("hasRole('ADMIN') or project_security.isProjectCreator(#projectId)")
+//    @PreAuthorize("hasRole('ADMIN') or @project_security.isProjectCreator(#id)")
     @PostMapping("/{id}/members")
     public ResponseEntity<String> addProjectPerMember(@PathVariable Long id,@Valid @RequestBody AssigningUserRequestDto dto){
         projectService.addMember(id, dto.getUserId(), dto.getRoleInProject());
         return ResponseEntity.status(HttpStatus.CREATED).body(null);
     }
 
-    @PreAuthorize("hasRole('ADMIN') or project_security.isProjectCreator(#projectId)")
+    @PreAuthorize("hasRole('ADMIN') or @project_security.isProjectCreator(#id)")
     @DeleteMapping("/{id}/members/{memberId}")
     public ResponseEntity<String> removeMemberFromProject(@PathVariable Long id, @PathVariable Long memberId){
         projectService.removeMember(id, memberId);
@@ -91,7 +91,7 @@ public class ProjectsController {
         return taskService.listTasksByProject(id, pageable);
     }
 
-    @PreAuthorize("hasRole('ADMIN') or project_security.isProjectCreator(#projectId) or project_security.isProjectMember(#projectId)")
+    @PreAuthorize("hasRole('ADMIN') or @project_security.isProjectCreator(#projectId) or @project_security.isProjectMember(#projectId)")
     @PostMapping("/{projectId}/tasks")
     public List<TaskResponseDto> postAllTaskOfProject(@PathVariable Long projectId,
                                                       @Valid @RequestBody List<TaskRequestDTO> tasks){

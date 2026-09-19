@@ -1,5 +1,6 @@
 package com.projectManagement.taskflow.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
@@ -9,6 +10,13 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 @Configuration
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
+
+    private final String[] allowedOriginPatterns;
+
+    public WebSocketConfig(@Value("${app.cors.allowed-origin-patterns}") String[] allowedOriginPatterns) {
+        this.allowedOriginPatterns = allowedOriginPatterns;
+    }
+
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
         config.enableSimpleBroker("/topic"); // for broadcasting
@@ -18,10 +26,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/ws")
-                .setAllowedOriginPatterns(
-                        "http://localhost:4200",
-                        "https://*.vercel.app"
-                )
+                .setAllowedOriginPatterns(allowedOriginPatterns)
 //                .withSockJS()
         ;
     }
