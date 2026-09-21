@@ -1,6 +1,7 @@
 package com.projectManagement.taskflow.service;
 
 import com.projectManagement.taskflow.dto.*;
+import com.projectManagement.taskflow.entity.ProfileEntity;
 import com.projectManagement.taskflow.entity.UserEntity;
 import com.projectManagement.taskflow.enums.RoleEnum;
 import com.projectManagement.taskflow.exception.InvalidCredentialsException;
@@ -47,6 +48,9 @@ public class AuthService {
     @Autowired
     private UserRepo userRepo;
 
+    @Autowired
+    private ProfileService profileService;
+
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public UserResponseDto register(TenantUserRequestDto dto){
         try {
@@ -61,7 +65,16 @@ public class AuthService {
             UserEntity saved = userRepo.save(user);
             userRepo.flush();   // 🔥 FORCE DB interaction
 
-            return userMapper.toDto(saved);
+            UserResponseDto DTO = userMapper.toDto(saved);
+
+            ProfileEntity profile = new ProfileEntity();
+            profile.setUserId(user.getId());
+            profile.setBio(user.getUsername() + "'s bio");
+            profile.setFirstName(user.getUsername());
+            profile.setLastName("");
+            profileService.saveProfile(profile);
+
+            return DTO;
 
         } finally {
             TenantContext.clear();

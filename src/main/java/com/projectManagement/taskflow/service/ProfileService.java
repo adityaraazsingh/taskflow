@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Transactional
 @Service
 public class ProfileService {
@@ -19,7 +21,16 @@ public class ProfileService {
     }
 
     public ProfileEntity saveProfile(ProfileEntity profile){
-        return profileRepo.save(profile);
+        Optional<ProfileEntity> userProfileOpt = profileRepo.findByUserId(profile.getUserId());
+        if (userProfileOpt.isPresent()) {
+            ProfileEntity userProfile = userProfileOpt.get();
+            userProfile.setBio(profile.getBio());
+            userProfile.setFirstName(profile.getFirstName());
+            userProfile.setLastName(profile.getLastName());
+            return profileRepo.save(userProfile);
+        } else {
+            return profileRepo.save(profile);
+        }
     }
 
 }
